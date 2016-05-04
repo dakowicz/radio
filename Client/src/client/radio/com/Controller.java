@@ -85,6 +85,7 @@ public class Controller {
         Player player = new Player();
         Playlist playlist = new Playlist();
         Receiver receiver = new Receiver(controller.getSocket(), playlist, player, in);
+<<<<<<< d9d5920b8c34c5a0ba04e4a9864c160b73a32465
         Sender sender = new Sender(controller.getSocket());
 
         controller.setReceiver(receiver);
@@ -95,6 +96,14 @@ public class Controller {
 
         receiverThread.start();
         senderThread.start();
+=======
+
+        controller.setReceiver(receiver);
+
+        Thread receiverThread = new Thread(receiver);
+
+        receiverThread.start();
+>>>>>>> Simple connection to server
         receiverThread.join();
 
         System.out.println("DONE");
