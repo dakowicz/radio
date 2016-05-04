@@ -2,6 +2,7 @@ package client.radio.com;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 /**
  * Created by Michał on 2016-04-23.
@@ -28,24 +29,53 @@ public class Receiver implements Runnable {
         String message = "";
         try {
             while (true) {
-                byte[] header = new byte[8];
-                header[0] = messageByte[0];
-                switch (header[0]) {
-                    case 0:
-                        break;
-                    //TO DO: handling received stream from server and
-                    //pass control to adequate handling methods
+                byte[] head = new byte[7];
+                for (int i = 0; i < 7; i++) {
+                    head[i] = receiverStream.readByte();
                 }
+                Header header = new Header(head);
+                resolveHeaderType(header);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("receiver thread done");
     }
 
-    private void handleStreamingMusic() {
+    private void resolveHeaderType(Header header) {
+        switch (header.type) {
+            case Header.connect:
+                handleConnectionSignal(header);
+                break;
+            case Header.stream:
+                handleStreamingMusic(header);
+                break;
+            case Header.votes:
+                handleVoting(header);
+                break;
+        }
+    }
+
+    private void handleConnectionSignal(Header header) {
+        if (header.parameters == 1)
+            System.out.println("CONNECT SIGNAL RECEIVED");
+            //connect(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        else if (header.parameters == 2)
+            System.out.println("DISCONNECT SIGNAL RECEIVED");
+        // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
+    }
+
+    private void handleStreamingMusic(Header header) {
         System.out.println("MUSIC");
+        if (header.parameters == 0)
+            System.out.println("MP3 DATA");
+            //appendToTempFile(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        else if (header.parameters == 2)
+            System.out.println("NEW SONG");
+            //startNewSong(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        else if (header.parameters == 1)
+            System.out.println("END OF SONG");
+        //endCurrentSong(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
 
@@ -54,8 +84,14 @@ public class Receiver implements Runnable {
     }
 
 
-    private void handlePlaylist() {
-        System.out.println("NEW PLAYLIST");
+    private void handleVoting(Header header) {
+        System.out.println("VOTING");
+        if (header.parameters == 0)
+            System.out.println("NEW PLAYLIST");
+        //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        if (header.parameters == 1)
+            System.out.println("VOTE ACK");
+        //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
 
