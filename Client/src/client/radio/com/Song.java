@@ -12,8 +12,6 @@ public class Song {
     private boolean isVoted;
 
 
-
-
     public Song(String title, String band, int id, int votesNumber) {
         this.title = title;
         this.band = band;
@@ -45,10 +43,12 @@ public class Song {
     public void setTitle(String title) {
         this.title = title;
     }
-    public void addVote(){
+
+    public void addVote() {
         votesNumber++;
     }
-    public void subtractVote(){
+
+    public void subtractVote() {
         votesNumber--;
     }
 

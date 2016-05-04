@@ -8,7 +8,7 @@ import java.io.File;
 /**
  * Created by Michał on 2016-04-23.
  */
-public class Recorder extends Thread{
+public class Recorder extends Thread {
 
     private TargetDataLine dataLine;
     private AudioFileFormat.Type targetType;
@@ -18,17 +18,26 @@ public class Recorder extends Thread{
     private Sender sender;
 
 
+    public void run() {
+    }
 
+    public void convertToMp3() {
+    }
 
-    public void run(){}
+    ;
 
-    public void convertToMp3(){};
+    private void startRecording() {
+    }
 
-    private void startRecording(){};
+    ;
 
-    private void stopRecording(){};
+    private void stopRecording() {
+    }
 
-    private void sendMessage(){}
+    ;
+
+    private void sendMessage() {
+    }
 
     public Converter getConverter() {
         return converter;

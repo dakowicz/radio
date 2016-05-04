@@ -10,6 +10,7 @@ import java.util.Set;
 public class Playlist {
 
     private Set<Song> playlist;
+
     public Playlist() {
         playlist = new HashSet<Song>();
     }
@@ -22,7 +23,7 @@ public class Playlist {
         this.playlist = playlist;
     }
 
-    public void vote(int songId){
+    public void vote(int songId) {
 
     }
 }
