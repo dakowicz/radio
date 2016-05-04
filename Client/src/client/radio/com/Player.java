@@ -20,8 +20,6 @@ public class Player extends Application {
     private Song currentSong;
 
 
-
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -35,10 +33,13 @@ public class Player extends Application {
     public void setInputStreamFile(FileInputStream inputStreamFile) {
         this.inputStreamFile = inputStreamFile;
     }
-    public void mute(){
+
+    public void mute() {
 
     }
-    public void unmute(){}
+
+    public void unmute() {
+    }
 
     public Song getCurrentSong() {
         return currentSong;

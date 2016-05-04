@@ -8,5 +8,8 @@ import java.io.File;
 public class Converter {
 
 
-    public void convertToMp3(File mp3File){};
+    public void convertToMp3(File mp3File) {
+    }
+
+    ;
 }
