@@ -13,12 +13,17 @@ public class Sender {
     DataOutputStream senderStream;
 
 
-
     public Sender(Socket socket) {
         this.socket = socket;
     }
-    public void sendVote(Song song, boolean isGood){}
-    public void sendMessage(File file){}
-    public void sendFile(File file){}
+
+    public void sendVote(Song song, boolean isGood) {
+    }
+
+    public void sendMessage(File file) {
+    }
+
+    public void sendFile(File file) {
+    }
 
 }
