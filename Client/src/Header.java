@@ -2,11 +2,11 @@
  * Created by Kamil on 2016-05-04.
  */
 public class Header {
-    static byte connect=0;
-    static byte stream=1;
-    static byte votes=2;
-    static byte file=3;
-    static byte id_prot=2;
+    static final byte connect=0;
+    static final byte stream=1;
+    static final byte votes=2;
+    static final byte file=3;
+    static final byte id_prot=2;
     byte type; //Here is also the zero-tail
     byte parameters;
     int length;
@@ -25,32 +25,34 @@ public class Header {
         length+=head[5]<<8;
         length+=head[6];
     }
-    public void createHeader(byte t, byte param, int l){
+    public void createHeader(byte t, byte param, int lng){
         type=t;
         parameters=param;
-        length=l;
+        length=lng;
 
     }
 
-    public void createHeaderConnect(boolean start, boolean end, int l){
+    public void createHeaderConnect(boolean start, boolean end, int lng){
         type=connect;
         parameters=(byte)(start?1:0);
         parameters+=(byte)(end?2:0);
-        length=l;
+        length=lng;
     }
-    public void createHeaderVote(boolean cancel_vote, int l){
+
+
+    public void createHeaderVote(boolean cancel_vote, int lng){
         type=votes;
         parameters=(byte)(cancel_vote?1:0);
         parameters+=2;	//Since it's the client to server message
-        length=l;
+        length=lng;
     }
-    public void createHeaderFile(boolean priority, byte info_length, int l){
+    public void createHeaderFile(boolean priority, byte info_length, int lng){
         type=file;
         if(info_length<0)
             return;
         parameters=info_length;
         parameters+=(byte)(priority?-128:0);
-        length=l;
+        length=lng;
     }
 
 }
