@@ -25,26 +25,26 @@ public class Header {
         length+=head[5]<<8;
         length+=head[6];
     }
-    public void create_headre(byte t, byte param, int l){
+    public void createHeader(byte t, byte param, int l){
         type=t;
         parameters=param;
         length=l;
 
     }
 
-    public void create_header_connect(boolean start, boolean end, int l){
+    public void createHeaderConnect(boolean start, boolean end, int l){
         type=connect;
         parameters=(byte)(start?1:0);
         parameters+=(byte)(end?2:0);
         length=l;
     }
-    public void create_header_vote(boolean cancel_vote, int l){
+    public void createHeaderVote(boolean cancel_vote, int l){
         type=votes;
         parameters=(byte)(cancel_vote?1:0);
         parameters+=2;	//Since it's the client to server message
         length=l;
     }
-    public void create_header_file(boolean priority, byte info_length, int l){
+    public void createHeaderFile(boolean priority, byte info_length, int l){
         type=file;
         if(info_length<0)
             return;
