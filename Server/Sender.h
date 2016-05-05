@@ -21,6 +21,10 @@ public:
 private:
     int socketDescriptor;
     HeaderWrapper* headerWrapper;
+
+    void sendMessage(const char *buffer) const;
+
+    void sendMessage(const MessageDTO *messageDTO) const;
 };
 
 

@@ -14,8 +14,9 @@ HeaderWrapper::~HeaderWrapper() {
 
 MessageDTO *HeaderWrapper::createMessage(char *data) {
 
-    
-    Header header = new Header()
+    uint8_t headerData[7] = {2, 0, 1, 0, 0, 0, 0 };
+    Header *header = new Header(headerData);
+
     return 0;
 }
 

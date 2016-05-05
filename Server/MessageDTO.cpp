@@ -7,11 +7,26 @@
 MessageDTO::MessageDTO(Header *header, char *data) {
     this->header = header;
     this->data = data;
+
+    this->wholeMessage = getMergedMessage();
 }
 
 MessageDTO::~MessageDTO() {
 
 }
+
+const void * MessageDTO::getWholeMessage()const {
+
+    return ;
+}
+
+void *MessageDTO::getMergedMessage() {
+    memcpy(wholeMessage, );
+}
+
+
+
+
 
 
 

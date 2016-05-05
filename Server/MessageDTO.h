@@ -12,10 +12,15 @@ class MessageDTO {
 public:
     MessageDTO(Header *header, char *data);
     ~MessageDTO();
+
+    const void * getWholeMessage()const;
+
 private:
     Header *header;
     char *data;
+    void *wholeMessage;
 
+    void *getMergedMessage();
 };
 
 
