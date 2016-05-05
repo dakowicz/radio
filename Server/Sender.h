@@ -1,0 +1,27 @@
+//
+// Created by tomasz on 05.05.16.
+//
+
+#ifndef SERVER_SENDER_H
+#define SERVER_SENDER_H
+
+
+#include "HeaderWrapper.h"
+#include "SocketListener.h"
+
+class Sender
+{
+
+public:
+    Sender(int socketDescriptor);
+    ~Sender();
+
+    void handle();
+
+private:
+    int socketDescriptor;
+    HeaderWrapper* headerWrapper;
+};
+
+
+#endif //SERVER_SENDER_H

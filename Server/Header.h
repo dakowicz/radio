@@ -4,14 +4,10 @@
 #ifndef SERVER_HEADER_H
 #define SERVER_HEADER_H
 
-#import <cstdint>
-#import <iostream>
-
-using namespace std;
+#include <cstdint>
 
 class Header {
 public:
-    Header(void);
     Header(uint8_t head[7]);
     void createHeader(uint8_t t, uint8_t param, int l);
     void createHeaderConnect(bool start, bool end, int l);
@@ -20,6 +16,7 @@ public:
     void createHeaderList(bool cancel_vote, int l);
     void createHeaderStream(bool start, bool end, int l);
 
+private:
     const uint8_t connect=0;
     const uint8_t stream=1;
     const uint8_t votes=2;

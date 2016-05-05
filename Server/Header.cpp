@@ -4,12 +4,9 @@
 
 #include "Header.h"
 
-Header::Header(void){
-
-}
 Header::Header(uint8_t head[7]) {
     if(head[0]!=id_prot||head[1]>3) {
-        cout << "Wrong protocol";
+        perror("Wrong protocol");
         return;
     }
     type=head[1]; //Here is also the zero-tail
@@ -24,7 +21,6 @@ void Header::createHeader(uint8_t t, uint8_t param, int l){
     type=t;
     parameters=param;
     length=l;
-
 }
 
 void Header::createHeaderConnect(bool start, bool end, int l){
@@ -61,4 +57,3 @@ void Header::createHeaderFile(bool priority, uint8_t info_length, int l){// It's
     parameters+=(uint8_t)(priority?-128:0);
     length=l;
 }
-
