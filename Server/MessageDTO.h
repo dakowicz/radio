@@ -10,17 +10,17 @@
 
 class MessageDTO {
 public:
-    MessageDTO(Header *header, char *data);
+    MessageDTO(uint8_t *headerData, uint8_t *data);
     ~MessageDTO();
 
-    const void * getWholeMessage()const;
+    const uint8_t *getWholeMessage()const;
 
 private:
-    Header *header;
-    char *data;
-    void *wholeMessage;
+    uint8_t *headerData;
+    uint8_t *data;
+    uint8_t *wholeMessage;
 
-    void *getMergedMessage();
+    uint8_t *getMergedMessage();
 };
 
 

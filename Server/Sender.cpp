@@ -19,14 +19,15 @@ Sender::~Sender() {
 
 void Sender::handle() {
     //TODO handling queuing messages to send
-    char* buffer = (char *) "elo320fsdsdfds";
-    MessageDTO *messageDTO = headerWrapper->createMessage(buffer);
-    sendMessage(buffer);
+    uint8_t *dataBuffer;//data to send should be in buffer
+    MessageDTO *messageDTO = headerWrapper->createMessage(dataBuffer);
+    sendMessage(messageDTO);
 }
 
 void Sender::sendMessage(const MessageDTO *messageDTO)  const {
-    const void *buffer = messageDTO->getWholeMessage();
-    write(this->socketDescriptor, buffer, strlen((const char *) buffer));
+    const uint8_t *buffer = messageDTO->getWholeMessage();
+
+    write(this->socketDescriptor, buffer, 7);//strlen((const char *) buffer)
 }
 
 

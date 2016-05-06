@@ -12,12 +12,12 @@ HeaderWrapper::~HeaderWrapper() {
 
 }
 
-MessageDTO *HeaderWrapper::createMessage(char *data) {
+MessageDTO *HeaderWrapper::createMessage(uint8_t *data) {
 
     uint8_t headerData[7] = {2, 0, 1, 0, 0, 0, 0 };
-    Header *header = new Header(headerData);
+    //Header *header = new Header(headerData);
 
-    return 0;
+    return new MessageDTO(headerData, data);
 }
 
 

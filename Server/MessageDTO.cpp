@@ -2,26 +2,30 @@
 // Created by tomasz on 06.05.16.
 //
 
+#include <cstring>
 #include "MessageDTO.h"
 
-MessageDTO::MessageDTO(Header *header, char *data) {
-    this->header = header;
+MessageDTO::MessageDTO(uint8_t *headerData, uint8_t *data) {
+    this->headerData = headerData;
     this->data = data;
 
     this->wholeMessage = getMergedMessage();
+
 }
 
 MessageDTO::~MessageDTO() {
 
 }
 
-const void * MessageDTO::getWholeMessage()const {
+const uint8_t *MessageDTO::getWholeMessage()const {
 
-    return ;
+    return this->wholeMessage;
 }
 
-void *MessageDTO::getMergedMessage() {
-    memcpy(wholeMessage, );
+uint8_t *MessageDTO::getMergedMessage() {
+    //TODO return whole message (not only header)
+    this->wholeMessage = new uint8_t[7];
+    memcpy(this->wholeMessage, this->headerData, 7 );
 }
 
 

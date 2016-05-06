@@ -86,7 +86,7 @@ void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr
     serv_addr.sin_port = htons((uint16_t) port);
 }
 
-void ConnectionManager::handleError(const std::string errorMessage) const {
+void ConnectionManager::handleError(const char *errorMessage) const {
     //TODO error handling
     perror(errorMessage);
     exit(0);

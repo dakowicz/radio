@@ -44,7 +44,7 @@ private:
 
     void configureSender(int newSocketDescriptor);
 
-    void handleError(const std::string) const;
+    void handleError(const char *errorMessage) const;
 };
 
 

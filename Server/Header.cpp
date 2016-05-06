@@ -2,6 +2,7 @@
 // Created by Kamil on 2016-05-04.
 //
 
+#include <cstdio>
 #include "Header.h"
 
 Header::Header(uint8_t head[7]) {
