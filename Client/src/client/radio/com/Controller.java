@@ -85,12 +85,16 @@ public class Controller {
         Player player = new Player();
         Playlist playlist = new Playlist();
         Receiver receiver = new Receiver(controller.getSocket(), playlist, player, in);
+        Sender sender = new Sender(controller.getSocket());
 
         controller.setReceiver(receiver);
+        controller.setSender(sender);
 
         Thread receiverThread = new Thread(receiver);
+        Thread senderThread = new Thread(controller.getSender());
 
         receiverThread.start();
+        senderThread.start();
         receiverThread.join();
 
         System.out.println("DONE");
