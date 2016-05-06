@@ -5,14 +5,14 @@ import javafx.application.Application;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
+import lombok.Data;
 import java.io.FileInputStream;
 
 /**
  * Created by Michał on 2016-04-23.
  */
+
+@Data
 public class Player extends Application {
     private FileInputStream inputStreamFile;
     private Media sound;
@@ -25,27 +25,10 @@ public class Player extends Application {
 
     }
 
-
-    public FileInputStream getInputStreamFile() {
-        return inputStreamFile;
-    }
-
-    public void setInputStreamFile(FileInputStream inputStreamFile) {
-        this.inputStreamFile = inputStreamFile;
-    }
-
     public void mute() {
 
     }
 
     public void unmute() {
-    }
-
-    public Song getCurrentSong() {
-        return currentSong;
-    }
-
-    public void setCurrentSong(Song currentSong) {
-        this.currentSong = currentSong;
     }
 }

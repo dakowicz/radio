@@ -1,12 +1,18 @@
 package client.radio.com;
 
-import java.io.*;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.DataInputStream;
+import java.io.File;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * Created by Michał on 2016-04-23.
  */
+
+@Slf4j
+@Data
 public class Receiver implements Runnable {
 
     private Socket socket;
@@ -23,7 +29,6 @@ public class Receiver implements Runnable {
         this.receiverStream = receiverStream;
     }
 
-    @Override
     public synchronized void run() {
         int bytesRead;
         String message = "";
@@ -39,58 +44,66 @@ public class Receiver implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("receiver thread done");
+        log.info("receiver thread done");
     }
 
     private void resolveHeaderType(Header header) {
-        switch (header.type) {
-            case Header.connect:
+        switch (header.getType()) {
+            case Header.CONNECT:
                 handleConnectionSignal(header);
                 break;
-            case Header.stream:
+            case Header.STREAM:
                 handleStreamingMusic(header);
                 break;
-            case Header.votes:
+            case Header.VOTES:
                 handleVoting(header);
                 break;
+            default:
         }
     }
 
     private void handleConnectionSignal(Header header) {
-        if (header.parameters == 1)
-            System.out.println("CONNECT SIGNAL RECEIVED");
-            //connect(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        else if (header.parameters == 2)
-            System.out.println("DISCONNECT SIGNAL RECEIVED");
+        if (header.getParameters() == 1) {
+            log.info("CONNECT SIGNAL RECEIVED");
+        }
+            //CONNECT(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        else if (header.getParameters() == 2) {
+            log.info("DISCONNECT SIGNAL RECEIVED");
+        }
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
     private void handleStreamingMusic(Header header) {
-        System.out.println("MUSIC");
-        if (header.parameters == 0)
-            System.out.println("MP3 DATA");
+        log.info("MUSIC");
+        if (header.getParameters() == 0) {
+            log.info("MP3 DATA");
+        }
             //appendToTempFile(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        else if (header.parameters == 2)
-            System.out.println("NEW SONG");
+        else if (header.getParameters() == 2) {
+            log.info("NEW SONG");
+        }
             //startNewSong(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        else if (header.parameters == 1)
-            System.out.println("END OF SONG");
+        else if (header.getParameters() == 1) {
+            log.info("END OF SONG");
+        }
         //endCurrentSong(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
 
     private void handleVoiceMessage() {
-        System.out.println("VOICE MESSAGE");
+        log.info("VOICE MESSAGE");
     }
 
 
     private void handleVoting(Header header) {
-        System.out.println("VOTING");
-        if (header.parameters == 0)
-            System.out.println("NEW PLAYLIST");
+        log.info("VOTING");
+        if (header.getParameters() == 0) {
+            log.info("NEW PLAYLIST");
+        }
         //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        if (header.parameters == 1)
-            System.out.println("VOTE ACK");
+        if (header.getParameters() == 1) {
+            log.info("VOTE ACK");
+        }
         //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 

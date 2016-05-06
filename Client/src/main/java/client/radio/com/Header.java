@@ -1,25 +1,26 @@
 package client.radio.com;
 
+import lombok.Data;
+
 /**
  * Created by Kamil on 2016-05-04.
  */
+
+@Data
 public class Header {
-    static final byte connect = 0;
-    static final byte stream = 1;
-    static final byte votes = 2;
-    static final byte file = 3;
-    static final byte id_prot = 2;
-    byte type; //Here is also the zero-tail
-    byte parameters;
-    int length;
-
-    public Header() {
-
-    }
+    static final byte CONNECT = 0;
+    static final byte STREAM = 1;
+    static final byte VOTES = 2;
+    static final byte FILE = 3;
+    static final byte ID_PROT = 2;
+    private byte type; //Here is also the zero-tail
+    private byte parameters;
+    private int length;
 
     public Header(byte head[]) throws Exception {
-        if (head[0] != id_prot || head[1] > 3)
+        if (head[0] != ID_PROT || head[1] > 3) {
             throw new Exception("Wrong protocol");
+        }
         type = head[1];
         parameters = head[2];
         length = head[3] << 24;
@@ -36,25 +37,26 @@ public class Header {
     }
 
     public void createHeaderConnect(boolean start, boolean end, int lng) {
-        type = connect;
+        type = CONNECT;
         parameters = (byte) (start ? 1 : 0);
         parameters += (byte) (end ? 2 : 0);
         length = lng;
     }
 
 
-    public void createHeaderVote(boolean cancel_vote, int lng) {
-        type = votes;
-        parameters = (byte) (cancel_vote ? 1 : 0);
+    public void createHeaderVote(boolean cancelVote, int lng) {
+        type = VOTES;
+        parameters = (byte) (cancelVote ? 1 : 0);
         parameters += 2;    //Since it's the client to server message
         length = lng;
     }
 
-    public void createHeaderFile(boolean priority, byte info_length, int lng) {
-        type = file;
-        if (info_length < 0)
+    public void createHeaderFile(boolean priority, byte infoLength, int lng) {
+        type = FILE;
+        if (infoLength < 0) {
             return;
-        parameters = info_length;
+        }
+        parameters = infoLength;
         parameters += (byte) (priority ? -128 : 0);
         length = lng;
     }
