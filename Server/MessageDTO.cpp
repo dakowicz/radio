@@ -5,15 +5,18 @@
 #include <cstring>
 #include "MessageDTO.h"
 
-MessageDTO::MessageDTO(uint8_t *headerData, uint8_t *data) {
-    this->headerData = headerData;
+MessageDTO::MessageDTO(Header *header, uint8_t *data) {
+    this->header = header;
     this->data = data;
 
-    this->wholeMessage = getMergedMessage();
+    this->getMergedMessage();
 
 }
 
 MessageDTO::~MessageDTO() {
+    delete this->header;
+    delete[] this->data;
+    delete[] this->wholeMessage;
 
 }
 
@@ -24,8 +27,8 @@ const uint8_t *MessageDTO::getWholeMessage()const {
 
 uint8_t *MessageDTO::getMergedMessage() {
     //TODO return whole message (not only header)
-    this->wholeMessage = new uint8_t[7];
-    memcpy(this->wholeMessage, this->headerData, 7 );
+    this->wholeMessage = this->header->createBuffer();
+    //memcpy(this->wholeMessage, this->header->createBuffer(), 7 );
 }
 
 

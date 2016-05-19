@@ -14,7 +14,7 @@ public:
     HeaderWrapper();
     ~HeaderWrapper();
 
-    MessageDTO *createMessage(uint8_t *data);
+    MessageDTO *createMessage(void *data);
 };
 
 

@@ -9,9 +9,11 @@
 #include <vector>
 #include <thread>
 #include <netinet/in.h>
+#include <map>
 #include "Dispatcher.h"
 #include "SocketListener.h"
 #include "Sender.h"
+#include "ClientManager.h"
 
 class ConnectionManager {
 
@@ -26,23 +28,13 @@ private:
     int port;
     int socketDescriptor;
     Dispatcher *dispatcher;
-    std::vector<SocketListener*> socketListeners;
-    std::vector<Sender*> senders;
-    std::vector<std::thread*> sendersThreads;
-
-    std::vector<std::thread*> listenersThreads;
+    std::map<int, std::thread*> clientThreads;
 
     void initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr);
 
-    void handleClient(int newSocketDescriptor);
+    void addClient(int newSocketDescriptor);
 
-    void static handleNewSender(int socketDescriptor, Sender *sender);
-
-    void static handleNewSocketListener(int socketDescriptor, SocketListener *socketListener);
-
-    void configureSocketListener(int newSocketDescriptor);
-
-    void configureSender(int newSocketDescriptor);
+    void static handleClient(int newSocketDescriptor, Dispatcher *dispatcher);
 
     void handleError(const char *errorMessage) const;
 };

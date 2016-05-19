@@ -10,13 +10,22 @@
 
 class MessageDTO {
 public:
-    MessageDTO(uint8_t *headerData, uint8_t *data);
+    MessageDTO(Header *header, uint8_t *data);
     ~MessageDTO();
 
     const uint8_t *getWholeMessage()const;
 
+    Header *getHeader() const {
+        return header;
+    }
+
+    uint8_t *getData() const {
+        return data;
+    }
+
 private:
-    uint8_t *headerData;
+
+    Header *header;
     uint8_t *data;
     uint8_t *wholeMessage;
 

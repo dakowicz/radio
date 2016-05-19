@@ -8,6 +8,7 @@
 
 #include "HeaderWrapper.h"
 #include "SocketListener.h"
+#include <unistd.h>
 
 class Sender
 {

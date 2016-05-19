@@ -3,12 +3,23 @@
 //
 
 #include <cstdio>
+#include <stdexcept>
 #include "Header.h"
 
+
+Header::Header() {
+
+}
+
+
+
 Header::Header(uint8_t head[7]) {
-    if(head[0]!=id_prot||head[1]>3) {
+    if(head[0]!=id_prot) {
         perror("Wrong protocol");
-        return;
+        throw std::invalid_argument("id_prot");
+    }else if (head[1]>3){
+        perror("Wrong protocol");
+        throw std::invalid_argument("type");
     }
     type=head[1]; //Here is also the zero-tail
     parameters=head[2];
@@ -58,3 +69,17 @@ void Header::createHeaderFile(bool priority, uint8_t info_length, int l){// It's
     parameters+=(uint8_t)(priority?-128:0);
     length=l;
 }
+
+uint8_t *Header::createBuffer() {
+    uint8_t *head = new uint8_t[7];
+    head[0] = id_prot;
+    head[1] = type;
+    head[2] = parameters;
+    head[3] = length>>24;
+    head[4] = length>>16;
+    head[5] = length>>8;
+    head[6] = length;
+    return head;
+}
+
+

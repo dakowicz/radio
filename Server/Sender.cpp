@@ -2,7 +2,7 @@
 // Created by tomasz on 05.05.16.
 //
 
-#include <unistd.h>
+
 #include <cstring>
 #include "Sender.h"
 #include "Header.h"
@@ -19,7 +19,7 @@ Sender::~Sender() {
 
 void Sender::handle() {
     //TODO handling queuing messages to send
-    uint8_t *dataBuffer;//data to send should be in buffer
+    void *dataBuffer;//data to send should be in buffer
     MessageDTO *messageDTO = headerWrapper->createMessage(dataBuffer);
     sendMessage(messageDTO);
 }

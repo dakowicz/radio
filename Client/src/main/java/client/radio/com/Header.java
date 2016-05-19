@@ -12,7 +12,7 @@ public class Header {
     static final byte STREAM = 1;
     static final byte VOTES = 2;
     static final byte FILE = 3;
-    static final byte ID_PROT = 2;
+    static final byte ID_PROT = 90;
     private byte type; //Here is also the zero-tail
     private byte parameters;
     private int length;

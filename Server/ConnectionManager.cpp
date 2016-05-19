@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "ConnectionManager.h"
 #include "Sender.h"
+#include "ClientManager.h"
 
 int ConnectionManager::QUEUE_LIMIT = 5;
 
@@ -42,36 +43,20 @@ void ConnectionManager::start() {
         if (newSocketDescriptor < 0) {
             handleError("error on accept");
         } else {
-            handleClient(newSocketDescriptor);
+            addClient(newSocketDescriptor);
         }
     }
 }
 
-void ConnectionManager::handleClient(int newSocketDescriptor) {
-    configureSocketListener(newSocketDescriptor);
-    configureSender(newSocketDescriptor);
+void ConnectionManager::addClient(int newSocketDescriptor) {
+    std::thread *clientThread = new std::thread(handleClient, newSocketDescriptor, this->dispatcher);
+    clientThreads[newSocketDescriptor] = clientThread;
+    //TODO delete client from map
 }
 
-void ConnectionManager::configureSocketListener(int newSocketDescriptor) {
-    SocketListener *socketListener = new SocketListener(newSocketDescriptor);
-    std::thread* newClientSocketListener = new std::thread(handleNewSocketListener, newSocketDescriptor, socketListener);
-    this->listenersThreads.push_back(newClientSocketListener);
-    this->socketListeners.push_back(socketListener);
-}
-
-void ConnectionManager::configureSender(int newSocketDescriptor) {
-    Sender *sender = new Sender(newSocketDescriptor);
-    std::thread* newClientSender = new std::thread(handleNewSender, newSocketDescriptor, sender);
-    this->sendersThreads.push_back(newClientSender);
-    this->senders.push_back(sender);
-}
-
-void ConnectionManager::handleNewSender(int socketDescriptor, Sender* sender) {
-    sender->handle();
-}
-
-void ConnectionManager::handleNewSocketListener(int socketDescriptor, SocketListener* socketListener) {
-    socketListener->handle();
+void ConnectionManager::handleClient(int newSocketDescriptor, Dispatcher *dispatcher) {
+    ClientManager *clientManager = new ClientManager(dispatcher, newSocketDescriptor);
+    clientManager->handle();
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
@@ -91,3 +76,4 @@ void ConnectionManager::handleError(const char *errorMessage) const {
     perror(errorMessage);
     exit(0);
 }
+
