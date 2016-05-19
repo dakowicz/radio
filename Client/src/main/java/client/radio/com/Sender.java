@@ -3,7 +3,7 @@ package client.radio.com;
 import lombok.Data;
 
 import java.io.DataOutputStream;
-import java.io.File;
+//import java.io.File;
 import java.net.Socket;
 
 /**
@@ -17,15 +17,6 @@ public class Sender implements Runnable {
 
     public Sender(Socket socket) {
         this.socket = socket;
-    }
-
-    public void sendVote(Song song, boolean isGood) {
-    }
-
-    public void sendMessage(File file) {
-    }
-
-    public void sendFile(File file) {
     }
 
     public void run() {
