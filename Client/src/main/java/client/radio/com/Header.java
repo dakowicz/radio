@@ -15,7 +15,7 @@ public class Header {
     static final byte ID_PROT = 90;
     private byte type; //Here is also the zero-tail
     private byte parameters;
-    private int length;
+    private long length;
 
     public Header(byte head[]) throws Exception {
         if (head[0] != ID_PROT || head[1] > 3) {
@@ -29,14 +29,14 @@ public class Header {
         length += head[6];
     }
 
-    public void createHeader(byte t, byte param, int lng) {
+    public void createHeader(byte t, byte param, long lng) {
         type = t;
         parameters = param;
         length = lng;
 
     }
 
-    public void createHeaderConnect(boolean start, boolean end, int lng) {
+    public void createHeaderConnect(boolean start, boolean end, long lng) {
         type = CONNECT;
         parameters = (byte) (start ? 1 : 0);
         parameters += (byte) (end ? 2 : 0);
@@ -44,14 +44,14 @@ public class Header {
     }
 
 
-    public void createHeaderVote(boolean cancelVote, int lng) {
+    public void createHeaderVote(boolean cancelVote, long lng) {
         type = VOTES;
         parameters = (byte) (cancelVote ? 1 : 0);
         parameters += 2;    //Since it's the client to server message
         length = lng;
     }
 
-    public void createHeaderFile(boolean priority, byte infoLength, int lng) {
+    public void createHeaderFile(boolean priority, byte infoLength, long lng) {
         type = FILE;
         if (infoLength < 0) {
             return;
@@ -61,4 +61,15 @@ public class Header {
         length = lng;
     }
 
+    public byte[] serializeHeader(){
+        byte[] head = new byte[7];
+        head[0]=ID_PROT;
+        head[1]=type;
+        head[2]=parameters;
+        head[3]=(byte)(length >>> 24);
+        head[3]=(byte)(length >>> 16);
+        head[3]=(byte)(length >>> 8);
+        head[3]=(byte)length;
+        return head;
+    }
 }
