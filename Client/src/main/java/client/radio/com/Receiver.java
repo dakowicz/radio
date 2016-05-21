@@ -31,6 +31,7 @@ public class Receiver implements Runnable {
 
     public synchronized void run() {
         int bytesRead;
+        byte[] data;
         String message = "";
         try {
             while (true) {
@@ -39,7 +40,15 @@ public class Receiver implements Runnable {
                     head[i] = receiverStream.readByte();
                 }
                 Header header = new Header(head);
-                resolveHeaderType(header);
+                data = new byte[header.getLength()];
+                for (int i = 0; i < header.getLength(); i++) {
+                    try {
+                        data[i] = receiverStream.readByte();
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+                resolveHeaderType(header, data);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,34 +56,37 @@ public class Receiver implements Runnable {
         log.info("receiver thread done");
     }
 
-    private void resolveHeaderType(Header header) {
+    private void resolveHeaderType(Header header, byte[] data) {
         switch (header.getType()) {
             case Header.CONNECT:
-                handleConnectionSignal(header);
+                handleConnectionSignal(header, data);
                 break;
             case Header.STREAM:
-                handleStreamingMusic(header);
+                handleStreamingMusic(header, data);
                 break;
             case Header.VOTES:
-                handleVoting(header);
+                handleVoting(header, data);
                 break;
             default:
         }
     }
 
-    private void handleConnectionSignal(Header header) {
+    private void handleConnectionSignal(Header header, byte[] data) {
         if (header.getParameters() == 1) {
+            log.info(new String(data));
             log.info("CONNECT SIGNAL RECEIVED");
         }
             //CONNECT(Arrays.copyOfRange(h_data, 7, header.length + 7));
         else if (header.getParameters() == 2) {
+            log.info(new String(data));
             log.info("DISCONNECT SIGNAL RECEIVED");
         }
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
-    private void handleStreamingMusic(Header header) {
+    private void handleStreamingMusic(Header header, byte[] data) {
         log.info("MUSIC");
+        log.info(new String(data));
         if (header.getParameters() == 0) {
             log.info("MP3 DATA");
         }
@@ -95,8 +107,9 @@ public class Receiver implements Runnable {
     }
 
 
-    private void handleVoting(Header header) {
+    private void handleVoting(Header header, byte[] data) {
         log.info("VOTING");
+        log.info(new String(data));
         if (header.getParameters() == 0) {
             log.info("NEW PLAYLIST");
         }
