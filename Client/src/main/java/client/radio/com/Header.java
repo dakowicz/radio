@@ -19,7 +19,7 @@ public class Header {
 
     public Header(byte head[]) throws Exception {
         if (head[0] != ID_PROT || head[1] > 3) {
-            throw new Exception("Wrong protocol");
+            throw new Exception("Wrong protocol - was: " + head[0]);
         }
         type = head[1];
         parameters = head[2];
