@@ -6,7 +6,7 @@
 #define SERVER_DISPATCHER_H
 
 
-#include "MessageDTO.h"
+#include "Data.h"
 #include "BlockingQueue.h"
 #include "BlockingQueue.cpp"
 
@@ -18,15 +18,17 @@ public:
     Dispatcher();
     ~Dispatcher();
 
-    void addMessage(MessageDTO *newMessage);
+    void start();
 
-
-    void startHandling();
+    void addMessage(Data* newMessage);
 
 private:
-    BlockingQueue<MessageDTO *> *blockingQueue;
+    BlockingQueue<Data*> *blockingQueue;
 
-    void static handleMessages(BlockingQueue<MessageDTO*> *blockingQueue);
+    bool running;
+
+    void processMessage(Data* data);
+
 };
 
 

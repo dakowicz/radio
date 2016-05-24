@@ -6,11 +6,13 @@
 #include <cstring>
 #include "Sender.h"
 #include "Header.h"
+#include "TCPSender.h"
+#include "Data.h"
 
 
 Sender::Sender(int socketDescriptor) {
-    this->socketDescriptor = socketDescriptor;
-    this->headerWrapper = new HeaderWrapper();
+    this->messageQueue = new BlockingQueue<Data*>;
+    this->tcpSender = new TCPSender(socketDescriptor);
 }
 
 Sender::~Sender() {
@@ -18,17 +20,30 @@ Sender::~Sender() {
 }
 
 void Sender::handle() {
-    //TODO handling queuing messages to send
-    void *dataBuffer;//data to send should be in buffer
-    MessageDTO *messageDTO = headerWrapper->createMessage(dataBuffer);
-    sendMessage(messageDTO);
+    Data* dataFromQueue;
+    this->running = true;
+
+    while(running) {
+        dataFromQueue = messageQueue->pop();
+        sendData(dataFromQueue);
+    }
 }
 
-void Sender::sendMessage(const MessageDTO *messageDTO)  const {
-    const uint8_t *buffer = messageDTO->getWholeMessage();
+void Sender::sendData(Data *data) {
 
-    write(this->socketDescriptor, buffer, 7);//strlen((const char *) buffer)
+    switch(data->getDataType()){
+        case DataType::MUSIC:
+            tcpSender->sendMusic(data->getContent());
+            break;
+        case DataType::VOTES:
+            tcpSender->sendVotes(data->getContent());
+            break;
+    }
 }
+
+
+
+
 
 
 

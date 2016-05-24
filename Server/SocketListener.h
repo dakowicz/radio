@@ -7,7 +7,7 @@
 
 
 #include "Dispatcher.h"
-#include "MessageDTO.h"
+#include "Data.h"
 #include <unistd.h>
 
 
@@ -22,7 +22,7 @@ private:
     bool isClosed;
     int socketDescriptor;
     Dispatcher *dispatcher;
-    MessageDTO *readMessage();
+    Data *readMessage();
 
     Header *readHeader();
 };

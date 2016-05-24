@@ -25,18 +25,16 @@ public:
     static int QUEUE_LIMIT;
 
 private:
-    int port;
-    int socketDescriptor;
-    Dispatcher *dispatcher;
-    std::map<int, std::thread*> clientThreads;
-
     void initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr);
 
     void addClient(int newSocketDescriptor);
 
-    void static handleClient(int newSocketDescriptor, Dispatcher *dispatcher);
-
     void handleError(const char *errorMessage) const;
+
+    int port;
+    int socketDescriptor;
+    Dispatcher *dispatcher;
+    std::map<int, std::thread*> clientThreads;
 };
 
 

@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include "SocketListener.h"
-#include "MessageDTO.h"
+#include "Data.h"
 
 SocketListener::SocketListener(int socketDescriptor, Dispatcher *dispatcher) {
     this->socketDescriptor = socketDescriptor;
@@ -19,7 +19,7 @@ SocketListener::~SocketListener() {
 void SocketListener::handle() {
     //TODO blocking on given socket for incoming messages
     while(!isClosed) {
-        MessageDTO *newMessage = readMessage();
+        Data *newMessage = readMessage();
         if(newMessage != nullptr) {
             dispatcher->addMessage(newMessage);
         } else {
@@ -28,7 +28,7 @@ void SocketListener::handle() {
     }
 }
 
-MessageDTO *SocketListener::readMessage() {
+Data* SocketListener::readMessage() {
 
     Header *header = readHeader();
 
@@ -39,13 +39,15 @@ MessageDTO *SocketListener::readMessage() {
     uint8_t* data = new uint8_t[header->getLength()];
     int  n = read(socketDescriptor, data, header->getLength());
     if (n < 0) {
-        perror("ERROR reading data from socket\n");
+        perror("ERROR reading content from socket\n");
     }
-    return new MessageDTO(header, data);
+
+    //TODO
+    return nullptr;
 
 }
 
-Header *SocketListener::readHeader() {
+Header* SocketListener::readHeader() {
     uint8_t head[7];
     int  n = read(socketDescriptor,head,7);
     if (n < 0) {
