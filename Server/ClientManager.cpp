@@ -18,8 +18,8 @@ ClientManager::~ClientManager() {
 }
 
 void ClientManager::handle() {
-    this->socketListnerThread = new std::thread(handleSocketListener, this->socketListener);
-    this->senderThread = new std::thread(handleSender, this->sender);
+    this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
+    this->senderThread = new std::thread(&Sender::handle, this->sender);
 
     socketListnerThread->join();
     senderThread->join();

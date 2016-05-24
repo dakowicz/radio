@@ -8,6 +8,7 @@
 
 #include "HeaderWrapper.h"
 #include "SocketListener.h"
+#include "TCPSender.h"
 #include <unistd.h>
 
 class Sender
@@ -18,14 +19,17 @@ public:
     ~Sender();
 
     void handle();
+    bool isRunning() const { return running; }
+    void setRunning(bool val) { this-> running = val;}
 
 private:
+
     int socketDescriptor;
-    HeaderWrapper* headerWrapper;
+    BlockingQueue<Data*> *messageQueue;
+    bool running;
+    TCPSender *tcpSender;
 
-    void sendMessage(const char *buffer) const;
-
-    void sendMessage(const MessageDTO *messageDTO) const;
+    void sendData(Data *data);
 };
 
 

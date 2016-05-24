@@ -6,7 +6,7 @@
 #define SERVER_HEADERWRAPPER_H
 
 
-#include "MessageDTO.h"
+#include "Data.h"
 
 class HeaderWrapper {
 
@@ -14,7 +14,7 @@ public:
     HeaderWrapper();
     ~HeaderWrapper();
 
-    MessageDTO *createMessage(void *data);
+    Data *createMessage(void *data);
 };
 
 

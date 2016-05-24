@@ -49,14 +49,7 @@ void ConnectionManager::start() {
 }
 
 void ConnectionManager::addClient(int newSocketDescriptor) {
-    std::thread *clientThread = new std::thread(handleClient, newSocketDescriptor, this->dispatcher);
-    clientThreads[newSocketDescriptor] = clientThread;
-    //TODO delete client from map
-}
-
-void ConnectionManager::handleClient(int newSocketDescriptor, Dispatcher *dispatcher) {
-    ClientManager *clientManager = new ClientManager(dispatcher, newSocketDescriptor);
-    clientManager->handle();
+    new std::thread(&ClientManager::handle, new ClientManager(dispatcher, newSocketDescriptor));
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
