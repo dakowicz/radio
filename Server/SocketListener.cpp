@@ -5,11 +5,16 @@
 
 #include <iostream>
 #include "SocketListener.h"
+<<<<<<< Updated upstream
 #include "Data.h"
+=======
+#include "TCPListener.h"
+>>>>>>> Stashed changes
 
 SocketListener::SocketListener(int socketDescriptor, Dispatcher *dispatcher) {
     this->socketDescriptor = socketDescriptor;
     this->dispatcher = dispatcher;
+    this->tcpListener = new TCPListener(socketDescriptor);
 }
 
 SocketListener::~SocketListener() {
@@ -17,6 +22,7 @@ SocketListener::~SocketListener() {
 }
 
 void SocketListener::handle() {
+<<<<<<< Updated upstream
     //TODO blocking on given socket for incoming messages
     while(!isClosed) {
         Data *newMessage = readMessage();
@@ -70,6 +76,14 @@ Header* SocketListener::readHeader() {
 }
 
 
+=======
+    while(!running) {
+        Data *newMessage = tcpListener->readMessage();
+        dispatcher->addMessage(newMessage);
+    }
+}
+
+>>>>>>> Stashed changes
 
 
 

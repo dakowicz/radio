@@ -1,6 +1,7 @@
 //
 // Created by erysman on 18.05.16.
 //
+#include <iostream>
 #include "ClientManager.h"
 
 
@@ -18,36 +19,30 @@ ClientManager::~ClientManager() {
 }
 
 void ClientManager::handle() {
+<<<<<<< Updated upstream
     this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
     this->senderThread = new std::thread(&Sender::handle, this->sender);
+=======
+
+    log("Created new ClientManager on socket: " + socketDescriptor);
+
+    this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
+    log("Created new SocketListener on socket: " + socketDescriptor);
+
+    this->senderThread = new std::thread(&Sender::handle, this->sender);
+    log("Created new Sender on socket: " + socketDescriptor);
+>>>>>>> Stashed changes
 
     socketListnerThread->join();
     senderThread->join();
 
     deleteClient();
+    log("Socket has been closed: " + socketDescriptor);
 }
 
-void ClientManager::handleSocketListener(SocketListener *socketListener) {
-    socketListener->handle();
-}
-
-void ClientManager::handleSender(Sender *sender) {
-    sender->handle();
-}
+void ClientManager::log(const char *message) const { std::cout << message << std::endl; }
 
 void ClientManager::deleteClient() {
     close(this->socketDescriptor);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 

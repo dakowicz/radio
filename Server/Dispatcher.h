@@ -23,12 +23,29 @@ public:
     void addMessage(Data* newMessage);
 
 private:
+<<<<<<< Updated upstream
     BlockingQueue<Data*> *blockingQueue;
 
     bool running;
 
     void processMessage(Data* data);
 
+=======
+    void processMessage(Data* data);
+
+    bool running;
+    BlockingQueue<Data*> *blockingQueue;
+
+    void log(const char *message) const;
+
+    void processVote(Data *data);
+
+    void wrongDataType();
+
+    void processMusicFile(Data *data);
+
+    void processConnectionMessage(Data *data);
+>>>>>>> Stashed changes
 };
 
 

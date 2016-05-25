@@ -11,6 +11,7 @@
 
 class Data {
 public:
+<<<<<<< Updated upstream
     Data(DataType type, uint8_t *content);
     ~Data();
 
@@ -19,6 +20,16 @@ public:
 
 private:
     uint8_t *content;
+=======
+    Data(DataType type, unsigned char *content);
+    ~Data();
+
+    DataType getDataType() const { return type; }
+    unsigned char *getContent() const { return content; }
+
+private:
+    unsigned char * content;
+>>>>>>> Stashed changes
     DataType type;
 };
 

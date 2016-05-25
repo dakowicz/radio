@@ -6,8 +6,6 @@
 #include <cstring>
 #include <unistd.h>
 #include "ConnectionManager.h"
-#include "Sender.h"
-#include "ClientManager.h"
 
 int ConnectionManager::QUEUE_LIMIT = 5;
 
@@ -37,6 +35,8 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
+
+    dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char(10)));
 
     while(true) {
         newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
