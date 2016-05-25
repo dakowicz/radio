@@ -29,6 +29,7 @@ private:
     int socketDescriptor;
     Dispatcher *dispatcher;
     std::map<int, std::thread*> clientThreads;
+    std::vector<int> clientSockets;
 
     void initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr);
 
