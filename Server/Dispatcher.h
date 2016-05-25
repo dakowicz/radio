@@ -8,8 +8,6 @@
 
 #include "Data.h"
 #include "BlockingQueue.h"
-#include "BlockingQueue.cpp"
-
 #include <thread>
 
 class Dispatcher {

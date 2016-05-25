@@ -7,16 +7,17 @@
 
 
 #include "Dispatcher.h"
-
 #include "Sender.h"
 #include "SocketListener.h"
+#include "BlockingMap.h"
+
 
 class ClientManager {
 public:
     ClientManager(Dispatcher* dispatcher, int newSocketDescriptor);
     ~ClientManager();
 
-    void handle();
+    void handle(BlockingMap<int, ClientManager*> *blockingMap);
 
 private:
 
@@ -31,6 +32,10 @@ private:
     void deleteClient();
 
     void log(const char message[38]) const;
+
+    void registerThread(BlockingMap<int, ClientManager*> *blockingMap);
+
+    void unregisterThread(BlockingMap<int, ClientManager*> *blockingMap);
 };
 
 

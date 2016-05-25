@@ -27,11 +27,20 @@ private:
 
     void sendData(Data *data);
 
-    void log(const char *string);
+    void log(const char *string)const;
 
-    BlockingQueue<Data*> *messageQueue;
+    BlockingQueue<Data*> *blockingQueue;
     bool running;
     TCPSender *tcpSender;
+    int socketDescriptor;
+
+    void sendStream(const Data *data) const;
+
+    void sendVotes(const Data *data) const;
+
+    void sendConnection(const Data *data) const;
+
+    void wrongDataType();
 };
 
 

@@ -6,9 +6,8 @@
 #include <iostream>
 #include "Dispatcher.h"
 
-
 Dispatcher::Dispatcher() {
-    blockingQueue = new BlockingQueue<Data*>();
+    blockingQueue = new BlockingQueue<Data*>;
 }
 
 Dispatcher::~Dispatcher() {
@@ -31,7 +30,7 @@ void Dispatcher::addMessage(Data *newMessage) {
     }
 
     this->blockingQueue->push(newMessage);
-    log("Pushed messege to the queue");
+    log("Pushed message to the structure");
 }
 
 void Dispatcher::processMessage(Data *data) {
@@ -54,42 +53,20 @@ void Dispatcher::processMessage(Data *data) {
     }
 }
 
-void Dispatcher::log(const char *message) const { std::cout << "Dispatcher: " << message << std::endl; }
-
 void Dispatcher::processVote(Data *data) {
-    log("Processing VOTE");
+    log("Processing data type VOTE");
 }
 
 void Dispatcher::processMusicFile(Data *data) {
-    log("Processing MUSIC_FILE");
+    log("Processing data type MUSIC_FILE");
 }
 
 void Dispatcher::processConnectionMessage(Data *data) {
-    log("Processing CONNECTION");
+    log("Processing data type CONNECTION");
 }
 
 void Dispatcher::wrongDataType() {
     log("Wrong data type");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void Dispatcher::log(const char *message) const { std::cout << "Dispatcher: " << message << std::endl << std::flush; }

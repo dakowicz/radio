@@ -22,7 +22,7 @@ T BlockingQueue<T>::pop() {
 }
 
 template <typename T>
-void BlockingQueue<T>::pop(T& item) {
+void BlockingQueue<T>::pop(T &item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     while(queue.empty()){
@@ -33,18 +33,10 @@ void BlockingQueue<T>::pop(T& item) {
 }
 
 template <typename T>
-void BlockingQueue<T>::push(const T& item) {
+void BlockingQueue<T>::push(const T &item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     queue.push(item);
     lock.unlock();
     condition_variable.notify_one();
 }
-
-
-
-
-
-
-
-

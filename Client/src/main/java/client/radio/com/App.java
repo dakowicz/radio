@@ -36,7 +36,7 @@ public class App extends Application implements Runnable {
         primaryStage.setTitle("Radio");
         final Button playButton = new Button("Play");
         playButton.setOnAction( event -> {
-            if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            if (mediaPlayewr != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                 stopPlayer();
                 playButton.setText("Start");
             } else {

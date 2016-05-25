@@ -9,7 +9,6 @@
 class Header {
 public:
     Header() = delete;
-    ~Header() = delete;
 
     static unsigned char* createHeader();
     static unsigned char* createHeaderConnect();

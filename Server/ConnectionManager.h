@@ -14,6 +14,7 @@
 #include "SocketListener.h"
 #include "Sender.h"
 #include "ClientManager.h"
+#include "BlockingMap.h"
 
 class ConnectionManager {
 
@@ -34,7 +35,8 @@ private:
     int port;
     int socketDescriptor;
     Dispatcher *dispatcher;
-    std::map<int, std::thread*> clientThreads;
+    BlockingMap<int, ClientManager*> *clientThreads;
+    bool running;
 };
 
 

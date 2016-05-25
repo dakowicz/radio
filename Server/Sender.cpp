@@ -6,10 +6,12 @@
 #include <cstring>
 #include <iostream>
 #include "Sender.h"
+#include "BlockingQueue.h"
 
 
 Sender::Sender(int socketDescriptor) {
-    this->messageQueue = new BlockingQueue<Data*>;
+    this->blockingQueue = new BlockingQueue<Data*>;
+    this->socketDescriptor = socketDescriptor;
     this->tcpSender = new TCPSender(socketDescriptor);
 }
 
@@ -22,33 +24,53 @@ void Sender::handle() {
     this->running = true;
 
     while(running) {
-        dataFromQueue = messageQueue->pop();
+        dataFromQueue = blockingQueue->pop();
         sendData(dataFromQueue);
     }
 }
 
 void Sender::sendData(Data *data) {
+    if(data == nullptr) {
+        return;
+    }
 
     switch(data->getDataType()){
         case DataType::STREAM:
-            tcpSender->sendMusic(data->getContent());
+            sendStream(data);
             break;
         case DataType::VOTE:
-            tcpSender->sendVotes(data->getContent());
+            sendVotes(data);
             break;
         case DataType::CONNECTION:
-            tcpSender->sendConnectionInfo(data->getContent());
+            sendConnection(data);
             break;
         case DataType::MUSIC_FILE:
-            log("Unknown operation type");
+            wrongDataType();
             break;
     }
 }
 
-void Sender::addMessage(Data *message) {
-    this->messageQueue->push(message);
+void Sender::sendConnection(const Data *data) const {
+    log("Sending data type CONNECTION");
+    tcpSender->sendConnectionInfo(data->getContent());
 }
 
-void Sender::log(const char *message) {
-    std::cout << message << std::endl;
+void Sender::sendVotes(const Data *data) const {
+    log("Sending data type VOTES");
+    tcpSender->sendVotes(data->getContent());
+}
+
+void Sender::sendStream(const Data *data) const {
+    log("Sending data type VOTES");
+    tcpSender->sendMusic(data->getContent());
+}
+
+void Sender::addMessage(Data *message) {
+    this->blockingQueue->push(message);
+}
+
+void Sender::wrongDataType() { log("Unknown operation type"); }
+
+void Sender::log(const char *message) const {
+    std::cout << "Sender " << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
 }
