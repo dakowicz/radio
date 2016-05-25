@@ -25,6 +25,7 @@ void ConnectionManager::start() {
     sockaddr_in serv_addr;
     sockaddr_in cli_addr;
     clilen = sizeof(cli_addr);
+    fd_set readSet;
 
     initConfig(serverSocketDescriptor, serv_addr, cli_addr);
 
@@ -36,21 +37,52 @@ void ConnectionManager::start() {
         handleError("error on listening");
     }
 
-    dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::VOTE, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::MUSIC_FILE, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::STREAM, new unsigned char(10)));
-
-    addClient(4);
-
     this->running = true;
 
     while(running) {
-        newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
-        if (newSocketDescriptor < 0) {
-            handleError("error on accept");
-        } else {
-            addClient(newSocketDescriptor);
+
+        //clear the socket set
+        FD_ZERO(&readSet);
+
+        //add server socket to set
+        FD_SET(serverSocketDescriptor, &readSet);
+        int max_sd = serverSocketDescriptor;
+
+        //add child sockets to set
+        for (int actualSocket : clientSockets) {
+
+            //if valid socket descriptor then add to read list
+            //if(actualSocket > 0)
+            FD_SET( actualSocket , &readSet);
+
+            //highest file descriptor number, need it for the select function
+            if(actualSocket > max_sd)
+                max_sd = actualSocket;
+        }
+
+        //wait for an activity on one of the sockets , timeout is NULL , so wait indefinitely
+        int activity = select( max_sd + 1 , &readSet , NULL , NULL , NULL);
+
+        if ((activity < 0) && (errno!=EINTR)) {
+            perror("select error");
+        }
+
+        //If something happened on the master socket , then its an incoming connection
+        if (FD_ISSET(serverSocketDescriptor, &readSet)) {
+
+            newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
+            if (newSocketDescriptor < 0) {
+                handleError("error on accept");
+            } else {
+                addClient(newSocketDescriptor);
+                clientSockets.push_back(newSocketDescriptor);
+                //TODO delete socket from vector after connection is finished
+            }
+        }
+        for(int actualSocket: clientSockets){
+            if (FD_ISSET( actualSocket , &readSet)) {
+                //TODO notify socketListner...
+            }
         }
     }
 }
