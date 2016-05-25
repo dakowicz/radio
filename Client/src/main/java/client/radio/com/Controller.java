@@ -1,8 +1,6 @@
 package client.radio.com;
 
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.Stage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,62 +32,25 @@ public class Controller {
     private Thread playerThread;
     private Thread appThread;
 
-    public Receiver getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(Receiver receiver) {
-        this.receiver = receiver;
-    }
-
-    public Playlist getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(Playlist playlist) {
-        this.playlist = playlist;
-    }
-
-    public Sender getSender() {
-        return sender;
-    }
-
-    public void setSender(Sender sender) {
-        this.sender = sender;
-    }
-
-    public Recorder getRecorder() {
-        return recorder;
-    }
-
-    public void setRecorder(Recorder recorder) {
-        this.recorder = recorder;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
     public void setSocket(Socket socket) {
         this.socket = socket;
     }
-    private void startAppThread(){
-        try{
+    private void startAppThread() {
+        try {
             this.getExecutor().execute(appThread);
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
-    private void startReceiverThread(){
-        try{
+    private void startReceiverThread() {
+        try {
             this.getExecutor().execute(receiverThread);
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
 
         Controller controller = new Controller();
         String hostName = args[0];

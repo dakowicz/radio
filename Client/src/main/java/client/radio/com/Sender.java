@@ -1,6 +1,7 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.net.Socket;
  */
 
 @Data
+@Slf4j
 public class Sender implements Runnable {
     private Socket socket;
     private DataOutputStream senderStream;

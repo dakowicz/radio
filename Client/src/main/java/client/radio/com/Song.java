@@ -1,12 +1,14 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Michał on 2016-04-23.
  */
 
 @Data
+@Slf4j
 public class Song {
 
     private String title;

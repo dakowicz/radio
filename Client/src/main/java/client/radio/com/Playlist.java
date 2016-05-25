@@ -1,6 +1,8 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,6 +11,7 @@ import java.util.Set;
  */
 
 @Data
+@Slf4j
 public class Playlist {
 
     private Set<Song> playlist;

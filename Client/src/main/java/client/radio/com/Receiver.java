@@ -3,7 +3,11 @@ package client.radio.com;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -43,11 +47,11 @@ public class Receiver implements Runnable {
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {
                     head[i] = receiverStream.readByte();
-                    System.out.println(head[i]);
+                    log.info(String.valueOf(head[i]));
                 }
                 Header header = new Header(head);
                 data = new byte[616110];
-                System.out.println(header.getLength());
+                log.info(String.valueOf(header.getLength()));
                 for (int i = 0; i < 616108; i++) {
                     try {
                         data[i] = receiverStream.readByte();

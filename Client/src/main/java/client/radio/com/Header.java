@@ -1,12 +1,14 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Kamil on 2016-05-04.
  */
 
 @Data
+@Slf4j
 public class Header {
     static final byte CONNECT = 0;
     static final byte STREAM = 1;

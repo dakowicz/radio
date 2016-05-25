@@ -1,6 +1,7 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 
@@ -9,6 +10,7 @@ import java.io.File;
  */
 
 @Data
+@Slf4j
 public class Converter {
 
     public void convertToMp3(File mp3File) {

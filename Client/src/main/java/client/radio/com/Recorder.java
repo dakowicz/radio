@@ -1,6 +1,7 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -12,6 +13,7 @@ import java.io.File;
  */
 
 @Data
+@Slf4j
 public class Recorder extends Thread {
 
     private TargetDataLine dataLine;

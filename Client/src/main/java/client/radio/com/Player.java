@@ -6,6 +6,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.FileInputStream;
 
 /**
@@ -13,6 +15,7 @@ import java.io.FileInputStream;
  */
 
 @Data
+@Slf4j
 public class Player extends Application {
     private FileInputStream inputStreamFile;
     private Media sound;
