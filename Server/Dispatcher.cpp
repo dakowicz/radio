@@ -15,23 +15,6 @@ Dispatcher::~Dispatcher() {
     delete blockingQueue;
 }
 
-<<<<<<< Updated upstream
-void Dispatcher::addMessage(Data *newMessage) {
-    blockingQueue->push(newMessage);
-}
-
-void Dispatcher::start() {
-    //todo add strategy of processing messages
-    Data *newMessage;
-    while(running) {
-        newMessage = blockingQueue->pop();
-        processMessage(newMessage);
-    }
-}
-
-void Dispatcher::processMessage(Data *data) {
-
-=======
 void Dispatcher::start() {
     Data *newMessage;
     this->running = true;
@@ -83,7 +66,6 @@ void Dispatcher::processMusicFile(Data *data) {
 
 void Dispatcher::processConnectionMessage(Data *data) {
     log("Processing CONNECTION");
->>>>>>> Stashed changes
 }
 
 void Dispatcher::wrongDataType() {

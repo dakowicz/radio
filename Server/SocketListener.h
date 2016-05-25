@@ -8,10 +8,7 @@
 
 #include "Dispatcher.h"
 #include "Data.h"
-<<<<<<< Updated upstream
-=======
 #include "TCPListener.h"
->>>>>>> Stashed changes
 #include <unistd.h>
 
 
@@ -29,13 +26,7 @@ private:
     bool running;
     int socketDescriptor;
     Dispatcher *dispatcher;
-<<<<<<< Updated upstream
-    Data *readMessage();
-
-    Header *readHeader();
-=======
     TCPListener *tcpListener;
->>>>>>> Stashed changes
 };
 
 #endif //SERVER_SOCKETLISTENER_H

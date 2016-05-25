@@ -17,13 +17,10 @@ public:
     void sendMusic(unsigned char *string);
 
     void sendVotes(unsigned char *string);
-<<<<<<< Updated upstream
-=======
 
     void sendConnectionInfo(uint8_t *message);
 
     void send(uint8_t *header, uint8_t *message);
->>>>>>> Stashed changes
 };
 
 

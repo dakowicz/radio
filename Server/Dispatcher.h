@@ -23,14 +23,6 @@ public:
     void addMessage(Data* newMessage);
 
 private:
-<<<<<<< Updated upstream
-    BlockingQueue<Data*> *blockingQueue;
-
-    bool running;
-
-    void processMessage(Data* data);
-
-=======
     void processMessage(Data* data);
 
     bool running;
@@ -45,7 +37,6 @@ private:
     void processMusicFile(Data *data);
 
     void processConnectionMessage(Data *data);
->>>>>>> Stashed changes
 };
 
 
