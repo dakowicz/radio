@@ -3,14 +3,10 @@
 //
 
 #include <cstdint>
-<<<<<<< Updated upstream
-#include "TCPSender.h"
-=======
 #include <unistd.h>
 #include <cstring>
 #include "TCPSender.h"
 #include "Header.h"
->>>>>>> Stashed changes
 
 TCPSender::TCPSender(int socketDescriptor) {
     this->socketDescriptor = socketDescriptor;
@@ -21,13 +17,6 @@ TCPSender::~TCPSender() {
 }
 
 void TCPSender::sendMusic(uint8_t* message) {
-<<<<<<< Updated upstream
-
-}
-
-void TCPSender::sendVotes(uint8_t* message) {
-
-=======
     unsigned char* header = Header::createHeaderStream();
     send(header, message);
 }
@@ -47,21 +36,4 @@ void TCPSender::send(uint8_t *header, uint8_t *message) {
     memcpy(dataToSend, header, sizeof(header));
     memcpy(dataToSend, message, sizeof(message));
     write(socketDescriptor, dataToSend, sizeof(dataToSend));
->>>>>>> Stashed changes
 }
-
-
-
-
-
-
-
-
-
-<<<<<<< Updated upstream
-=======
-
-
-
-
->>>>>>> Stashed changes

@@ -19,10 +19,6 @@ ClientManager::~ClientManager() {
 }
 
 void ClientManager::handle() {
-<<<<<<< Updated upstream
-    this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
-    this->senderThread = new std::thread(&Sender::handle, this->sender);
-=======
 
     log("Created new ClientManager on socket: " + socketDescriptor);
 
@@ -31,7 +27,6 @@ void ClientManager::handle() {
 
     this->senderThread = new std::thread(&Sender::handle, this->sender);
     log("Created new Sender on socket: " + socketDescriptor);
->>>>>>> Stashed changes
 
     socketListnerThread->join();
     senderThread->join();
