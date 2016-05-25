@@ -8,38 +8,32 @@
 
 class Header {
 public:
-    Header();
-    Header(uint8_t head[7]);
-    void createHeader(uint8_t t, uint8_t param, int l);
-    void createHeaderConnect(bool start, bool end, int l);
-    void createHeaderVote(bool cancel_vote, int l);
-    void createHeaderFile(bool priority, uint8_t info_length, int l);
-    void createHeaderList(bool cancel_vote, int l);
-    void createHeaderStream(bool start, bool end, int l);
-    uint8_t *createBuffer();
+    Header() = delete;
+    ~Header() = delete;
 
-    int getLength() const {
-        return length;
-    }
+    static unsigned char* createHeader();
+    static unsigned char* createHeaderConnect();
+    static unsigned char* createHeaderVote();
+    static unsigned char* createHeaderFile();
+    static unsigned char* createHeaderList();
+    static unsigned char* createHeaderStream();
+
+    static unsigned char* createHeader(unsigned char t, unsigned char param, int l);
+    static unsigned char* createHeaderConnect(bool start, bool end, int l);
+    static unsigned char* createHeaderVote(bool cancel_vote, int l);
+    static unsigned char* createHeaderFile(bool priority, unsigned char info_length, int l);
+    static unsigned char* createHeaderList(bool cancel_vote, int l);
+    static unsigned char* createHeaderStream(bool start, bool end, int l);
 
 private:
-    const uint8_t connect=0;
-    const uint8_t stream=1;
-    const uint8_t votes=2;
-    const uint8_t file=3;
-    const uint8_t id_prot=90;
-    uint8_t type; //Here is also the zero-tail
-    uint8_t parameters;
+    const unsigned char connect=0;
+    const unsigned char stream=1;
+    const unsigned char votes=2;
+    const unsigned char file=3;
+    const unsigned char id_prot=90;
+    unsigned char type; //Here is also the zero-tail
+    unsigned char parameters;
     int length;
-
-public:
-    uint8_t getParameters() const {
-        return parameters;
-    }
-
-    uint8_t getType() const {
-        return type;
-    }
 };
 
 

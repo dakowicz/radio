@@ -4,10 +4,14 @@
 
 
 #include <cstring>
+#include <iostream>
 #include "Sender.h"
+<<<<<<< Updated upstream
 #include "Header.h"
 #include "TCPSender.h"
 #include "Data.h"
+=======
+>>>>>>> Stashed changes
 
 
 Sender::Sender(int socketDescriptor) {
@@ -27,6 +31,7 @@ void Sender::handle() {
         dataFromQueue = messageQueue->pop();
         sendData(dataFromQueue);
     }
+<<<<<<< Updated upstream
 }
 
 void Sender::sendData(Data *data) {
@@ -39,6 +44,34 @@ void Sender::sendData(Data *data) {
             tcpSender->sendVotes(data->getContent());
             break;
     }
+=======
+}
+
+void Sender::sendData(Data *data) {
+
+    switch(data->getDataType()){
+        case DataType::STREAM:
+            tcpSender->sendMusic(data->getContent());
+            break;
+        case DataType::VOTE:
+            tcpSender->sendVotes(data->getContent());
+            break;
+        case DataType::CONNECTION:
+            tcpSender->sendConnectionInfo(data->getContent());
+            break;
+        case DataType::MUSIC_FILE:
+            log("Unknown operation type");
+            break;
+    }
+}
+
+void Sender::log(const char *message) {
+    std::cout << message << std::endl;
+}
+
+void Sender::addMessage(Data *message) {
+    this->messageQueue->push(message);
+>>>>>>> Stashed changes
 }
 
 
@@ -53,3 +86,10 @@ void Sender::sendData(Data *data) {
 
 
 
+<<<<<<< Updated upstream
+=======
+
+
+
+
+>>>>>>> Stashed changes

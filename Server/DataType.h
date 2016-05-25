@@ -7,8 +7,15 @@
 
 
 enum class DataType {
+<<<<<<< Updated upstream
     MUSIC,
     VOTES
+=======
+    STREAM,
+    VOTE,
+    CONNECTION,
+    MUSIC_FILE
+>>>>>>> Stashed changes
 };
 
 

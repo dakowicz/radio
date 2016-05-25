@@ -28,11 +28,9 @@ private:
 
     int socketDescriptor;
 
-    void static handleSocketListener(SocketListener *socketListener);
-
-    void static handleSender(Sender *sender);
-
     void deleteClient();
+
+    void log(const char message[38]) const;
 };
 
 

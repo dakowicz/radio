@@ -8,6 +8,10 @@
 
 #include "Dispatcher.h"
 #include "Data.h"
+<<<<<<< Updated upstream
+=======
+#include "TCPListener.h"
+>>>>>>> Stashed changes
 #include <unistd.h>
 
 
@@ -18,13 +22,20 @@ public:
     ~SocketListener();
     void handle();
 
+    bool isRunning() const { return running; }
+    void setRunning(bool running) { SocketListener::running = running; }
+
 private:
-    bool isClosed;
+    bool running;
     int socketDescriptor;
     Dispatcher *dispatcher;
+<<<<<<< Updated upstream
     Data *readMessage();
 
     Header *readHeader();
+=======
+    TCPListener *tcpListener;
+>>>>>>> Stashed changes
 };
 
 #endif //SERVER_SOCKETLISTENER_H
