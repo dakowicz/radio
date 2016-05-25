@@ -35,6 +35,7 @@ private:
     int socketDescriptor;
     Dispatcher *dispatcher;
     std::map<int, std::thread*> clientThreads;
+    bool running;
 };
 
 

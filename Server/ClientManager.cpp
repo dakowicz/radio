@@ -20,13 +20,13 @@ ClientManager::~ClientManager() {
 
 void ClientManager::handle() {
 
-    log("Created new ClientManager on socket: " + socketDescriptor);
-
     this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
-    log("Created new SocketListener on socket: " + socketDescriptor);
+    log("New SocketListener on socket: " + socketDescriptor);
 
     this->senderThread = new std::thread(&Sender::handle, this->sender);
-    log("Created new Sender on socket: " + socketDescriptor);
+    log("New Sender on socket: " + socketDescriptor);
+
+    sender->addMessage(new Data(DataType::STREAM, new unsigned char(10)));
 
     socketListnerThread->join();
     senderThread->join();
@@ -35,7 +35,7 @@ void ClientManager::handle() {
     log("Socket has been closed: " + socketDescriptor);
 }
 
-void ClientManager::log(const char *message) const { std::cout << message << std::endl; }
+void ClientManager::log(const char *message) const { std::cout << "ClientManager: " << message << std::endl << std::flush; }
 
 void ClientManager::deleteClient() {
     close(this->socketDescriptor);

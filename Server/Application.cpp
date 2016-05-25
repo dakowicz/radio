@@ -32,4 +32,4 @@ int main(int argc, char* arg[])
     return 0;
 }
 
-void log(const char *message) { std::cout << message << std::endl; }
+void log(const char *message) { std::cout << message << std::endl << std::flush; }

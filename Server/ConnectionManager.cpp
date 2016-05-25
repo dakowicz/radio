@@ -37,8 +37,15 @@ void ConnectionManager::start() {
     }
 
     dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char(10)));
+    dispatcher->addMessage(new Data(DataType::VOTE, new unsigned char(10)));
+    dispatcher->addMessage(new Data(DataType::MUSIC_FILE, new unsigned char(10)));
+    dispatcher->addMessage(new Data(DataType::STREAM, new unsigned char(10)));
 
-    while(true) {
+    addClient(4);
+
+    this->running = true;
+
+    while(running) {
         newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
         if (newSocketDescriptor < 0) {
             handleError("error on accept");
@@ -65,7 +72,7 @@ void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr
 }
 
 void ConnectionManager::handleError(const char *errorMessage) const {
-    //TODO error handling
+    //TODO
     perror(errorMessage);
     exit(0);
 }

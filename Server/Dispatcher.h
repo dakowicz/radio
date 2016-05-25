@@ -7,8 +7,8 @@
 
 
 #include "Data.h"
-#include "BlockingQueue.h"
-#include "BlockingQueue.cpp"
+#include "SynchronizedStructure.h"
+#include "SynchronizedStructure.cpp"
 
 #include <thread>
 
@@ -26,7 +26,7 @@ private:
     void processMessage(Data* data);
 
     bool running;
-    BlockingQueue<Data*> *blockingQueue;
+    SynchronizedStructure<Data*> *blockingQueue;
 
     void log(const char *message) const;
 
