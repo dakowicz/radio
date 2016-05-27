@@ -43,6 +43,8 @@ private:
 
     bool running;
 
+    static std::string MODULE_NAME;
+
     static int QUEUE_LIMIT;
 };
 

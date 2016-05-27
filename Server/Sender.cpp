@@ -8,21 +8,20 @@
 #include "Sender.h"
 #include "BlockingQueue.h"
 
+std::string Sender::MODULE_NAME = "Sender";
 
 Sender::Sender(int socketDescriptor) {
-    this->blockingQueue = new BlockingQueue<Data*>(MODULE_NAME->append());
+    this->blockingQueue = new BlockingQueue<Data*> (std::string(MODULE_NAME).append(std::to_string(socketDescriptor)));
     this->socketDescriptor = socketDescriptor;
     this->tcpSender = new TCPSender(socketDescriptor);
 }
 
 Sender::~Sender() {
-
 }
 
 void Sender::handle() {
     Data* dataFromQueue;
     this->running = true;
-
     while(running) {
         dataFromQueue = blockingQueue->pop();
         sendData(dataFromQueue);
@@ -33,7 +32,6 @@ void Sender::sendData(Data *data) {
     if(data == nullptr) {
         return;
     }
-
     switch(data->getDataType()) {
         case DataType::STREAM:
             sendStream(data);
@@ -73,6 +71,6 @@ void Sender::wrongDataType() {
     log("Unknown operation type");
 }
 
-void Sender::log(const char *message) const {
-    std::cout << "Sender " << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
+void Sender::log(std::string message) const {
+    std::cout << MODULE_NAME << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
 }

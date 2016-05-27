@@ -26,8 +26,6 @@ private:
 
     void processMessage(Data* data);
 
-    void log(const char *message) const;
-
     void processVote(Data *data);
 
     void wrongDataType();
@@ -40,7 +38,11 @@ private:
 
     BlockingQueue<Data*> *blockingQueue;
 
-    static std::string *MODULE_NAME;
+    static std::string MODULE_NAME;
+
+    void log(std::string message) const;
+
+    bool isMessageEmpty(const Data *newMessage) const;
 };
 
 

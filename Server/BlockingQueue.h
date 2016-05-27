@@ -8,6 +8,7 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
+#include <iostream>
 
 template <typename T>
 class BlockingQueue {
@@ -15,11 +16,11 @@ public:
 
     BlockingQueue();
 
-    BlockingQueue& operator=(const BlockingQueue&) = delete; // disable assignment
+    BlockingQueue(std::string& moduleName);
 
     BlockingQueue(const BlockingQueue&) = delete;            // disable copying
 
-    BlockingQueue(std::string *moduleName);
+    BlockingQueue& operator=(const BlockingQueue&) = delete; // disable assignment
 
     ~BlockingQueue();
 
@@ -31,20 +32,20 @@ public:
 
 private:
 
-    void log(const char *message);
-
     std::queue<T> queue;
 
     std::mutex mutex;
 
     std::condition_variable condition_variable;
 
-    std::string *moduleName;
+    std::string moduleName;
+
+    void log(const char *message);
 };
 
 
 template <typename T>
-BlockingQueue<T>::BlockingQueue(std::string *moduleName) {
+BlockingQueue<T>::BlockingQueue(std::string& moduleName) {
     this->moduleName = moduleName;
 }
 
@@ -91,10 +92,9 @@ void BlockingQueue<T>::push(const T &item) {
     condition_variable.notify_one();
 }
 
-void BlockingQueue::log(const char *message) {
-    if(moduleName != nullptr) {
-
-    }
+template <typename T>
+void BlockingQueue<T>::log(const char *message) {
+    std::cout << this->moduleName << ": " <<  message << std::endl << std::flush;
 }
 
 

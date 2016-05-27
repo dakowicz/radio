@@ -6,10 +6,10 @@
 #include <iostream>
 #include "Dispatcher.h"
 
-std::string* Dispatcher::MODULE_NAME = new std::string("Dispatcher");
+std::string Dispatcher::MODULE_NAME = "Dispatcher";
 
 Dispatcher::Dispatcher() {
-    blockingQueue = new BlockingQueue<Data*>(MODULE_NAME);
+    blockingQueue = new BlockingQueue<Data*> (MODULE_NAME);
 }
 
 Dispatcher::~Dispatcher() {
@@ -19,7 +19,6 @@ Dispatcher::~Dispatcher() {
 void Dispatcher::start() {
     Data *newMessage;
     this->running = true;
-
     while(running) {
         newMessage = blockingQueue->pop();
         processMessage(newMessage);
@@ -27,18 +26,20 @@ void Dispatcher::start() {
 }
 
 void Dispatcher::addMessage(Data *newMessage) {
-    if(newMessage == nullptr) {
+    if(isMessageEmpty(newMessage)) {
         return;
     }
-
     this->blockingQueue->push(newMessage);
+}
+
+bool Dispatcher::isMessageEmpty(const Data *newMessage) const {
+    return newMessage == nullptr || newMessage->getContent() == nullptr;
 }
 
 void Dispatcher::processMessage(Data *data) {
     if(data == nullptr) {
         return;
     }
-
     switch(data->getDataType()) {
         case DataType::VOTE:
             processVote(data);
@@ -70,6 +71,6 @@ void Dispatcher::wrongDataType() {
     log("Wrong data type");
 }
 
-void Dispatcher::log(const char *message) const {
-    std::cout << "Dispatcher: " << message << std::endl << std::flush;
+void Dispatcher::log(std::string message) const {
+    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
 }

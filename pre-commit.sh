@@ -1,1 +1,0 @@
-/home/tomasz/Pobrane/pre-commit.sh

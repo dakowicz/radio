@@ -27,6 +27,8 @@ public:
 
 private:
 
+    void log(std::string message);
+
     bool running;
 
     int socketDescriptor;
@@ -34,6 +36,8 @@ private:
     Dispatcher *dispatcher;
 
     TCPListener *tcpListener;
+
+    static std::string MODULE_NAME;
 };
 
 #endif //SERVER_SOCKETLISTENER_H

@@ -4,12 +4,13 @@
 
 #include "TCPListener.h"
 
+std::string TCPListener::MODULE_NAME = "TCPListener";
+
 TCPListener::TCPListener(int socketDescriptor) {
     this->socketDescriptor = socketDescriptor;
 }
 
 TCPListener::~TCPListener() {
-
 }
 
 Data *TCPListener::readMessage() {

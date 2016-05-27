@@ -9,10 +9,12 @@
 
 int ConnectionManager::QUEUE_LIMIT = 5;
 
+std::string ConnectionManager::MODULE_NAME = "ConnectionManager";
+
 ConnectionManager::ConnectionManager(Dispatcher *dispatcher, int port) {
     this->port = port;
     this->dispatcher = dispatcher;
-    this->clientThreads = new BlockingMap<int, ClientManager*>();
+    this->clientThreads = new BlockingMap<int, ClientManager*> (MODULE_NAME);
 }
 
 ConnectionManager::~ConnectionManager() {
@@ -25,22 +27,22 @@ void ConnectionManager::start() {
     socklen_t clilen;
     sockaddr_in serv_addr;
     sockaddr_in cli_addr;
+
     clilen = sizeof(cli_addr);
-
     initConfig(serverSocketDescriptor, serv_addr, cli_addr);
-
-    if (bind(serverSocketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+    if(bind(serverSocketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         handleError("error on binding");
     }
-
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
 
-    dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::VOTE, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::MUSIC_FILE, new unsigned char(10)));
-    dispatcher->addMessage(new Data(DataType::STREAM, new unsigned char(10)));
+    dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char (10)));
+    dispatcher->addMessage(new Data(DataType::VOTE, new unsigned char (10)));
+    dispatcher->addMessage(new Data(DataType::MUSIC_FILE, new unsigned char (10)));
+    dispatcher->addMessage(new Data(DataType::STREAM, new unsigned char (10)));
+    dispatcher->addMessage(new Data(DataType::STREAM, nullptr));
+    dispatcher->addMessage(nullptr);
 
     addClient(4);
 
@@ -48,7 +50,7 @@ void ConnectionManager::start() {
 
     while(running) {
         newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
-        if (newSocketDescriptor < 0) {
+        if(newSocketDescriptor < 0) {
             handleError("error on accept");
         } else {
             addClient(newSocketDescriptor);
@@ -62,7 +64,7 @@ void ConnectionManager::addClient(int newSocketDescriptor) {
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
+    if(sockfd < 0) {
         handleError("error opening socket");
     }
     this->socketDescriptor = sockfd;

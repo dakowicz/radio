@@ -29,8 +29,6 @@ private:
 
     void sendData(Data *data);
 
-    void log(const char *string)const;
-
     void sendStream(const Data *data) const;
 
     void sendVotes(const Data *data) const;
@@ -46,6 +44,10 @@ private:
     TCPSender *tcpSender;
 
     int socketDescriptor;
+
+    static std::string MODULE_NAME;
+
+    void log(std::string message) const;
 };
 
 

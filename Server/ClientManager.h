@@ -25,11 +25,11 @@ private:
 
     void deleteClient();
 
-    void log(const char *message) const;
-
     void registerThread(BlockingMap<int, ClientManager*> *blockingMap);
 
     void unregisterThread(BlockingMap<int, ClientManager*> *blockingMap);
+
+    void log(std::string) const;
 
     SocketListener *socketListener;
 
@@ -40,6 +40,8 @@ private:
     std::thread *senderThread;
 
     int socketDescriptor;
+
+    static std::string MODULE_NAME;
 };
 
 

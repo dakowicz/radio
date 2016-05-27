@@ -17,6 +17,8 @@ public:
 
     BlockingMap();
 
+    BlockingMap(std::string &moduleName);
+
     BlockingMap(const BlockingMap&) = delete;            // disable copying
 
     BlockingMap& operator=(const BlockingMap&) = delete; // disable assignment
@@ -32,12 +34,21 @@ private:
     std::map<K, V> map;
 
     std::mutex mutex;
+
+    std::string moduleName;
+
+    void log(std::string message);
 };
 
 
 template <typename K, typename V>
 BlockingMap<K, V>::BlockingMap() {
 
+}
+
+template <typename K, typename V>
+BlockingMap<K, V>::BlockingMap(std::string& moduleName) {
+    this->moduleName = moduleName;
 }
 
 template <typename K, typename V>
@@ -67,6 +78,11 @@ void BlockingMap<K, V>::insert(K key, V value) {
     map[key] = value;
     lock.unlock();
 }
+
+template <typename K, typename V>
+void BlockingMap<K, V>::log(std::string message) {
+    std::cout << this->moduleName << ": " <<  message << std::endl << std::flush;
+};
 
 
 #endif //SERVER_BLOCKINGMAP_H

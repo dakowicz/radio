@@ -4,6 +4,7 @@
 #include <iostream>
 #include "ClientManager.h"
 
+std::string ClientManager::MODULE_NAME = "ClientManager";
 
 ClientManager::ClientManager(Dispatcher *dispatcher, int newSocketDescriptor) {
     this->socketDescriptor = newSocketDescriptor;
@@ -22,38 +23,32 @@ void ClientManager::handle(BlockingMap<int, ClientManager*> * blockingMap) {
     registerThread(blockingMap);
 
     this->socketListnerThread = new std::thread(&SocketListener::handle, this->socketListener);
-    log("New SocketListener on socket: " + socketDescriptor);
-
     this->senderThread = new std::thread(&Sender::handle, this->sender);
-    log("New Sender on socket: " + socketDescriptor);
 
-    sender->addMessage(new Data(DataType::STREAM, new unsigned char(10)));
+    sender->addMessage(new Data(DataType::STREAM, new unsigned char (10)));
 
     socketListnerThread->join();
     senderThread->join();
 
     deleteClient();
-    log("Socket has been closed: " + socketDescriptor);
     unregisterThread(blockingMap);
-}
-
-void ClientManager::log(const char *message) const {
-    std::cout << "ClientManager: " << message << std::endl << std::flush;
 }
 
 void ClientManager::deleteClient() {
     close(this->socketDescriptor);
+    log("Socket has been closed");
 }
 
 void ClientManager::registerThread(BlockingMap<int, ClientManager*>  *blockingMap) {
     blockingMap->insert(socketDescriptor, this);
+    log("Registered");
 }
 
 void ClientManager::unregisterThread(BlockingMap<int, ClientManager*>  *blockingMap) {
     blockingMap->erase(socketDescriptor, this);
+    log("Unregistered");
 }
 
-
-
-
-
+void ClientManager::log(std::string message) const {
+    std::cout << MODULE_NAME << this->socketDescriptor << ": " << message << std::endl << std::flush;
+}
