@@ -13,19 +13,26 @@
 
 
 class SocketListener {
-
 public:
+
     SocketListener(int socketDescriptor, Dispatcher *dispatcher);
+
     ~SocketListener();
+
     void handle();
 
     bool isRunning() const { return running; }
-    void setRunning(bool running) { SocketListener::running = running; }
+
+    void setRunning(bool running) { this->running = running; }
 
 private:
+
     bool running;
+
     int socketDescriptor;
+
     Dispatcher *dispatcher;
+
     TCPListener *tcpListener;
 };
 

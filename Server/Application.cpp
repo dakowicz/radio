@@ -8,10 +8,7 @@
 
 void log(const char *message);
 
-void print(const char *message);
-
-int main(int argc, char* arg[])
-{
+int main(int argc, char* arg[]) {
     int port = atoi(arg[1]);
     std::thread *dispatcherThread, *connectionManagerThread;
 
@@ -32,4 +29,6 @@ int main(int argc, char* arg[])
     return 0;
 }
 
-void log(const char *message) { std::cout << message << std::endl << std::flush; }
+void log(const char *message) {
+    std::cout << message << std::endl << std::flush;
+}

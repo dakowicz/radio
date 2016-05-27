@@ -9,15 +9,18 @@
 #include "Data.h"
 
 class TCPListener {
-
 public:
+
     TCPListener(int socketDescriptor);
+
     ~TCPListener();
 
     Data *readMessage();
 
 private:
+
     int socketDescriptor;
+
     int bytesToRead;
 };
 

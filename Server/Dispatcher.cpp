@@ -6,8 +6,10 @@
 #include <iostream>
 #include "Dispatcher.h"
 
+std::string* Dispatcher::MODULE_NAME = new std::string("Dispatcher");
+
 Dispatcher::Dispatcher() {
-    blockingQueue = new BlockingQueue<Data*>;
+    blockingQueue = new BlockingQueue<Data*>(MODULE_NAME);
 }
 
 Dispatcher::~Dispatcher() {
@@ -25,16 +27,15 @@ void Dispatcher::start() {
 }
 
 void Dispatcher::addMessage(Data *newMessage) {
-    if(newMessage == nullptr){
+    if(newMessage == nullptr) {
         return;
     }
 
     this->blockingQueue->push(newMessage);
-    log("Pushed message to the structure");
 }
 
 void Dispatcher::processMessage(Data *data) {
-    if(data == nullptr){
+    if(data == nullptr) {
         return;
     }
 
@@ -69,4 +70,6 @@ void Dispatcher::wrongDataType() {
     log("Wrong data type");
 }
 
-void Dispatcher::log(const char *message) const { std::cout << "Dispatcher: " << message << std::endl << std::flush; }
+void Dispatcher::log(const char *message) const {
+    std::cout << "Dispatcher: " << message << std::endl << std::flush;
+}

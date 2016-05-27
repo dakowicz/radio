@@ -14,28 +14,32 @@
 
 class ClientManager {
 public:
+
     ClientManager(Dispatcher* dispatcher, int newSocketDescriptor);
+
     ~ClientManager();
 
     void handle(BlockingMap<int, ClientManager*> *blockingMap);
 
 private:
 
-    SocketListener *socketListener;
-    std::thread *socketListnerThread;
-
-    Sender *sender;
-    std::thread *senderThread;
-
-    int socketDescriptor;
-
     void deleteClient();
 
-    void log(const char message[38]) const;
+    void log(const char *message) const;
 
     void registerThread(BlockingMap<int, ClientManager*> *blockingMap);
 
     void unregisterThread(BlockingMap<int, ClientManager*> *blockingMap);
+
+    SocketListener *socketListener;
+
+    std::thread *socketListnerThread;
+
+    Sender *sender;
+
+    std::thread *senderThread;
+
+    int socketDescriptor;
 };
 
 

@@ -10,7 +10,7 @@
 
 
 Sender::Sender(int socketDescriptor) {
-    this->blockingQueue = new BlockingQueue<Data*>;
+    this->blockingQueue = new BlockingQueue<Data*>(MODULE_NAME->append());
     this->socketDescriptor = socketDescriptor;
     this->tcpSender = new TCPSender(socketDescriptor);
 }
@@ -34,7 +34,7 @@ void Sender::sendData(Data *data) {
         return;
     }
 
-    switch(data->getDataType()){
+    switch(data->getDataType()) {
         case DataType::STREAM:
             sendStream(data);
             break;
@@ -69,7 +69,9 @@ void Sender::addMessage(Data *message) {
     this->blockingQueue->push(message);
 }
 
-void Sender::wrongDataType() { log("Unknown operation type"); }
+void Sender::wrongDataType() {
+    log("Unknown operation type");
+}
 
 void Sender::log(const char *message) const {
     std::cout << "Sender " << this->socketDescriptor << ": " <<  message << std::endl << std::flush;

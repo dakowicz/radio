@@ -17,15 +17,16 @@
 #include "BlockingMap.h"
 
 class ConnectionManager {
-
 public:
+
     ConnectionManager(Dispatcher *dispatcher, int port);
+
     ~ConnectionManager();
+
     void start();
 
-    static int QUEUE_LIMIT;
-
 private:
+
     void initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr);
 
     void addClient(int newSocketDescriptor);
@@ -33,10 +34,16 @@ private:
     void handleError(const char *errorMessage) const;
 
     int port;
+
     int socketDescriptor;
+
     Dispatcher *dispatcher;
+
     BlockingMap<int, ClientManager*> *clientThreads;
+
     bool running;
+
+    static int QUEUE_LIMIT;
 };
 
 

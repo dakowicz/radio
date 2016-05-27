@@ -14,17 +14,26 @@
 template <typename K, typename V>
 class BlockingMap {
 public:
+
     BlockingMap();
-    V get(K key);
-    void erase(K key, V value);
-    void insert(K key, V value);
 
     BlockingMap(const BlockingMap&) = delete;            // disable copying
+
     BlockingMap& operator=(const BlockingMap&) = delete; // disable assignment
+
+    V get(K key);
+
+    void erase(K key, V value);
+
+    void insert(K key, V value);
+
 private:
+
     std::map<K, V> map;
+
     std::mutex mutex;
 };
+
 
 template <typename K, typename V>
 BlockingMap<K, V>::BlockingMap() {

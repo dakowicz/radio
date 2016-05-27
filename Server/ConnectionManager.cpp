@@ -12,7 +12,7 @@ int ConnectionManager::QUEUE_LIMIT = 5;
 ConnectionManager::ConnectionManager(Dispatcher *dispatcher, int port) {
     this->port = port;
     this->dispatcher = dispatcher;
-    this->clientThreads = new BlockingMap<int, ClientManager*>;
+    this->clientThreads = new BlockingMap<int, ClientManager*>();
 }
 
 ConnectionManager::~ConnectionManager() {
@@ -29,7 +29,7 @@ void ConnectionManager::start() {
 
     initConfig(serverSocketDescriptor, serv_addr, cli_addr);
 
-    if (bind(serverSocketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
+    if (bind(serverSocketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         handleError("error on binding");
     }
 

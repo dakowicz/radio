@@ -37,7 +37,9 @@ void ClientManager::handle(BlockingMap<int, ClientManager*> * blockingMap) {
     unregisterThread(blockingMap);
 }
 
-void ClientManager::log(const char *message) const { std::cout << "ClientManager: " << message << std::endl << std::flush; }
+void ClientManager::log(const char *message) const {
+    std::cout << "ClientManager: " << message << std::endl << std::flush;
+}
 
 void ClientManager::deleteClient() {
     close(this->socketDescriptor);

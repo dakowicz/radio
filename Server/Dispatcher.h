@@ -13,7 +13,9 @@
 class Dispatcher {
 
 public:
+
     Dispatcher();
+
     ~Dispatcher();
 
     void start();
@@ -21,10 +23,8 @@ public:
     void addMessage(Data* newMessage);
 
 private:
-    void processMessage(Data* data);
 
-    bool running;
-    BlockingQueue<Data*> *blockingQueue;
+    void processMessage(Data* data);
 
     void log(const char *message) const;
 
@@ -35,6 +35,12 @@ private:
     void processMusicFile(Data *data);
 
     void processConnectionMessage(Data *data);
+
+    bool running;
+
+    BlockingQueue<Data*> *blockingQueue;
+
+    static std::string *MODULE_NAME;
 };
 
 

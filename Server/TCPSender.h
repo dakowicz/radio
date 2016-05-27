@@ -7,12 +7,11 @@
 
 
 class TCPSender {
-
 public:
-    TCPSender(int socketDescriptor);
-    ~TCPSender();
 
-    int socketDescriptor;
+    TCPSender(int socketDescriptor);
+
+    ~TCPSender();
 
     void sendMusic(unsigned char *string);
 
@@ -21,6 +20,10 @@ public:
     void sendConnectionInfo(uint8_t *message);
 
     void send(uint8_t *header, uint8_t *message);
+
+private:
+
+    int socketDescriptor;
 };
 
 

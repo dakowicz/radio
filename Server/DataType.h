@@ -8,8 +8,11 @@
 
 enum class DataType {
     STREAM,
+
     VOTE,
+
     CONNECTION,
+
     MUSIC_FILE
 };
 
