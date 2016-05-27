@@ -22,7 +22,7 @@ public:
 
 private:
 
-    unsigned char * content;
+    unsigned char *content;
 
     DataType type;
 };

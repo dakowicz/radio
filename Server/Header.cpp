@@ -2,8 +2,6 @@
 // Created by Kamil on 2016-05-04.
 //
 
-#include <cstdio>
-#include <stdexcept>
 #include "Header.h"
 
 
@@ -58,27 +56,27 @@
 
 
 
-unsigned char * Header::createHeader(unsigned char t, unsigned char param, int l) {
+unsigned char *Header::createHeader(unsigned char t, unsigned char param, int l) {
     return 0;
 }
 
-unsigned char * Header::createHeaderConnect(bool start, bool end, int l) {
+unsigned char *Header::createHeaderConnect(bool start, bool end, int l) {
     return 0;
 }
 
-unsigned char * Header::createHeaderVote(bool cancel_vote, int l) {
+unsigned char *Header::createHeaderVote(bool cancel_vote, int l) {
     return 0;
 }
 
-unsigned char * Header::createHeaderFile(bool priority, unsigned char info_length, int l) {
+unsigned char *Header::createHeaderFile(bool priority, unsigned char info_length, int l) {
     return 0;
 }
 
-unsigned char * Header::createHeaderList(bool cancel_vote, int l) {
+unsigned char *Header::createHeaderList(bool cancel_vote, int l) {
     return 0;
 }
 
-unsigned char * Header::createHeaderStream(bool start, bool end, int l) {
+unsigned char *Header::createHeaderStream(bool start, bool end, int l) {
     return 0;
 }
 

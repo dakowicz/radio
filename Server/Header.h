@@ -10,19 +10,19 @@ class Header {
 public:
     Header() = delete;
 
-    static unsigned char* createHeader();
-    static unsigned char* createHeaderConnect();
-    static unsigned char* createHeaderVote();
-    static unsigned char* createHeaderFile();
-    static unsigned char* createHeaderList();
-    static unsigned char* createHeaderStream();
+    static unsigned char *createHeader();
+    static unsigned char *createHeaderConnect();
+    static unsigned char *createHeaderVote();
+    static unsigned char *createHeaderFile();
+    static unsigned char *createHeaderList();
+    static unsigned char *createHeaderStream();
 
-    static unsigned char* createHeader(unsigned char t, unsigned char param, int l);
-    static unsigned char* createHeaderConnect(bool start, bool end, int l);
-    static unsigned char* createHeaderVote(bool cancel_vote, int l);
-    static unsigned char* createHeaderFile(bool priority, unsigned char info_length, int l);
-    static unsigned char* createHeaderList(bool cancel_vote, int l);
-    static unsigned char* createHeaderStream(bool start, bool end, int l);
+    static unsigned char *createHeader(unsigned char t, unsigned char param, int l);
+    static unsigned char *createHeaderConnect(bool start, bool end, int l);
+    static unsigned char *createHeaderVote(bool cancel_vote, int l);
+    static unsigned char *createHeaderFile(bool priority, unsigned char info_length, int l);
+    static unsigned char *createHeaderList(bool cancel_vote, int l);
+    static unsigned char *createHeaderStream(bool start, bool end, int l);
 
 private:
     const unsigned char connect=0;

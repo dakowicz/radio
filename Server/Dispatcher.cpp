@@ -1,26 +1,23 @@
-//
-// Created by tomasz on 05.05.16.
-//
-
-
 #include <iostream>
 #include "Dispatcher.h"
 
+
 std::string Dispatcher::MODULE_NAME = "Dispatcher";
 
-Dispatcher::Dispatcher() {
-    blockingQueue = new BlockingQueue<Data*> (MODULE_NAME);
+Dispatcher::Dispatcher(const std::shared_ptr<FileReceiver> &fileReceiver, const std::shared_ptr<PlaylistManager> &playlistManager) {
+    this->fileReceiver = fileReceiver;
+    this->playlistManager = playlistManager;
+    this->atomicQueue = std::make_shared< AtomicQueue<Data*> >(MODULE_NAME);
 }
 
 Dispatcher::~Dispatcher() {
-    delete blockingQueue;
 }
 
 void Dispatcher::start() {
-    Data *newMessage;
+    Data* newMessage;
     this->running = true;
     while(running) {
-        newMessage = blockingQueue->pop();
+        newMessage = atomicQueue->pop();
         processMessage(newMessage);
     }
 }
@@ -29,10 +26,10 @@ void Dispatcher::addMessage(Data *newMessage) {
     if(isMessageEmpty(newMessage)) {
         return;
     }
-    this->blockingQueue->push(newMessage);
+    this->atomicQueue->push(newMessage);
 }
 
-bool Dispatcher::isMessageEmpty(const Data *newMessage) const {
+bool Dispatcher::isMessageEmpty(Data *newMessage) const {
     return newMessage == nullptr || newMessage->getContent() == nullptr;
 }
 
@@ -56,21 +53,29 @@ void Dispatcher::processMessage(Data *data) {
 }
 
 void Dispatcher::processVote(Data *data) {
-    log("Processing data type VOTE");
+    log("Processing - data type VOTE");
 }
 
 void Dispatcher::processMusicFile(Data *data) {
-    log("Processing data type MUSIC_FILE");
+    log("Processing - data type MUSIC_FILE");
 }
 
 void Dispatcher::processConnectionMessage(Data *data) {
-    log("Processing data type CONNECTION");
+    log("Processing - data type CONNECTION");
 }
 
 void Dispatcher::wrongDataType() {
-    log("Wrong data type");
+    log("Processing - wrong data type");
 }
 
 void Dispatcher::log(std::string message) const {
     std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
 }
+
+
+
+
+
+
+
+

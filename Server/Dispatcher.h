@@ -7,42 +7,58 @@
 
 
 #include "Data.h"
-#include "BlockingQueue.h"
+#include "AtomicQueue.h"
+#include "FileReceiver.h"
+#include "PlaylistManager.h"
 #include <thread>
+
+class PlaylistManager;
 
 class Dispatcher {
 
 public:
 
-    Dispatcher();
+    Dispatcher(const std::shared_ptr<FileReceiver> &fileReceiver, const std::shared_ptr<PlaylistManager> &playlistManager);
 
     ~Dispatcher();
 
     void start();
 
-    void addMessage(Data* newMessage);
+    void addMessage(Data *newMessage);
 
 private:
 
-    void processMessage(Data* data);
-
-    void processVote(Data *data);
-
     void wrongDataType();
-
-    void processMusicFile(Data *data);
-
-    void processConnectionMessage(Data *data);
 
     bool running;
 
-    BlockingQueue<Data*> *blockingQueue;
+    std::shared_ptr<AtomicQueue<Data*>> atomicQueue;
 
     static std::string MODULE_NAME;
 
     void log(std::string message) const;
 
-    bool isMessageEmpty(const Data *newMessage) const;
+    std::shared_ptr<FileReceiver> fileReceiver;
+
+    std::shared_ptr<PlaylistManager> playlistManager;
+
+    void processMessage(const std::shared_ptr<Data> &data);
+
+    void processVote(const std::shared_ptr<Data> &data);
+
+    void processMusicFile(const std::shared_ptr<Data> &data);
+
+    void processConnectionMessage(const std::shared_ptr<Data> &data);
+
+    bool isMessageEmpty(Data *newMessage) const;
+
+    void processVote(Data *data);
+
+    void processMusicFile(Data *data);
+
+    void processConnectionMessage(Data *data);
+
+    void processMessage(Data *data);
 };
 
 

@@ -5,11 +5,10 @@
 #include <cstdint>
 #include <unistd.h>
 #include <cstring>
-#include <sys/socket.h>
 #include "TCPSender.h"
 #include "Header.h"
 
-std::string TCPSender::MODULE_NAME = "TCPListener";
+std::string TCPSender::MODULE_NAME = "TCPSender";
 
 TCPSender::TCPSender(int socketDescriptor) {
     this->socketDescriptor = socketDescriptor;
@@ -18,23 +17,23 @@ TCPSender::TCPSender(int socketDescriptor) {
 TCPSender::~TCPSender() {
 }
 
-void TCPSender::sendMusic(unsigned  char* message) {
-    unsigned char* header = Header::createHeaderStream();
+void TCPSender::sendMusic(unsigned  char *message) {
+    unsigned char *header = Header::createHeaderStream();
     send(header, message);
 }
 
-void TCPSender::sendVotes(unsigned  char* message) {
-    unsigned char* header = Header::createHeaderVote();
+void TCPSender::sendVotes(unsigned  char *message) {
+    unsigned char *header = Header::createHeaderVote();
     send(header, message);
 }
 
 void TCPSender::sendConnectionInfo(unsigned char *message) {
-    unsigned char* header = Header::createHeaderConnect();
+    unsigned char *header = Header::createHeaderConnect();
     send(header, message);
 }
 
 void TCPSender::send(unsigned char *header, unsigned char *message) {
-    unsigned char* dataToSend = new unsigned char (sizeof(header) + sizeof(message));
+    unsigned char *dataToSend = new unsigned char [sizeof(header) + sizeof(message)];
     addHeader(header, dataToSend);
     addMessage(message, dataToSend);
     write(socketDescriptor, dataToSend, sizeof(dataToSend));

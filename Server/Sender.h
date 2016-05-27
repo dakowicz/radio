@@ -19,35 +19,38 @@ public:
 
     void handle();
 
-    void addMessage(Data* message);
+    void addMessage(const std::shared_ptr<Data> &message);
 
     bool isRunning() const { return running; }
 
     void setRunning(bool val) { this-> running = val; }
 
+    void addMessage(Data *message);
+
 private:
-
-    void sendData(Data *data);
-
-    void sendStream(const Data *data) const;
-
-    void sendVotes(const Data *data) const;
-
-    void sendConnection(const Data *data) const;
 
     void wrongDataType();
 
-    BlockingQueue<Data*> *blockingQueue;
+    std::shared_ptr<AtomicQueue<Data*>> atomicQueue;
 
     bool running;
 
-    TCPSender *tcpSender;
+    std::shared_ptr<TCPSender> tcpSender;
 
     int socketDescriptor;
 
     static std::string MODULE_NAME;
 
     void log(std::string message) const;
+
+    void sendConnection(Data *data) const;
+
+    void sendVotes(Data *data) const;
+
+    void sendData(Data *data);
+
+    void sendStream(Data *data) const;
+
 };
 
 

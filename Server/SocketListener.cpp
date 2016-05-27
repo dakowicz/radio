@@ -7,11 +7,12 @@
 
 std::string SocketListener::MODULE_NAME = "SocketListener";
 
-SocketListener::SocketListener(int socketDescriptor, Dispatcher *dispatcher) {
-    this->socketDescriptor = socketDescriptor;
+SocketListener::SocketListener(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor) {
+    this->tcpListener = std::make_shared<TCPListener>(socketDescriptor);
     this->dispatcher = dispatcher;
-    this->tcpListener = new TCPListener(socketDescriptor);
+    this->socketDescriptor = socketDescriptor;
 }
+
 
 SocketListener::~SocketListener() {
 }
@@ -27,3 +28,4 @@ void SocketListener::handle() {
 void SocketListener::log(std::string message) {
     std::cout << MODULE_NAME << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
 }
+

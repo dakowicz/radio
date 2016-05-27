@@ -6,6 +6,8 @@
 #define SERVER_TCPLISTENER_H
 
 #include <string>
+#include <iostream>
+#include <memory>
 #include "Data.h"
 
 class TCPListener {
@@ -15,7 +17,7 @@ public:
 
     ~TCPListener();
 
-    Data *readMessage();
+    Data * readMessage();
 
 private:
 

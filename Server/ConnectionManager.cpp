@@ -11,10 +11,11 @@ int ConnectionManager::QUEUE_LIMIT = 5;
 
 std::string ConnectionManager::MODULE_NAME = "ConnectionManager";
 
-ConnectionManager::ConnectionManager(Dispatcher *dispatcher, int port) {
+ConnectionManager::ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
+                                     const std::shared_ptr< AtomicMap<int, ClientManager* > > &clients) {
     this->port = port;
     this->dispatcher = dispatcher;
-    this->clientThreads = new BlockingMap<int, ClientManager*> (MODULE_NAME);
+    this->clients = clients;
 }
 
 ConnectionManager::~ConnectionManager() {
@@ -37,14 +38,24 @@ void ConnectionManager::start() {
         handleError("error on listening");
     }
 
-    dispatcher->addMessage(new Data(DataType::CONNECTION, new unsigned char (10)));
-    dispatcher->addMessage(new Data(DataType::VOTE, new unsigned char (10)));
-    dispatcher->addMessage(new Data(DataType::MUSIC_FILE, new unsigned char (10)));
-    dispatcher->addMessage(new Data(DataType::STREAM, new unsigned char (10)));
-    dispatcher->addMessage(new Data(DataType::STREAM, nullptr));
+
+//    std::shared_ptr<Data> data1 = std::make_shared<Data>(DataType::CONNECTION, new unsigned char[10]);
+//    std::shared_ptr<Data> data2 = std::make_shared<Data>(DataType::MUSIC_FILE, new unsigned char[10]);
+//    std::shared_ptr<Data> data3 = std::make_shared<Data>(DataType::VOTE, new unsigned char[10]);
+//    std::shared_ptr<Data> data4 = std::make_shared<Data>(DataType::STREAM, new unsigned char[10]);
+    Data *data1 = new Data(DataType::CONNECTION, new unsigned char[10]);
+    Data *data2 = new Data(DataType::MUSIC_FILE, new unsigned char[10]);
+    Data *data3 = new Data(DataType::VOTE, new unsigned char[10]);
+    Data *data4 = new Data(DataType::STREAM, new unsigned char[10]);
+
+    dispatcher->addMessage(data1);
+    dispatcher->addMessage(data2);
+    dispatcher->addMessage(data3);
+    dispatcher->addMessage(data4);
     dispatcher->addMessage(nullptr);
 
     addClient(4);
+    addClient(5);
 
     this->running = true;
 
@@ -59,7 +70,8 @@ void ConnectionManager::start() {
 }
 
 void ConnectionManager::addClient(int newSocketDescriptor) {
-    new std::thread(&ClientManager::handle, new ClientManager(dispatcher, newSocketDescriptor), clientThreads);
+    std::shared_ptr<ClientManager> clientManager = std::make_shared<ClientManager>(dispatcher, newSocketDescriptor);
+    new std::thread(&ClientManager::handle, clientManager.get(), clients);
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
@@ -79,4 +91,10 @@ void ConnectionManager::handleError(const char *errorMessage) const {
     perror(errorMessage);
     exit(0);
 }
+
+
+
+
+
+
 

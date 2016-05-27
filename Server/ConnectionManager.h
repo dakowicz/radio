@@ -14,12 +14,14 @@
 #include "SocketListener.h"
 #include "Sender.h"
 #include "ClientManager.h"
-#include "BlockingMap.h"
+#include "AtomicMap.h"
+
 
 class ConnectionManager {
 public:
 
-    ConnectionManager(Dispatcher *dispatcher, int port);
+    ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
+                          const std::shared_ptr<AtomicMap<int, ClientManager*>> &clients);
 
     ~ConnectionManager();
 
@@ -37,9 +39,9 @@ private:
 
     int socketDescriptor;
 
-    Dispatcher *dispatcher;
+    std::shared_ptr<Dispatcher> dispatcher;
 
-    BlockingMap<int, ClientManager*> *clientThreads;
+    std::shared_ptr<AtomicMap<int, ClientManager*>> clients;
 
     bool running;
 

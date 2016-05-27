@@ -4,7 +4,7 @@
 
 #include "Data.h"
 
-Data::Data(DataType type, unsigned char* content) {
+Data::Data(DataType type, unsigned char *content) {
     this->content = content;
     this->type = type;
 }

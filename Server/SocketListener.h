@@ -6,16 +6,17 @@
 #define SERVER_SOCKETLISTENER_H
 
 
-#include "Dispatcher.h"
 #include "Data.h"
 #include "TCPListener.h"
+#include "Dispatcher.h"
 #include <unistd.h>
 
+class Dispatcher;
 
 class SocketListener {
 public:
 
-    SocketListener(int socketDescriptor, Dispatcher *dispatcher);
+    SocketListener(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor);
 
     ~SocketListener();
 
@@ -33,9 +34,9 @@ private:
 
     int socketDescriptor;
 
-    Dispatcher *dispatcher;
+    std::shared_ptr<Dispatcher> dispatcher;
 
-    TCPListener *tcpListener;
+    std::shared_ptr<TCPListener> tcpListener;
 
     static std::string MODULE_NAME;
 };

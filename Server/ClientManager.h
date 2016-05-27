@@ -6,42 +6,47 @@
 #define SERVER_CLIENTMANAGER_H
 
 
-#include "Dispatcher.h"
 #include "Sender.h"
 #include "SocketListener.h"
-#include "BlockingMap.h"
+#include "AtomicMap.h"
+#include "Dispatcher.h"
+#include <thread>
 
+class Dispatcher;
+
+class SocketListener;
+
+class Sender;
 
 class ClientManager {
 public:
 
-    ClientManager(Dispatcher* dispatcher, int newSocketDescriptor);
+    ClientManager(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor);
 
     ~ClientManager();
 
-    void handle(BlockingMap<int, ClientManager*> *blockingMap);
+    void handle(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+
+    void send(Data *data);
 
 private:
 
     void deleteClient();
 
-    void registerThread(BlockingMap<int, ClientManager*> *blockingMap);
-
-    void unregisterThread(BlockingMap<int, ClientManager*> *blockingMap);
-
     void log(std::string) const;
 
-    SocketListener *socketListener;
+    std::shared_ptr<SocketListener> socketListener;
 
-    std::thread *socketListnerThread;
-
-    Sender *sender;
-
-    std::thread *senderThread;
+    std::shared_ptr<Sender> sender;
 
     int socketDescriptor;
 
     static std::string MODULE_NAME;
+
+    void registerThread(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+
+    void unregisterThread(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+
 };
 
 

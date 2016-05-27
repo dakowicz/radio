@@ -5,26 +5,37 @@
 #include <cstdlib>
 #include <iostream>
 #include "ConnectionManager.h"
-
+#include "SoundProcessor.h"
 
 void log(std::string message);
 
-int main(int argc, char* arg[]) {
-    std::thread *dispatcherThread, *connectionManagerThread;
+int main(int argc, char *arg[]) {
+
     int port = atoi(arg[1]);
 
-    Dispatcher* dispatcher = new Dispatcher();
-    dispatcherThread = new std::thread(&Dispatcher::start, dispatcher);
-    log("Dispatcher is created");
+    std::shared_ptr< AtomicMap<int, ClientManager*> > clients = std::make_shared< AtomicMap<int, ClientManager*> >("Clients");
 
-    ConnectionManager* connectionManager = new ConnectionManager(dispatcher, port);
-    connectionManagerThread = new std::thread(&ConnectionManager::start, connectionManager);
-    log("ConnectionManager is created");
+    std::shared_ptr<FileManager> fileManager = std::make_shared<FileManager>();
+    std::shared_ptr<PlaylistManager> playlistManager = std::make_shared<PlaylistManager>();
+    std::shared_ptr<FileReceiver> fileReceiver = std::make_shared<FileReceiver>(fileManager);
 
-    dispatcherThread->join();
-    connectionManagerThread->join();
+    std::shared_ptr<Dispatcher> dispatcher = std::make_shared<Dispatcher>(fileReceiver, playlistManager);
+    std::thread dispatcherThread = std::thread(&Dispatcher::start, dispatcher.get());
+    log("Dispatcher has been created");
+
+    std::shared_ptr<ConnectionManager> connectionManager = std::make_shared<ConnectionManager>(dispatcher, port, clients);
+    std::thread connectionManagerThread = std::thread(&ConnectionManager::start, connectionManager.get());
+    log("ConnectionManager has been created");
+
+    std::shared_ptr<SoundProcessor> soundProcessor = std::make_shared<SoundProcessor>(fileManager, playlistManager, clients);
+    std::thread soundProcessorThread = std::thread(&SoundProcessor::stream, soundProcessor.get());
+    log("SoundProcessor has been created");
+
+    connectionManagerThread.join();
+    dispatcherThread.join();
+    soundProcessorThread.join();
+
     log("Application has been closed");
-
     return 0;
 }
 

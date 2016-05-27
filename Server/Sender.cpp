@@ -6,14 +6,13 @@
 #include <cstring>
 #include <iostream>
 #include "Sender.h"
-#include "BlockingQueue.h"
 
 std::string Sender::MODULE_NAME = "Sender";
 
 Sender::Sender(int socketDescriptor) {
-    this->blockingQueue = new BlockingQueue<Data*> (std::string(MODULE_NAME).append(std::to_string(socketDescriptor)));
+    this->atomicQueue = std::make_shared<AtomicQueue<Data*>>(std::string(MODULE_NAME).append(std::to_string(socketDescriptor)));
+    this->tcpSender = std::make_shared<TCPSender>(socketDescriptor);
     this->socketDescriptor = socketDescriptor;
-    this->tcpSender = new TCPSender(socketDescriptor);
 }
 
 Sender::~Sender() {
@@ -23,12 +22,12 @@ void Sender::handle() {
     Data* dataFromQueue;
     this->running = true;
     while(running) {
-        dataFromQueue = blockingQueue->pop();
+        dataFromQueue = atomicQueue->pop();
         sendData(dataFromQueue);
     }
 }
 
-void Sender::sendData(Data *data) {
+void Sender::sendData(Data* data) {
     if(data == nullptr) {
         return;
     }
@@ -48,23 +47,23 @@ void Sender::sendData(Data *data) {
     }
 }
 
-void Sender::sendConnection(const Data *data) const {
+void Sender::sendConnection(Data* data) const {
     log("Sending data type CONNECTION");
     tcpSender->sendConnectionInfo(data->getContent());
 }
 
-void Sender::sendVotes(const Data *data) const {
+void Sender::sendVotes(Data* data) const {
     log("Sending data type VOTES");
     tcpSender->sendVotes(data->getContent());
 }
 
-void Sender::sendStream(const Data *data) const {
-    log("Sending data type VOTES");
+void Sender::sendStream(Data* data) const {
+    log("Sending data type STREAM");
     tcpSender->sendMusic(data->getContent());
 }
 
-void Sender::addMessage(Data *message) {
-    this->blockingQueue->push(message);
+void Sender::addMessage(Data* message) {
+    this->atomicQueue->push(message);
 }
 
 void Sender::wrongDataType() {
