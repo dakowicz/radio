@@ -37,10 +37,10 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
-    Data *data1 = new Data(DataType::CONNECTION, new unsigned char[10], 10);
-    Data *data2 = new Data(DataType::MUSIC_FILE, new unsigned char[10], 10);
-    Data *data3 = new Data(DataType::VOTE, new unsigned char[10], 10);
-    Data *data4 = new Data(DataType::STREAM, new unsigned char[10], 10);
+    Data *data1 = new Data(DataType::CONNECTION, new char[10], 10);
+    Data *data2 = new Data(DataType::MUSIC_FILE, new char[10], 10);
+    Data *data3 = new Data(DataType::VOTE, new char[10], 10);
+    Data *data4 = new Data(DataType::STREAM, new char[10], 10);
 
     dispatcher->addMessage(data1);
     dispatcher->addMessage(data2);
@@ -61,11 +61,24 @@ void ConnectionManager::start() {
             addClient(newSocketDescriptor);
         }
     }
+
+    closeClientManagers();
+}
+
+void ConnectionManager::closeClientManagers() {
+    std::vector<ClientManager*> clientManagers;
+    clients->getAllValues(clientManagers);
+    for(auto& clientManager : clientManagers) {
+        std::thread *&clientThread = clientManagersThreads[clientManager->getSocketDescriptor()];
+        if(clientThread != nullptr && clientThread->joinable()) {
+            clientThread->join();
+        }
+    }
 }
 
 void ConnectionManager::addClient(int newSocketDescriptor) {
-    clientManagers.push_back(std::make_shared<ClientManager>(dispatcher, newSocketDescriptor));
-    new std::thread(&ClientManager::handle, clientManagers.back().get(), clients);
+    ClientManager *clientManager = new ClientManager(dispatcher, newSocketDescriptor);
+    clientManagersThreads[newSocketDescriptor] = new std::thread(&ClientManager::handle, clientManager, clients);
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
@@ -85,10 +98,5 @@ void ConnectionManager::handleError(const char *errorMessage) const {
     perror(errorMessage);
     exit(0);
 }
-
-
-
-
-
 
 

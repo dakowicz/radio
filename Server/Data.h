@@ -12,11 +12,11 @@
 class Data {
 public:
 
-    Data(DataType type, unsigned char *content, int size);
+    Data(DataType type, char *content, int size);
 
     ~Data();
 
-    unsigned char *getContent() const { return content; }
+    char * getContent() const { return content; }
 
     DataType getType() const { return type; }
 
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    unsigned char *content;
+    char *content;
 
     DataType type;
 

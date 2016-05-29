@@ -29,15 +29,17 @@ public:
 
     void send(Data *data);
 
+    int getSocketDescriptor() const { return socketDescriptor; }
+
 private:
 
     void deleteClient();
 
     void log(std::string) const;
 
-    std::shared_ptr<SocketListener> socketListener;
+    SocketListener *socketListener;
 
-    std::shared_ptr<Sender> sender;
+    Sender *sender;
 
     int socketDescriptor;
 

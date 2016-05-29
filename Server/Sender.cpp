@@ -10,13 +10,15 @@
 std::string Sender::MODULE_NAME = "Sender";
 
 Sender::Sender(int socketDescriptor) {
-    this->atomicQueue = std::make_shared<AtomicQueue<Data *>>(std::string(MODULE_NAME).append(std::to_string(socketDescriptor)));
-    this->tcpSender = std::make_shared<TCPSender>(socketDescriptor);
+    this->atomicQueue = new AtomicQueue<Data*>(MODULE_NAME + std::to_string(socketDescriptor));
+    this->tcpSender = new TCPSender(socketDescriptor);
     this->socketDescriptor = socketDescriptor;
     this->running = false;
 }
 
 Sender::~Sender() {
+    delete atomicQueue;
+    delete tcpSender;
 }
 
 void Sender::handle() {

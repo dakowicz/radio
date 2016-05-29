@@ -11,11 +11,11 @@ public:
     Header() = delete;
 
     static unsigned char *createHeader();
-    static unsigned char *createHeaderConnect();
-    static unsigned char *createHeaderVote();
+    static char * createHeaderConnect();
+    static char * createHeaderVote();
     static unsigned char *createHeaderFile();
     static unsigned char *createHeaderList();
-    static unsigned char *createHeaderStream();
+    static char * createHeaderStream();
 
     static unsigned char *createHeader(unsigned char t, unsigned char param, int l);
     static unsigned char *createHeaderConnect(bool start, bool end, int l);

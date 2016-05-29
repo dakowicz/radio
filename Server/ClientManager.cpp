@@ -8,19 +8,21 @@ std::string ClientManager::MODULE_NAME = "ClientManager";
 
 ClientManager::ClientManager(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor) {
     this->socketDescriptor = newSocketDescriptor;
-    this->socketListener = std::make_shared<SocketListener>(dispatcher, newSocketDescriptor);
-    this->sender = std::make_shared<Sender>(newSocketDescriptor);
+    this->socketListener = new SocketListener(dispatcher, newSocketDescriptor);
+    this->sender = new Sender(newSocketDescriptor);
 }
 
 ClientManager::~ClientManager() {
+    delete socketListener;
+    delete sender;
 }
 
 void ClientManager::handle(const std::shared_ptr<AtomicMap <int, ClientManager *>> &blockingMap) {
     registerThread(blockingMap);
     log("Created");
 
-    std::thread socketListnerThread(&SocketListener::handle, this->socketListener.get());
-    std::thread senderThread(&Sender::handle, this->sender.get());
+    std::thread socketListnerThread(&SocketListener::handle, this->socketListener);
+    std::thread senderThread(&Sender::handle, this->sender);
 
     socketListnerThread.join();
     senderThread.join();

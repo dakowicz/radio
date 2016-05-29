@@ -26,30 +26,34 @@ void SoundProcessor::stream() {
         Song *nextSong = playlistManager->getNextSong();
         std::shared_ptr<std::ifstream> fileStream = fileManager->getFileStream(nextSong);
         divideFile(fileStream);
+        this->running = false;
     }
 }
 
 void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream) {
     if(fileStream == nullptr) {
+        log("Opening file error");
         return;
     }
-    while(!endOf(fileStream)) {
-        std::this_thread::sleep_for(TIME_INTERVAL_MS);
-        pushStreamMessage(fileStream);
+    while(!endOf(fileStream) && isRunning()) {
+        sleep();
+        pushStreamData(fileStream);
         log("New package of data");
     }
 }
 
-bool SoundProcessor::endOf(std::shared_ptr<std::ifstream> fileStream) const { return fileStream->eof(); }
-
-void SoundProcessor::pushStreamMessage(std::shared_ptr<std::ifstream> fileStream) {
+void SoundProcessor::pushStreamData(std::shared_ptr<std::ifstream> fileStream) {
     log("Position in current file: " + std::to_string(fileStream->tellg()));
-    unsigned char *streamData = new unsigned char[PACKAGE_SIZE_B];
+    char *streamData = new char[PACKAGE_SIZE_B];
     Data *data = readFile(fileStream, streamData);
     broadcastToClients(data);
 }
 
-Data *SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const {
+void SoundProcessor::sleep() const { std::this_thread::sleep_for(TIME_INTERVAL_MS); }
+
+bool SoundProcessor::endOf(std::shared_ptr<std::ifstream> fileStream) const { return fileStream->eof(); }
+
+Data *SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const {
     fileStream->read((char *) streamData, PACKAGE_SIZE_B);
     return new Data(DataType::STREAM, streamData, (int) fileStream->gcount());
 }

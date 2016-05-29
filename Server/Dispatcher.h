@@ -37,7 +37,7 @@ private:
 
     std::atomic<bool> running;
 
-    std::shared_ptr<AtomicQueue<Data *>> atomicQueue;
+    AtomicQueue<Data*> *atomicQueue;
 
     static std::string MODULE_NAME;
 

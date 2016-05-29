@@ -47,9 +47,11 @@ private:
 
     bool endOf(std::shared_ptr<std::ifstream> fileStream) const;
 
-    void pushStreamMessage(std::shared_ptr<std::ifstream> fileStream);
+    void pushStreamData(std::shared_ptr<std::ifstream> fileStream);
 
-    Data *readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const;
+    Data *readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const;
+
+    void sleep() const;
 };
 
 

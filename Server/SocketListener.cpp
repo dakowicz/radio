@@ -8,13 +8,14 @@
 std::string SocketListener::MODULE_NAME = "SocketListener";
 
 SocketListener::SocketListener(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor) {
-    this->tcpListener = std::make_shared<TCPListener>(socketDescriptor);
+    this->tcpListener = new TCPListener(socketDescriptor);
     this->dispatcher = dispatcher;
     this->socketDescriptor = socketDescriptor;
 }
 
 
 SocketListener::~SocketListener() {
+    delete tcpListener;
 }
 
 void SocketListener::handle() {

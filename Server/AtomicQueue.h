@@ -16,7 +16,7 @@ public:
 
     AtomicQueue();
 
-    AtomicQueue(std::string &moduleName);
+    AtomicQueue(std::string moduleName);
 
     AtomicQueue(const AtomicQueue &) = delete;           // disable copying
 
@@ -45,7 +45,7 @@ private:
 
 
 template <typename T>
-AtomicQueue<T>::AtomicQueue(std::string &moduleName) {
+AtomicQueue<T>::AtomicQueue(std::string moduleName) {
     this->moduleName = moduleName;
 }
 

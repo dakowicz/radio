@@ -48,13 +48,15 @@ private:
 
     std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
 
-    std::vector<std::shared_ptr<ClientManager>> clientManagers;
-
     std::atomic<bool> running;
 
     static std::string MODULE_NAME;
 
     static int QUEUE_LIMIT;
+
+    std::map<int, std::thread*> clientManagersThreads;
+
+    void closeClientManagers();
 };
 
 

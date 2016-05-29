@@ -85,11 +85,11 @@ unsigned char *Header::createHeader() {
     return nullptr;
 }
 
-unsigned char *Header::createHeaderConnect() {
+char * Header::createHeaderConnect() {
     return nullptr;
 }
 
-unsigned char *Header::createHeaderVote() {
+char * Header::createHeaderVote() {
     return nullptr;
 }
 
@@ -101,7 +101,7 @@ unsigned char *Header::createHeaderList() {
     return nullptr;
 }
 
-unsigned char *Header::createHeaderStream() {
+char * Header::createHeaderStream() {
     return nullptr;
 }
 

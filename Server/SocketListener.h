@@ -37,7 +37,7 @@ private:
 
     std::shared_ptr<Dispatcher> dispatcher;
 
-    std::shared_ptr<TCPListener> tcpListener;
+    TCPListener *tcpListener;
 
     static std::string MODULE_NAME;
 };

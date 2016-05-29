@@ -14,40 +14,45 @@ std::string TCPSender::MODULE_NAME = "TCPSender";
 
 TCPSender::TCPSender(int socketDescriptor) {
     this->socketDescriptor = socketDescriptor;
+//    std::string fileName = std::string("/home/tomasz/prog/radio/Server/") + std::string("newfile") + std::to_string(socketDescriptor);
+//    this->file = new std::ofstream(fileName);
 }
 
 TCPSender::~TCPSender() {
 }
 
-void TCPSender::sendMusic(unsigned char *message, int messageSize) {
-    unsigned char *header = Header::createHeaderStream();
+void TCPSender::sendMusic(char *message, int messageSize) {
+    char *header = Header::createHeaderStream();
     send(header, message, messageSize);
 }
 
-void TCPSender::sendVotes(unsigned char *message, int messageSize) {
-    unsigned char *header = Header::createHeaderVote();
+void TCPSender::sendVotes(char *message, int messageSize) {
+    char *header = Header::createHeaderVote();
     send(header, message, messageSize);
 }
 
-void TCPSender::sendConnectionInfo(unsigned char *message, int messageSize) {
-    unsigned char *header = Header::createHeaderConnect();
+void TCPSender::sendConnectionInfo(char *message, int messageSize) {
+    char *header = Header::createHeaderConnect();
     send(header, message, messageSize);
 }
 
-void TCPSender::send(unsigned char *header, unsigned char *message, int messageSize) {
+void TCPSender::send(char *header, char *message, int messageSize) {
     int dataToSendSize = Header::SIZE + messageSize;
-    unsigned char *dataToSend = new unsigned char [dataToSendSize];
+    char *dataToSend = new char [dataToSendSize];
     addHeader(header, dataToSend);
     addMessage(message, dataToSend, messageSize);
     writeData(dataToSend, dataToSendSize);
     log(std::to_string(dataToSendSize));
+//    if(dataToSendSize < 200000)
+//        file->close();
 }
 
-void TCPSender::writeData(const unsigned char *dataToSend, int dataToSendSize) const {
+void TCPSender::writeData(char *dataToSend, int dataToSendSize) const {
+//    file->write(dataToSend, dataToSendSize);
     write(socketDescriptor, dataToSend, dataToSendSize);
 }
 
-void TCPSender::addHeader(unsigned char *header, unsigned char *dataToSend) const {
+void TCPSender::addHeader(char *header, char *dataToSend) const {
     if(header != nullptr) {
         memcpy(dataToSend, header, getHeaderSize());
     }
@@ -55,7 +60,7 @@ void TCPSender::addHeader(unsigned char *header, unsigned char *dataToSend) cons
 
 int TCPSender::getHeaderSize() const { return Header::SIZE; }
 
-void TCPSender::addMessage(unsigned char *message, unsigned char *dataToSend, size_t messageSize) const {
+void TCPSender::addMessage(char *message, char *dataToSend, size_t messageSize) const {
     if(message != nullptr) {
         memcpy(dataToSend + getHeaderSize(), message, messageSize);
     }

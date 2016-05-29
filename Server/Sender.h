@@ -30,11 +30,11 @@ private:
 
     void wrongDataType();
 
-    std::shared_ptr<AtomicQueue<Data *>> atomicQueue;
+    AtomicQueue<Data*> *atomicQueue;
 
     std::atomic<bool> running;
 
-    std::shared_ptr<TCPSender> tcpSender;
+    TCPSender *tcpSender;
 
     int socketDescriptor;
 
