@@ -37,7 +37,7 @@ private:
 
     std::map<K, V> map;
 
-    std::mutex mutex;
+    std::shared_timed_mutex mutex;
 
     std::string moduleName;
 
@@ -59,7 +59,7 @@ AtomicMap<K, V>::AtomicMap(std::string moduleName) {
 template <typename K, typename V>
 V AtomicMap<K, V>::get(K key) {
 
-    std::shared_lock<std::mutex> lock(mutex);
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
     V val = map[key];
     log("Loaded from map");
     return val;
@@ -68,7 +68,7 @@ V AtomicMap<K, V>::get(K key) {
 template <typename K, typename V>
 void AtomicMap<K, V>::erase(K key, V value) {
 
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
     if(map[key] == value) {
         map.erase(key);
         log("Erased from map");
@@ -79,7 +79,7 @@ void AtomicMap<K, V>::erase(K key, V value) {
 template <typename K, typename V>
 void AtomicMap<K, V>::insert(K key, V value) {
 
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::shared_timed_mutex> lock(mutex);
     map[key] = value;
     log("Inserted into map");
     lock.unlock();
@@ -88,7 +88,7 @@ void AtomicMap<K, V>::insert(K key, V value) {
 template <typename K, typename V>
 void AtomicMap<K, V>::getAllValues(std::vector<V> &values) {
 
-    std::shared_lock<std::mutex> lock(mutex);
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
     for(const auto &map_pairs : map) {
         values.push_back(map_pairs.second);
     }

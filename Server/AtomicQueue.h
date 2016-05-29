@@ -40,8 +40,7 @@ private:
 
     std::string moduleName;
 
-    void log(const char *message);
-
+    void log(std::string message);
 };
 
 
@@ -96,7 +95,7 @@ void AtomicQueue<T>::push(const T &item) {
 }
 
 template <typename T>
-void AtomicQueue<T>::log(const char *message) {
+void AtomicQueue<T>::log(std::string message) {
     std::cout << this->moduleName << ": " <<  message << std::endl << std::flush;
 }
 

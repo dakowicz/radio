@@ -43,6 +43,8 @@ private:
 
     std::shared_ptr<AtomicMap<int, ClientManager*>> clients;
 
+    std::vector<std::shared_ptr<ClientManager>> clientManagers;
+
     bool running;
 
     static std::string MODULE_NAME;

@@ -70,8 +70,8 @@ void ConnectionManager::start() {
 }
 
 void ConnectionManager::addClient(int newSocketDescriptor) {
-    std::shared_ptr<ClientManager> clientManager = std::make_shared<ClientManager>(dispatcher, newSocketDescriptor);
-    new std::thread(&ClientManager::handle, clientManager.get(), clients);
+    clientManagers.push_back(std::make_shared<ClientManager>(dispatcher, newSocketDescriptor));
+    new std::thread(&ClientManager::handle, clientManagers.back().get(), clients);
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
