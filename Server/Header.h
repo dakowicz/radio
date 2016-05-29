@@ -24,6 +24,8 @@ public:
     static unsigned char *createHeaderList(bool cancel_vote, int l);
     static unsigned char *createHeaderStream(bool start, bool end, int l);
 
+    static int SIZE;
+
 private:
     const unsigned char connect=0;
     const unsigned char stream=1;

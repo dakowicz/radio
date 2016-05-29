@@ -4,7 +4,9 @@
 
 #include <cstdint>
 #include <unistd.h>
+#include <fstream>
 #include <cstring>
+#include <iostream>
 #include "TCPSender.h"
 #include "Header.h"
 
@@ -17,36 +19,49 @@ TCPSender::TCPSender(int socketDescriptor) {
 TCPSender::~TCPSender() {
 }
 
-void TCPSender::sendMusic(unsigned  char *message) {
+void TCPSender::sendMusic(unsigned char *message, int messageSize) {
     unsigned char *header = Header::createHeaderStream();
-    send(header, message);
+    send(header, message, messageSize);
 }
 
-void TCPSender::sendVotes(unsigned  char *message) {
+void TCPSender::sendVotes(unsigned char *message, int messageSize) {
     unsigned char *header = Header::createHeaderVote();
-    send(header, message);
+    send(header, message, messageSize);
 }
 
-void TCPSender::sendConnectionInfo(unsigned char *message) {
+void TCPSender::sendConnectionInfo(unsigned char *message, int messageSize) {
     unsigned char *header = Header::createHeaderConnect();
-    send(header, message);
+    send(header, message, messageSize);
 }
 
-void TCPSender::send(unsigned char *header, unsigned char *message) {
-    unsigned char *dataToSend = new unsigned char [sizeof(header) + sizeof(message)];
+void TCPSender::send(unsigned char *header, unsigned char *message, int messageSize) {
+    int dataToSendSize = Header::SIZE + messageSize;
+    unsigned char *dataToSend = new unsigned char [dataToSendSize];
     addHeader(header, dataToSend);
-    addMessage(message, dataToSend);
-    write(socketDescriptor, dataToSend, sizeof(dataToSend));
+    addMessage(message, dataToSend, messageSize);
+    writeData(dataToSend, dataToSendSize);
+    log(std::to_string(dataToSendSize));
 }
 
-void TCPSender::addMessage(unsigned char *message, unsigned char *dataToSend) const {
-    if(message != nullptr) {
-        memcpy(dataToSend + sizeof(dataToSend), message, sizeof(message));
-    }
+void TCPSender::writeData(const unsigned char *dataToSend, int dataToSendSize) const {
+    write(socketDescriptor, dataToSend, dataToSendSize);
 }
 
 void TCPSender::addHeader(unsigned char *header, unsigned char *dataToSend) const {
     if(header != nullptr) {
-        memcpy(dataToSend, header, sizeof(header));
+        memcpy(dataToSend, header, getHeaderSize());
     }
 }
+
+int TCPSender::getHeaderSize() const { return Header::SIZE; }
+
+void TCPSender::addMessage(unsigned char *message, unsigned char *dataToSend, size_t messageSize) const {
+    if(message != nullptr) {
+        memcpy(dataToSend + getHeaderSize(), message, messageSize);
+    }
+}
+
+void TCPSender::log(std::string message) {
+    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
+}
+

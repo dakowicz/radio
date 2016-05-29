@@ -9,5 +9,5 @@ PlaylistManager::PlaylistManager() {
 }
 
 Song *PlaylistManager::getNextSong() {
-    return nullptr;
+    return new Song("musicFile");
 }

@@ -10,7 +10,7 @@ std::string SoundProcessor::MODULE_NAME = "SoundProcessor";
 
 std::chrono::milliseconds SoundProcessor::TIME_INTERVAL_MS(1000);
 
-size_t SoundProcessor::PACKAGE_SIZE_B = 200000;
+int SoundProcessor::PACKAGE_SIZE_B = 200000;
 
 SoundProcessor::SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
                                const std::shared_ptr<PlaylistManager> &playlistManager,
@@ -24,7 +24,7 @@ void SoundProcessor::stream() {
     this->running = true;
     while(running) {
         Song *nextSong = playlistManager->getNextSong();
-        std::shared_ptr<std::ifstream> fileStream = fileManager->getFileStream();
+        std::shared_ptr<std::ifstream> fileStream = fileManager->getFileStream(nextSong);
         divideFile(fileStream);
     }
 }
@@ -42,17 +42,16 @@ void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream) {
 
 bool SoundProcessor::endOf(std::shared_ptr<std::ifstream> fileStream) const { return fileStream->eof(); }
 
-void SoundProcessor::log(std::string message) {
-    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
-}
-
 void SoundProcessor::pushStreamMessage(std::shared_ptr<std::ifstream> fileStream) {
     log("Position in current file: " + std::to_string(fileStream->tellg()));
     unsigned char *streamData = new unsigned char[PACKAGE_SIZE_B];
-    fileStream->read((char *) streamData, PACKAGE_SIZE_B);
-//    std::shared_ptr<Data> data = std::make_shared<Data>(DataType::STREAM, streamData);
-    Data *data = new Data(DataType::STREAM, streamData);
+    Data *data = readFile(fileStream, streamData);
     broadcastToClients(data);
+}
+
+Data * SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const {
+    fileStream->read((char *) streamData, PACKAGE_SIZE_B);
+    return new Data(DataType::STREAM, streamData, (int) fileStream->gcount());
 }
 
 void SoundProcessor::broadcastToClients(Data* data) {
@@ -63,6 +62,10 @@ void SoundProcessor::broadcastToClients(Data* data) {
             clientManager->send(data);
         }
     }
+}
+
+void SoundProcessor::log(std::string message) {
+    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
 }
 
 

@@ -5,12 +5,17 @@
 #include <memory>
 #include <iostream>
 #include "FileManager.h"
+#include "Song.h"
 
-std::string FileManager::PREFIX = "/home/tomasz/prog/radio/Server/";
+FileManager::FileManager(std::string &prefix) {
+    this->prefix = prefix;
+}
 
-std::shared_ptr<std::ifstream> FileManager::getFileStream() {
+std::shared_ptr<std::ifstream> FileManager::getFileStream(Song *song) {
     std::shared_ptr<std::ifstream> fileStream = std::make_shared<std::ifstream>();
-    fileStream->open(PREFIX + "musicFile");
+    fileStream->open(prefix + song->getName());
     return fileStream;
 }
+
+
 

@@ -43,10 +43,10 @@ void ConnectionManager::start() {
 //    std::shared_ptr<Data> data2 = std::make_shared<Data>(DataType::MUSIC_FILE, new unsigned char[10]);
 //    std::shared_ptr<Data> data3 = std::make_shared<Data>(DataType::VOTE, new unsigned char[10]);
 //    std::shared_ptr<Data> data4 = std::make_shared<Data>(DataType::STREAM, new unsigned char[10]);
-    Data *data1 = new Data(DataType::CONNECTION, new unsigned char[10]);
-    Data *data2 = new Data(DataType::MUSIC_FILE, new unsigned char[10]);
-    Data *data3 = new Data(DataType::VOTE, new unsigned char[10]);
-    Data *data4 = new Data(DataType::STREAM, new unsigned char[10]);
+    Data *data1 = new Data(DataType::CONNECTION, new unsigned char[10], 10);
+    Data *data2 = new Data(DataType::MUSIC_FILE, new unsigned char[10], 10);
+    Data *data3 = new Data(DataType::VOTE, new unsigned char[10], 10);
+    Data *data4 = new Data(DataType::STREAM, new unsigned char[10], 10);
 
     dispatcher->addMessage(data1);
     dispatcher->addMessage(data2);

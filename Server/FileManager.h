@@ -7,16 +7,19 @@
 
 
 #include <fstream>
+#include "Song.h"
 
 class FileManager {
 
 public:
 
-    std::shared_ptr<std::ifstream> getFileStream();
+    FileManager(std::string &prefix);
 
-    static std::string PREFIX;
+    std::shared_ptr<std::ifstream> getFileStream(Song *song);
 
 private:
+
+    std::string prefix;
 };
 
 

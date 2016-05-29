@@ -19,8 +19,6 @@ public:
 
     void handle();
 
-    void addMessage(const std::shared_ptr<Data> &message);
-
     bool isRunning() const { return running; }
 
     void setRunning(bool val) { this-> running = val; }

@@ -4,6 +4,7 @@
 
 #include "Header.h"
 
+int Header::SIZE = 7;
 
 //uint8_t* Header::createHeaderConnect(bool start, bool end, int l){
 //    type=connect;

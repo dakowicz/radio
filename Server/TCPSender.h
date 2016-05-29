@@ -14,11 +14,11 @@ public:
 
     ~TCPSender();
 
-    void sendMusic(unsigned char *string);
+    void sendMusic(unsigned char *string, int messageSize);
 
-    void sendVotes(unsigned char *string);
+    void sendVotes(unsigned char *string, int messageSize);
 
-    void sendConnectionInfo(unsigned char *message);
+    void sendConnectionInfo(unsigned char *message, int messageSize);
 
 private:
 
@@ -26,11 +26,19 @@ private:
 
     static std::string MODULE_NAME;
 
-    void send(unsigned char *header, unsigned char *message);
+    void send(unsigned char *header, unsigned char *message, int messageSize);
 
-    void addMessage(unsigned char *message, unsigned char *dataToSend) const;
+    void addMessage(unsigned char *message, unsigned char *dataToSend, size_t messageSize) const;
 
     void addHeader(unsigned char *header, unsigned char *dataToSend) const;
+
+    std::ofstream *file;
+    
+    void log(std::string message);
+
+    void writeData(const unsigned char *dataToSend, int dataToSendSize) const;
+
+    int getHeaderSize() const;
 };
 
 

@@ -37,7 +37,7 @@ void Dispatcher::processMessage(Data *data) {
     if(data == nullptr) {
         return;
     }
-    switch(data->getDataType()) {
+    switch(data->getType()) {
         case DataType::VOTE:
             processVote(data);
             break;

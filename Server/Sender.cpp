@@ -31,7 +31,7 @@ void Sender::sendData(Data* data) {
     if(data == nullptr) {
         return;
     }
-    switch(data->getDataType()) {
+    switch(data->getType()) {
         case DataType::STREAM:
             sendStream(data);
             break;
@@ -49,17 +49,17 @@ void Sender::sendData(Data* data) {
 
 void Sender::sendConnection(Data* data) const {
     log("Sending data type CONNECTION");
-    tcpSender->sendConnectionInfo(data->getContent());
+    tcpSender->sendConnectionInfo(data->getContent(), data->getSize());
 }
 
 void Sender::sendVotes(Data* data) const {
     log("Sending data type VOTES");
-    tcpSender->sendVotes(data->getContent());
+    tcpSender->sendVotes(data->getContent(), data->getSize());
 }
 
 void Sender::sendStream(Data* data) const {
     log("Sending data type STREAM");
-    tcpSender->sendMusic(data->getContent());
+    tcpSender->sendMusic(data->getContent(), data->getSize());
 }
 
 void Sender::addMessage(Data* message) {

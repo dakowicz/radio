@@ -33,7 +33,7 @@ private:
 
     static std::chrono::milliseconds TIME_INTERVAL_MS;
 
-    static size_t PACKAGE_SIZE_B;
+    static int PACKAGE_SIZE_B;
 
     static std::string MODULE_NAME;
 
@@ -44,6 +44,8 @@ private:
     bool endOf(std::shared_ptr<std::ifstream> fileStream) const;
 
     void pushStreamMessage(std::shared_ptr<std::ifstream> fileStream);
+
+    Data * readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const;
 };
 
 

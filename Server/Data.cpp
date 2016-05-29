@@ -4,9 +4,10 @@
 
 #include "Data.h"
 
-Data::Data(DataType type, unsigned char *content) {
+Data::Data(DataType type, unsigned char *content, int size) {
     this->content = content;
     this->type = type;
+    this->size = size;
 }
 
 Data::~Data() {

@@ -5,9 +5,17 @@
 #ifndef SERVER_SONG_H
 #define SERVER_SONG_H
 
+#include <string>
 
 class Song {
+public:
 
+    Song(std::string name);
+
+    const std::string &getName() const { return name; }
+
+private:
+    std::string name;
 };
 
 
