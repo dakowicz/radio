@@ -8,17 +8,41 @@
 
 #include "Song.h"
 #include "ClientManager.h"
+#include "PlaylistFileReader.h"
 
 class PlaylistManager {
 
 public:
 
-    PlaylistManager();
+    PlaylistManager(std::string prefix);
+
+    ~PlaylistManager();
 
     Song *getNextSong();
 
+    void popRecording(Song *&song);
+
 private:
 
+    std::vector<Song *> songs;
+
+    std::vector<Song *>::iterator currentSong;
+
+    AtomicQueue<Song *> *recordings;
+
+    static std::string MODULE_NAME;
+
+    void loadPlaylist();
+
+    static std::string PLAYLIST_FILENAME;
+
+    PlaylistFileReader *playlistFileReader;
+
+    void addSong(Song *song);
+
+    void moveIterator();
+
+    void addRecording(Song *recording);
 };
 
 

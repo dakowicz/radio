@@ -13,7 +13,7 @@ FileManager::FileManager(std::string &prefix) {
 
 std::shared_ptr<std::ifstream> FileManager::getFileStream(Song *song) {
     std::shared_ptr<std::ifstream> fileStream = std::make_shared<std::ifstream>();
-    fileStream->open(prefix + song->getName());
+    fileStream->open(prefix + song->getFileName());
     return fileStream;
 }
 

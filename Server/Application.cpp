@@ -17,10 +17,9 @@ int main(int argc, char *arg[]) {
     std::shared_ptr< AtomicMap<int, ClientManager *> > clients = std::make_shared< AtomicMap<int, ClientManager *> >("Clients");
 
     std::shared_ptr<FileManager> fileManager = std::make_shared<FileManager>(fileSystemPrefix);
-    std::shared_ptr<PlaylistManager> playlistManager = std::make_shared<PlaylistManager>();
-    std::shared_ptr<FileReceiver> fileReceiver = std::make_shared<FileReceiver>(fileManager);
+    std::shared_ptr<PlaylistManager> playlistManager = std::make_shared<PlaylistManager>(fileSystemPrefix);
 
-    std::shared_ptr<Dispatcher> dispatcher = std::make_shared<Dispatcher>(fileReceiver, playlistManager);
+    std::shared_ptr<Dispatcher> dispatcher = std::make_shared<Dispatcher>(fileManager, playlistManager);
     std::thread dispatcherThread = std::thread(&Dispatcher::start, dispatcher.get());
     log("Dispatcher has been created");
 

@@ -4,8 +4,8 @@
 
 std::string Dispatcher::MODULE_NAME = "Dispatcher";
 
-Dispatcher::Dispatcher(const std::shared_ptr<FileReceiver> &fileReceiver, const std::shared_ptr<PlaylistManager> &playlistManager) {
-    this->fileReceiver = fileReceiver;
+Dispatcher::Dispatcher(const std::shared_ptr<FileManager> &fileManager, const std::shared_ptr<PlaylistManager> &playlistManager) {
+    this->fileManager = fileManager;
     this->playlistManager = playlistManager;
     this->atomicQueue = new AtomicQueue<Data*>(MODULE_NAME);
 }

@@ -9,6 +9,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <iostream>
+#include <shared_mutex>
 
 template <typename T>
 class AtomicQueue {
@@ -41,6 +42,8 @@ private:
     std::string moduleName;
 
     void log(std::string message);
+
+    bool isEmpty();
 };
 
 
@@ -92,6 +95,15 @@ void AtomicQueue<T>::push(const T &item) {
     log("Pushed message to queue");
     lock.unlock();
     condition_variable.notify_one();
+}
+
+template <typename T>
+bool AtomicQueue<T>::isEmpty() {
+
+    std::unique_lock<std::mutex> lock(mutex);
+    bool val = queue.empty();
+    lock.unlock();
+    return val;
 }
 
 template <typename T>

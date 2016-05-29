@@ -8,8 +8,8 @@
 
 #include "Data.h"
 #include "AtomicQueue.h"
-#include "FileReceiver.h"
 #include "PlaylistManager.h"
+#include "FileManager.h"
 #include <thread>
 #include <atomic>
 
@@ -19,7 +19,7 @@ class Dispatcher {
 
 public:
 
-    Dispatcher(const std::shared_ptr<FileReceiver> &fileReceiver, const std::shared_ptr<PlaylistManager> &playlistManager);
+    Dispatcher(const std::shared_ptr<FileManager> &fileManager, const std::shared_ptr<PlaylistManager> &playlistManager);
 
     ~Dispatcher();
 
@@ -43,7 +43,7 @@ private:
 
     void log(std::string message) const;
 
-    std::shared_ptr<FileReceiver> fileReceiver;
+    std::shared_ptr<FileManager> fileManager;
 
     std::shared_ptr<PlaylistManager> playlistManager;
 

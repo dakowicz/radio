@@ -10,12 +10,23 @@
 class Song {
 public:
 
-    Song(std::string name);
+    Song(std::string fileName, std::string title, std::string author);
 
-    const std::string &getName() const { return name; }
+    ~Song();
+
+    const std::string &getTitle() const { return title; }
+
+    const std::string &getAuthor() const { return author; }
+
+    const std::string &getFileName() const { return fileName; }
 
 private:
-    std::string name;
+
+    std::string title;
+
+    std::string author;
+
+    std::string fileName;
 };
 
 

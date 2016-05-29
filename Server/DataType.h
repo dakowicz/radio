@@ -7,7 +7,8 @@
 
 
 enum class DataType {
-    STREAM,
+
+    STREAM = 1,
 
     VOTE,
 
