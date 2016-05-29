@@ -32,8 +32,8 @@ void TCPSender::sendConnectionInfo(uint8_t *message) {
 }
 
 void TCPSender::send(uint8_t *header, uint8_t *message) {
-    uint8_t* dataToSend = nullptr;
+    uint8_t* dataToSend = new unsigned char(sizeof(header) + sizeof(message));
     memcpy(dataToSend, header, sizeof(header));
-    memcpy(dataToSend, message, sizeof(message));
+    memcpy(dataToSend + sizeof(dataToSend), message, sizeof(message));
     write(socketDescriptor, dataToSend, sizeof(dataToSend));
 }

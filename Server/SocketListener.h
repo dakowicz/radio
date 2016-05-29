@@ -19,6 +19,8 @@ public:
     ~SocketListener();
     void handle();
 
+    void read();
+
     bool isRunning() const { return running; }
     void setRunning(bool running) { SocketListener::running = running; }
 

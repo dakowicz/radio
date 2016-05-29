@@ -5,8 +5,12 @@
 #ifndef SERVER_TCPLISTENER_H
 #define SERVER_TCPLISTENER_H
 
-
+#include <cstdio>
+#include <unistd.h>
+#include <cstring>
+#include <atomic>
 #include "Data.h"
+#include "Header.h"
 
 class TCPListener {
 
@@ -15,10 +19,19 @@ public:
     ~TCPListener();
 
     Data *readMessage();
+    unsigned char *readN(int num);
+    void SetReady();
 
 private:
     int socketDescriptor;
-    int bytesToRead;
+    int collectedBytes; //actual number of read bytes
+    unsigned char *messageBuffer;
+    Header *header;
+
+    bool headerReady;
+    std::atomic<bool> readyToRead;
+
+    void readHeader();
 };
 
 

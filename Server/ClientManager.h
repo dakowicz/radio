@@ -18,12 +18,14 @@ public:
 
     void handle();
 
+    void read();
+
 private:
-
     SocketListener *socketListener;
-    std::thread *socketListnerThread;
 
+    std::thread *socketListnerThread;
     Sender *sender;
+
     std::thread *senderThread;
 
     int socketDescriptor;

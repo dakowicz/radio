@@ -35,9 +35,16 @@ void ClientManager::handle() {
     log("Socket has been closed: " + socketDescriptor);
 }
 
+void ClientManager::read() {
+    this->socketListener->read();
+}
+
 void ClientManager::log(const char *message) const { std::cout << "ClientManager: " << message << std::endl << std::flush; }
+
 
 void ClientManager::deleteClient() {
     close(this->socketDescriptor);
 }
+
+
 

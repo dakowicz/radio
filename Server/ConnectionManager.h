@@ -36,6 +36,7 @@ private:
     Dispatcher *dispatcher;
     std::map<int, std::thread*> clientThreads;
     std::vector<int> clientSockets;
+    std::map<int,ClientManager *> clientManagers;
     bool running;
 };
 

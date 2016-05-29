@@ -7,10 +7,10 @@
 
 
 enum class DataType {
-    STREAM,
-    VOTE,
-    CONNECTION,
-    MUSIC_FILE
+    CONNECTION = 0,
+    STREAM = 1,
+    VOTE = 2,
+    MUSIC_FILE = 3
 };
 
 

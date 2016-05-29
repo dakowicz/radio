@@ -82,13 +82,16 @@ void ConnectionManager::start() {
         for(int actualSocket: clientSockets){
             if (FD_ISSET( actualSocket , &readSet)) {
                 //TODO notify socketListner...
+                new std::thread(&ClientManager::read, clientManagers[actualSocket]);
             }
         }
     }
 }
 
 void ConnectionManager::addClient(int newSocketDescriptor) {
-    new std::thread(&ClientManager::handle, new ClientManager(dispatcher, newSocketDescriptor));
+    ClientManager * newClientManager = new ClientManager(dispatcher, newSocketDescriptor);
+    new std::thread(&ClientManager::handle, newClientManager);
+    clientManagers[newSocketDescriptor] = newClientManager;
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {

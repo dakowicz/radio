@@ -18,9 +18,17 @@ SocketListener::~SocketListener() {
 void SocketListener::handle() {
     while(!running) {
         Data *newMessage = tcpListener->readMessage();
-        dispatcher->addMessage(newMessage);
+        if(newMessage != nullptr) {
+            dispatcher->addMessage(newMessage);
+        }
     }
 }
+
+void SocketListener::read() {
+    this->tcpListener->SetReady();
+}
+
+
 
 
 
