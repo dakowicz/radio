@@ -10,6 +10,7 @@
 #include <thread>
 #include <netinet/in.h>
 #include <map>
+#include <atomic>
 #include "Dispatcher.h"
 #include "SocketListener.h"
 #include "Sender.h"
@@ -21,11 +22,15 @@ class ConnectionManager {
 public:
 
     ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
-                          const std::shared_ptr<AtomicMap<int, ClientManager*>> &clients);
+                      const std::shared_ptr<AtomicMap<int, ClientManager *>> &clients);
 
     ~ConnectionManager();
 
     void start();
+
+    const bool isRunning() const { return running.load(); }
+
+    void setRunning(bool val) { this->running = val; }
 
 private:
 
@@ -41,11 +46,11 @@ private:
 
     std::shared_ptr<Dispatcher> dispatcher;
 
-    std::shared_ptr<AtomicMap<int, ClientManager*>> clients;
+    std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
 
     std::vector<std::shared_ptr<ClientManager>> clientManagers;
 
-    bool running;
+    std::atomic<bool> running;
 
     static std::string MODULE_NAME;
 

@@ -15,7 +15,7 @@ ClientManager::ClientManager(const std::shared_ptr<Dispatcher> &dispatcher, int 
 ClientManager::~ClientManager() {
 }
 
-void ClientManager::handle(const std::shared_ptr<AtomicMap <int, ClientManager*>> &blockingMap) {
+void ClientManager::handle(const std::shared_ptr<AtomicMap <int, ClientManager *>> &blockingMap) {
     registerThread(blockingMap);
     log("Created");
 
@@ -46,7 +46,7 @@ void ClientManager::log(std::string message) const {
     std::cout << MODULE_NAME << this->socketDescriptor << ": " << message << std::endl << std::flush;
 }
 
-void ClientManager::send(Data* data) {
+void ClientManager::send(Data *data) {
     this->sender->addMessage(data);
 }
 

@@ -14,7 +14,7 @@ int main(int argc, char *arg[]) {
     int port = atoi(arg[1]);
     std::string fileSystemPrefix = std::string(arg[2]);
 
-    std::shared_ptr< AtomicMap<int, ClientManager*> > clients = std::make_shared< AtomicMap<int, ClientManager*> >("Clients");
+    std::shared_ptr< AtomicMap<int, ClientManager *> > clients = std::make_shared< AtomicMap<int, ClientManager *> >("Clients");
 
     std::shared_ptr<FileManager> fileManager = std::make_shared<FileManager>(fileSystemPrefix);
     std::shared_ptr<PlaylistManager> playlistManager = std::make_shared<PlaylistManager>();

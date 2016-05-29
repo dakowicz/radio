@@ -11,6 +11,7 @@
 #include "FileReceiver.h"
 #include "PlaylistManager.h"
 #include <thread>
+#include <atomic>
 
 class PlaylistManager;
 
@@ -26,13 +27,17 @@ public:
 
     void addMessage(Data *newMessage);
 
+    const bool isRunning() const { return running.load(); }
+
+    void setRunning(bool val) { this->running = val; }
+
 private:
 
     void wrongDataType();
 
-    bool running;
+    std::atomic<bool> running;
 
-    std::shared_ptr<AtomicQueue<Data*>> atomicQueue;
+    std::shared_ptr<AtomicQueue<Data *>> atomicQueue;
 
     static std::string MODULE_NAME;
 
@@ -41,14 +46,6 @@ private:
     std::shared_ptr<FileReceiver> fileReceiver;
 
     std::shared_ptr<PlaylistManager> playlistManager;
-
-    void processMessage(const std::shared_ptr<Data> &data);
-
-    void processVote(const std::shared_ptr<Data> &data);
-
-    void processMusicFile(const std::shared_ptr<Data> &data);
-
-    void processConnectionMessage(const std::shared_ptr<Data> &data);
 
     bool isMessageEmpty(Data *newMessage) const;
 

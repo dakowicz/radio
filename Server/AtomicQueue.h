@@ -73,7 +73,7 @@ T AtomicQueue<T>::pop() {
 }
 
 template <typename T>
-void AtomicQueue<T>::pop(T& item) {
+void AtomicQueue<T>::pop(T &item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     while(queue.empty()) {

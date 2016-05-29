@@ -19,7 +19,7 @@ SocketListener::~SocketListener() {
 
 void SocketListener::handle() {
     this->running = true;
-    while(running) {
+    while(isRunning()) {
         Data *newMessage = tcpListener->readMessage();
         dispatcher->addMessage(newMessage);
     }

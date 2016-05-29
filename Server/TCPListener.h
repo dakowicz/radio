@@ -17,7 +17,7 @@ public:
 
     ~TCPListener();
 
-    Data * readMessage();
+    Data *readMessage();
 
 private:
 

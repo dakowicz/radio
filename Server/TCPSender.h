@@ -32,8 +32,6 @@ private:
 
     void addHeader(unsigned char *header, unsigned char *dataToSend) const;
 
-    std::ofstream *file;
-    
     void log(std::string message);
 
     void writeData(const unsigned char *dataToSend, int dataToSendSize) const;

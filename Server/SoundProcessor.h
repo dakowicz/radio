@@ -15,19 +15,23 @@ class SoundProcessor {
 public:
 
     SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
-                       const std::shared_ptr<PlaylistManager> &playlistManager, const std::shared_ptr< AtomicMap<int, ClientManager* > > &clients);
+                   const std::shared_ptr<PlaylistManager> &playlistManager, const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients);
 
     void stream();
 
+    const bool isRunning() const { return running.load(); }
+
+    void setRunning(bool val) { this->running = val; }
+
 private:
 
-    std::shared_ptr<AtomicMap<int, ClientManager*>> clients;
+    std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
 
     std::shared_ptr<FileManager> fileManager;
 
     std::shared_ptr<PlaylistManager> playlistManager;
 
-    bool running;
+    std::atomic<bool> running;
 
     void log(std::string message);
 
@@ -45,7 +49,7 @@ private:
 
     void pushStreamMessage(std::shared_ptr<std::ifstream> fileStream);
 
-    Data * readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const;
+    Data *readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const;
 };
 
 

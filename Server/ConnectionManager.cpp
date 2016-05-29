@@ -12,7 +12,7 @@ int ConnectionManager::QUEUE_LIMIT = 5;
 std::string ConnectionManager::MODULE_NAME = "ConnectionManager";
 
 ConnectionManager::ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
-                                     const std::shared_ptr< AtomicMap<int, ClientManager* > > &clients) {
+                                     const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients) {
     this->port = port;
     this->dispatcher = dispatcher;
     this->clients = clients;
@@ -37,12 +37,6 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
-
-
-//    std::shared_ptr<Data> data1 = std::make_shared<Data>(DataType::CONNECTION, new unsigned char[10]);
-//    std::shared_ptr<Data> data2 = std::make_shared<Data>(DataType::MUSIC_FILE, new unsigned char[10]);
-//    std::shared_ptr<Data> data3 = std::make_shared<Data>(DataType::VOTE, new unsigned char[10]);
-//    std::shared_ptr<Data> data4 = std::make_shared<Data>(DataType::STREAM, new unsigned char[10]);
     Data *data1 = new Data(DataType::CONNECTION, new unsigned char[10], 10);
     Data *data2 = new Data(DataType::MUSIC_FILE, new unsigned char[10], 10);
     Data *data3 = new Data(DataType::VOTE, new unsigned char[10], 10);
@@ -59,7 +53,7 @@ void ConnectionManager::start() {
 
     this->running = true;
 
-    while(running) {
+    while(isRunning()) {
         newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
         if(newSocketDescriptor < 0) {
             handleError("error on accept");

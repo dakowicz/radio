@@ -14,7 +14,7 @@ int SoundProcessor::PACKAGE_SIZE_B = 200000;
 
 SoundProcessor::SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
                                const std::shared_ptr<PlaylistManager> &playlistManager,
-                               const std::shared_ptr<AtomicMap<int, ClientManager* > > &clients) {
+                               const std::shared_ptr<AtomicMap<int, ClientManager * > > &clients) {
     this->clients = clients;
     this->fileManager = fileManager;
     this->playlistManager = playlistManager;
@@ -22,7 +22,7 @@ SoundProcessor::SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
 
 void SoundProcessor::stream() {
     this->running = true;
-    while(running) {
+    while(isRunning()) {
         Song *nextSong = playlistManager->getNextSong();
         std::shared_ptr<std::ifstream> fileStream = fileManager->getFileStream(nextSong);
         divideFile(fileStream);
@@ -49,15 +49,15 @@ void SoundProcessor::pushStreamMessage(std::shared_ptr<std::ifstream> fileStream
     broadcastToClients(data);
 }
 
-Data * SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const {
+Data *SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, unsigned char *streamData) const {
     fileStream->read((char *) streamData, PACKAGE_SIZE_B);
     return new Data(DataType::STREAM, streamData, (int) fileStream->gcount());
 }
 
-void SoundProcessor::broadcastToClients(Data* data) {
-    std::vector<ClientManager*> clientManagers;
+void SoundProcessor::broadcastToClients(Data *data) {
+    std::vector<ClientManager *> clientManagers;
     clients->getAllValues(clientManagers);
-    for(auto& clientManager: clientManagers) {
+    for(auto &clientManager: clientManagers) {
         if(clientManager != nullptr) {
             clientManager->send(data);
         }

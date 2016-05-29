@@ -9,6 +9,7 @@
 #include "SocketListener.h"
 #include "TCPSender.h"
 #include <unistd.h>
+#include <atomic>
 
 class Sender {
 public:
@@ -19,9 +20,9 @@ public:
 
     void handle();
 
-    bool isRunning() const { return running; }
+    const bool isRunning() const { return running.load(); }
 
-    void setRunning(bool val) { this-> running = val; }
+    void setRunning(bool val) { this->running = val; }
 
     void addMessage(Data *message);
 
@@ -29,9 +30,9 @@ private:
 
     void wrongDataType();
 
-    std::shared_ptr<AtomicQueue<Data*>> atomicQueue;
+    std::shared_ptr<AtomicQueue<Data *>> atomicQueue;
 
-    bool running;
+    std::atomic<bool> running;
 
     std::shared_ptr<TCPSender> tcpSender;
 

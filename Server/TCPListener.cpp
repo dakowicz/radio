@@ -15,7 +15,7 @@ TCPListener::TCPListener(int socketDescriptor) {
 TCPListener::~TCPListener() {
 }
 
-Data * TCPListener::readMessage() {
+Data *TCPListener::readMessage() {
     return nullptr;
 }
 

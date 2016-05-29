@@ -10,6 +10,7 @@
 #include "TCPListener.h"
 #include "Dispatcher.h"
 #include <unistd.h>
+#include <atomic>
 
 class Dispatcher;
 
@@ -22,15 +23,15 @@ public:
 
     void handle();
 
-    bool isRunning() const { return running; }
+    const bool isRunning() const { return running.load(); }
 
-    void setRunning(bool running) { this->running = running; }
+    void setRunning(bool val) { this->running = val; }
 
 private:
 
     void log(std::string message);
 
-    bool running;
+    std::atomic<bool> running;
 
     int socketDescriptor;
 
