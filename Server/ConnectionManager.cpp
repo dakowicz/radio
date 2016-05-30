@@ -28,6 +28,7 @@ void ConnectionManager::start() {
     socklen_t clilen;
     sockaddr_in serv_addr;
     sockaddr_in cli_addr;
+    fd_set readSet;
 
     clilen = sizeof(cli_addr);
     initConfig(serverSocketDescriptor, serv_addr, cli_addr);
@@ -48,21 +49,92 @@ void ConnectionManager::start() {
     dispatcher->addMessage(data4);
     dispatcher->addMessage(nullptr);
 
-    addClient(4);
-    addClient(5);
+    //addClient(4);
+    //addClient(5);
 
     this->running = true;
-
     while(isRunning()) {
-        newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
-        if(newSocketDescriptor < 0) {
-            handleError("error on accept");
-        } else {
-            addClient(newSocketDescriptor);
+        readSet = selectInit(serverSocketDescriptor, readSet);
+        int max_sd = serverSocketDescriptor;
+        registerSockets(readSet, max_sd);
+
+        int activity = select( max_sd + 1 , &readSet , NULL , NULL , NULL);
+        if (isSelectError(activity)) {
+            perror("select error");
+        }
+
+        if (isNewClient(serverSocketDescriptor, readSet)) {
+            newSocketDescriptor = acceptNewClient(serverSocketDescriptor, clilen, cli_addr);
+            checkSocketDescriptor(newSocketDescriptor);
+        }
+        checkAllSocketsForIncomingData(readSet);
+    }
+    closeClientManagers();
+}
+
+void ConnectionManager::checkAllSocketsForIncomingData(fd_set &readSet) const {
+    std::vector<int> clientSockets;
+    getClientSockets(clientSockets);
+    for(int actualSocket: clientSockets) {
+        if (isDataOnSocket(actualSocket, readSet)) {
+            ClientManager *clientManager = clients->get(actualSocket);
+            clientManager->addReadRequest();
         }
     }
+}
 
-    closeClientManagers();
+void ConnectionManager::registerSockets(fd_set &readSet, int &max_sd) const {
+    std::vector<int> clientSockets;
+    getClientSockets(clientSockets);
+    for (int socket : clientSockets) {
+        FD_SET(socket, &readSet);
+        if (socket > max_sd) {
+            max_sd = socket;
+        }
+    }
+}
+
+void ConnectionManager::getClientSockets(std::vector<int> &clientSockets) const { clients->getAllKeys(clientSockets); }
+
+bool ConnectionManager::isDataOnSocket(int actualSocket, fd_set &readSet) const { return FD_ISSET(actualSocket , &readSet); }
+
+void ConnectionManager::checkSocketDescriptor(int newSocketDescriptor) {
+    if (newSocketDescriptor < 0) {
+        handleError("error on accept");
+    } else {
+        //setNonBlockingSocketState(newSocketDescriptor);
+        addClient(newSocketDescriptor);
+    }
+}
+
+int ConnectionManager::acceptNewClient(int serverSocketDescriptor, socklen_t &clilen, sockaddr_in &cli_addr) const {
+    int newSocketDescriptor;
+    newSocketDescriptor = accept(serverSocketDescriptor, (struct sockaddr *) &cli_addr, &clilen);
+    return newSocketDescriptor;
+}
+
+bool ConnectionManager::isNewClient(int serverSocketDescriptor, fd_set &readSet) const { return FD_ISSET(serverSocketDescriptor, &readSet); }
+
+fd_set &ConnectionManager::selectInit(int serverSocketDescriptor, fd_set &readSet) const {
+    FD_ZERO(&readSet);
+    FD_SET(serverSocketDescriptor, &readSet);
+    return readSet;
+}
+
+bool ConnectionManager::isSelectError(int activity) const { return (activity < 0) && (errno != EINTR); }
+
+void ConnectionManager::setNonBlockingSocketState(int newSocketDescriptor) const {
+    struct timeval timeout;
+    timeout = setTimeout(timeout);
+    if (setsockopt (newSocketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
+        perror("setsockopt failed\n");
+    }
+}
+
+timeval &ConnectionManager::setTimeout(timeval &timeout) const {
+    timeout.tv_sec = READ_TIMEOUT_SEC;
+    timeout.tv_usec = 0;
+    return timeout;
 }
 
 void ConnectionManager::closeClientManagers() {

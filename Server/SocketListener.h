@@ -27,6 +27,8 @@ public:
 
     void setRunning(bool val) { this->running = val; }
 
+    void addReadRequest();
+
 private:
 
     void log(std::string message);
@@ -39,7 +41,17 @@ private:
 
     TCPListener *tcpListener;
 
+    int readRequestsCounter;
+
+    std::mutex mutex;
+
+    std::condition_variable cond;
+
     static std::string MODULE_NAME;
+
+    void waitForRequest();
+
+    Data *readMessage() const;
 };
 
 #endif //SERVER_SOCKETLISTENER_H

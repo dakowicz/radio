@@ -52,3 +52,11 @@ void ClientManager::send(Data *data) {
     this->sender->addMessage(data);
 }
 
+void ClientManager::addReadRequest() {
+    this->socketListener->addReadRequest();
+}
+
+
+
+
+

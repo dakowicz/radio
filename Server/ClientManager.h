@@ -29,7 +29,11 @@ public:
 
     void send(Data *data);
 
+    void notifyListner();
+
     int getSocketDescriptor() const { return socketDescriptor; }
+
+    void addReadRequest();
 
 private:
 

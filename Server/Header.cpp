@@ -2,86 +2,88 @@
 // Created by Kamil on 2016-05-04.
 //
 
+
 #include "Header.h"
 
-int Header::SIZE = 7;
+const int Header::SIZE = 7;
 
-//uint8_t* Header::createHeaderConnect(bool start, bool end, int l){
-//    type=connect;
-//    parameters=(uint8_t)(start?1:0);
-//    parameters+=(uint8_t)(end?2:0);
-//    length=l;
-//}
-//uint8_t* Header::createHeaderVote(bool cancel_vote, int l){
-//    type=votes;
-//    parameters=(uint8_t)(cancel_vote?1:0);
-//    parameters+=2;	//Since it's the client to server message
-//    length=l;
-//}
+const  char Header::CONNECT = 0;
+const  char Header::STREAM = 1;
+const  char Header::VOTES = 2;
+const  char Header::FILE = 3;
+const  char Header::ID_PROT = 90;
 
-//Header Header::createHeaderList(bool ack, int l){
-//    type=votes;
-//    parameters=(uint8_t)(ack?1:0);
-//    length=l;
-//}
-
-//Header Header::createHeaderStream(bool start, bool end, int l){
-//    type=votes;
-//    parameters=(uint8_t)(start?1:0);
-//    parameters+=(uint8_t)(end?2:0);
-//    length=l;
-//}
-
-
-//Header Header::createHeaderFile(bool priority, uint8_t info_length, int l){
-// It's probably not used by server
-//    type=file;
-//    if(info_length<0)
-//        return;
-//    parameters=info_length;
-//    parameters+=(uint8_t)(priority?-128:0);
-//    length=l;
-//}
-
-//uint8_t *Header::createBuffer() {
-//    uint8_t *head = new uint8_t[7];
-//    head[0] = id_prot;
-//    head[1] = type;
-//    head[2] = parameters;
-//    head[3] = (uint8_t) (length >> 24);
-//    head[4] = (uint8_t) (length >> 16);
-//    head[5] = (uint8_t) (length >> 8);
-//    head[6] = (uint8_t) length;
-//    return head;
-//}
-
-
-
-unsigned char *Header::createHeader(unsigned char t, unsigned char param, int l) {
-    return 0;
+Header::Header(const  char type,  char parameters, int length) {
+    this->type = type;
+    this->parameters = parameters;
+    this->length = length;
 }
 
-unsigned char *Header::createHeaderConnect(bool start, bool end, int l) {
-    return 0;
+Header *Header::createHeader(char *headerBuffer) {
+    if(headerBuffer[0]!=Header::ID_PROT||headerBuffer[1]>3) {
+        perror("Wrong protocol");
+        return nullptr;
+    }
+    char type = headerBuffer[1]; //Here is also the zero-tail
+    char parameters = headerBuffer[2];
+    int length = headerBuffer[3]<<24;
+    length += headerBuffer[4]<<16;
+    length += headerBuffer[5]<<8;
+    length += headerBuffer[6];
+    return new Header(type, parameters, length);
+}
+Header * Header::createHeaderConnect(bool start, bool end, int l){
+
+    char parameters=(char)(start?1:0);
+    parameters+=(uint8_t)(end?2:0);
+
+    return new Header(Header::CONNECT, parameters, l);
 }
 
-unsigned char *Header::createHeaderVote(bool cancel_vote, int l) {
-    return 0;
+Header * Header::createHeaderVote(bool cancel_vote, int l){
+
+    char parameters=(char)(cancel_vote?1:0);
+    parameters+=2;	//Since it's the client to server message
+    return new Header(Header::VOTES, parameters, l);
 }
 
-unsigned char *Header::createHeaderFile(bool priority, unsigned char info_length, int l) {
-    return 0;
+Header * Header::createHeaderList(bool ack, int l){
+
+     char parameters=( char)(ack?1:0);
+    return new Header(Header::VOTES, parameters, l);
 }
 
-unsigned char *Header::createHeaderList(bool cancel_vote, int l) {
-    return 0;
+
+Header * Header::createHeaderStream(bool start, bool end, int l){
+
+     char parameters=( char)(start?1:0);
+    parameters+=( char)(end?2:0);
+    return new Header(Header::VOTES, parameters, l);
 }
 
-unsigned char *Header::createHeaderStream(bool start, bool end, int l) {
-    return 0;
+Header * Header::createHeaderFile(bool priority, char info_length, int l){
+    //It's probably not used by server
+    if(info_length<0)
+        return nullptr;
+     char parameters=info_length;
+    parameters+=(uint8_t)(priority?-128:0);
+
+    return new Header(Header::FILE, parameters, l);
 }
 
-unsigned char *Header::createHeader() {
+char *Header::createBuffer() {
+    char *head = new char[7];
+    head[0] = ID_PROT;
+    head[1] = type;
+    head[2] = parameters;
+    head[3] = ( char) (length >> 24);
+    head[4] = ( char) (length >> 16);
+    head[5] = ( char) (length >> 8);
+    head[6] = ( char) length;
+    return head;
+}
+
+ char *Header::createHeader() {
     return nullptr;
 }
 
@@ -93,37 +95,14 @@ char * Header::createHeaderVote() {
     return nullptr;
 }
 
-unsigned char *Header::createHeaderFile() {
+ char *Header::createHeaderFile() {
     return nullptr;
 }
 
-unsigned char *Header::createHeaderList() {
+ char *Header::createHeaderList() {
     return nullptr;
 }
 
 char * Header::createHeaderStream() {
     return nullptr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

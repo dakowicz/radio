@@ -67,6 +67,6 @@ void TCPSender::addMessage(char *message, char *dataToSend, size_t messageSize) 
 }
 
 void TCPSender::log(std::string message) {
-    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
+    std::cout << MODULE_NAME << this->socketDescriptor << ": " << message << std::endl << std::flush;
 }
 

@@ -5,36 +5,55 @@
 #define SERVER_HEADER_H
 
 #include <cstdint>
+#include <cstdio>
 
 class Header {
 public:
+    static const int SIZE;
+
     Header() = delete;
 
-    static unsigned char *createHeader();
+    static char *createHeader();
     static char * createHeaderConnect();
     static char * createHeaderVote();
-    static unsigned char *createHeaderFile();
-    static unsigned char *createHeaderList();
+    static char *createHeaderFile();
+    static char *createHeaderList();
     static char * createHeaderStream();
 
-    static unsigned char *createHeader(unsigned char t, unsigned char param, int l);
-    static unsigned char *createHeaderConnect(bool start, bool end, int l);
-    static unsigned char *createHeaderVote(bool cancel_vote, int l);
-    static unsigned char *createHeaderFile(bool priority, unsigned char info_length, int l);
-    static unsigned char *createHeaderList(bool cancel_vote, int l);
-    static unsigned char *createHeaderStream(bool start, bool end, int l);
+    static Header *createHeader(char *headerBuffer);
+    static Header *createHeaderConnect(bool start, bool end, int l);
+    static Header *createHeaderVote(bool cancel_vote, int l);
+    static Header *createHeaderFile(bool priority,  char info_length, int l);
+    static Header *createHeaderList(bool cancel_vote, int l);
+    static Header *createHeaderStream(bool start, bool end, int l);
 
-    static int SIZE;
+    int getLength() const {
+        return length;
+    }
+    char getParameters() const {
+        return parameters;
+    }
+    char getType() const {
+        return type;
+    }
 
 private:
-    const unsigned char connect=0;
-    const unsigned char stream=1;
-    const unsigned char votes=2;
-    const unsigned char file=3;
-    const unsigned char id_prot=90;
-    unsigned char type; //Here is also the zero-tail
-    unsigned char parameters;
+
+    Header(const  char type,  char parameters, int length);
+
+    static const char CONNECT;
+    static const char STREAM;
+    static const char VOTES;
+    static const char FILE;
+    static const char ID_PROT;
+
+    char type; //Here is also the zero-tail
+    char parameters;
     int length;
+
+    char *createBuffer();
+
+    Header *createHeaderFile(bool priority, uint8_t info_length, int l);
 };
 
 

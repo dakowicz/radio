@@ -33,6 +33,8 @@ public:
 
     void getAllValues(std::vector<V> &values);
 
+    void getAllKeys(std::vector<K> &values);
+
 private:
 
     std::map<K, V> map;
@@ -93,6 +95,16 @@ void AtomicMap<K, V>::getAllValues(std::vector<V> &values) {
         values.push_back(map_pairs.second);
     }
     log("Loaded all values");
+};
+
+template <typename K, typename V>
+void AtomicMap<K, V>::getAllKeys(std::vector<K> &values) {
+
+    std::shared_lock<std::shared_timed_mutex> lock(mutex);
+    for(const auto &map_pairs : map) {
+        values.push_back(map_pairs.first);
+    }
+    log("Loaded all keys");
 };
 
 template <typename K, typename V>
