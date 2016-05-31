@@ -16,13 +16,11 @@ template <typename T>
 class AtomicQueue {
 public:
 
-    AtomicQueue(std::string moduleName);
+    AtomicQueue(std::string moduleName) : logger(moduleName) {}
 
     AtomicQueue(const AtomicQueue &) = delete;           // disable copying
 
     AtomicQueue &operator=(const AtomicQueue &) = delete; // disable assignment
-
-    ~AtomicQueue();
 
     T pop();
 
@@ -38,23 +36,10 @@ private:
 
     std::condition_variable condition_variable;
 
-    std::string moduleName;
-
     bool isEmpty();
 
-    Logger *logger;
+    Logger logger;
 };
-
-
-template <typename T>
-AtomicQueue<T>::AtomicQueue(std::string moduleName) {
-    this->logger = new Logger(moduleName);
-}
-
-template <typename T>
-AtomicQueue<T>::~AtomicQueue() {
-    delete logger;
-}
 
 template <typename T>
 T AtomicQueue<T>::pop() {
@@ -63,8 +48,8 @@ T AtomicQueue<T>::pop() {
     while(queue.empty()) {
         condition_variable.wait(lock);
     }
-    auto item = queue.front();
-    logger->log("Popped message from queue");
+    T item = queue.front();
+    logger.log("Popped message from queue");
     queue.pop();
     return item;
 }
@@ -77,7 +62,7 @@ void AtomicQueue<T>::pop(T &item) {
         condition_variable.wait(lock);
     }
     item = queue.front();
-    logger->log("Popped message from queue");
+    logger.log("Popped message from queue");
     queue.pop();
 }
 
@@ -86,7 +71,7 @@ void AtomicQueue<T>::push(const T &item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     queue.push(item);
-    logger->log("Pushed message to queue");
+    logger.log("Pushed message to queue");
     lock.unlock();
     condition_variable.notify_one();
 }

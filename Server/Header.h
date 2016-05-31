@@ -52,8 +52,6 @@ private:
     int length;
 
     char *createBuffer();
-
-    Header *createHeaderFile(bool priority, uint8_t info_length, int l);
 };
 
 

@@ -8,19 +8,6 @@ std::string PlaylistManager::MODULE_NAME = "PlaylistManager";
 
 std::string PlaylistManager::PLAYLIST_FILENAME = "playlist.csv";
 
-PlaylistManager::PlaylistManager(std::string prefix) {
-    this->recordings = new AtomicQueue<Song*>(MODULE_NAME + "Recordings");
-    this->playlistFileReader = new PlaylistFileReader(prefix);
-    this->logger = new Logger(MODULE_NAME);
-    loadPlaylist();
-}
-
-PlaylistManager::~PlaylistManager() {
-    delete recordings;
-    delete playlistFileReader;
-    delete logger;
-}
-
 Song *PlaylistManager::getNextSong() {
     Song *nextSong = *currentSong;
     moveIterator();
@@ -37,7 +24,7 @@ void PlaylistManager::moveIterator() {
 
 void PlaylistManager::loadPlaylist() {
 //    while(!playlistFileReader->endOF()) {
-        Song *song = playlistFileReader->getNextRow();
+        Song *song = playlistFileReader.getNextRow();
         addSong(song);
 //    }
 }
@@ -50,9 +37,9 @@ void PlaylistManager::addSong(Song *song) {
 }
 
 void PlaylistManager::addRecording(Song *recording) {
-    recordings->push(recording);
+    recordings.push(recording);
 }
 
 void PlaylistManager::popRecording(Song *&song) {
-    recordings->pop(song);
+    recordings.pop(song);
 }

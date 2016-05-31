@@ -6,26 +6,20 @@
 #define SERVER_CONNECTIONMANAGER_H
 
 
-static const int READ_TIMEOUT_SEC = 2;
-
 #include <vector>
 #include <thread>
 #include <netinet/in.h>
 #include <map>
 #include <atomic>
 #include <memory>
-#include "Dispatcher.h"
-#include "SocketListener.h"
-#include "Sender.h"
 #include "ClientManager.h"
-#include "AtomicMap.h"
 
 
 class ConnectionManager {
 public:
 
-    ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
-                      const std::shared_ptr<AtomicMap<int, ClientManager *>> &clients);
+    ConnectionManager(Dispatcher &dispatcher, int port, const std::shared_ptr<AtomicMap<int, ClientManager *>> &clients) :
+            dispatcher(dispatcher), port(port), clients(clients){};
 
     ~ConnectionManager();
 
@@ -47,15 +41,15 @@ private:
 
     int socketDescriptor;
 
-    std::shared_ptr<Dispatcher> dispatcher;
+    Dispatcher &dispatcher;
 
     std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
 
     std::atomic<bool> running;
 
-    static std::string MODULE_NAME;
+    static const std::string MODULE_NAME;
 
-    static int QUEUE_LIMIT;
+    static const int QUEUE_LIMIT;
 
     std::map<int, std::thread*> clientManagersThreads;
 
@@ -82,6 +76,8 @@ private:
     void checkAllSocketsForIncomingData(fd_set &readSet) const;
 
     void getClientSockets(std::vector<int> &clientSockets) const;
+
+    static const int READ_TIMEOUT_SEC;
 };
 
 

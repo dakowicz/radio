@@ -4,8 +4,8 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "ConnectionManager.h"
 #include "SoundProcessor.h"
+#include "ConnectionManager.h"
 
 
 int main(int argc, char *arg[]) {
@@ -16,19 +16,19 @@ int main(int argc, char *arg[]) {
 
     std::shared_ptr< AtomicMap<int, ClientManager *> > clients = std::make_shared< AtomicMap<int, ClientManager *> >("Clients");
 
-    std::shared_ptr<FileManager> fileManager = std::make_shared<FileManager>(fileSystemPrefix);
-    std::shared_ptr<PlaylistManager> playlistManager = std::make_shared<PlaylistManager>(fileSystemPrefix);
+    FileManager fileManager(fileSystemPrefix);
+    PlaylistManager playlistManager(fileSystemPrefix);
 
-    std::shared_ptr<Dispatcher> dispatcher = std::make_shared<Dispatcher>(fileManager, playlistManager);
-    std::thread dispatcherThread = std::thread(&Dispatcher::start, dispatcher.get());
+    Dispatcher dispatcher(fileManager, playlistManager);
+    std::thread dispatcherThread = std::thread(&Dispatcher::start, &dispatcher);
     logger.log("Dispatcher has been created");
 
-    std::shared_ptr<ConnectionManager> connectionManager = std::make_shared<ConnectionManager>(dispatcher, port, clients);
-    std::thread connectionManagerThread = std::thread(&ConnectionManager::start, connectionManager.get());
+    ConnectionManager connectionManager(dispatcher, port, clients);
+    std::thread connectionManagerThread = std::thread(&ConnectionManager::start, &connectionManager);
     logger.log("ConnectionManager has been created");
 
-    std::shared_ptr<SoundProcessor> soundProcessor = std::make_shared<SoundProcessor>(fileManager, playlistManager, clients);
-    std::thread soundProcessorThread = std::thread(&SoundProcessor::stream, soundProcessor.get());
+    SoundProcessor soundProcessor(fileManager, playlistManager, clients);
+    std::thread soundProcessorThread = std::thread(&SoundProcessor::stream, &soundProcessor);
     logger.log("SoundProcessor has been created");
 
     connectionManagerThread.join();

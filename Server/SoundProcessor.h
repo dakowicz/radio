@@ -6,16 +6,15 @@
 #define SERVER_SOUNDPROCESSOR_H
 
 
-#include "AtomicMap.h"
-#include "ClientManager.h"
 #include "FileManager.h"
 #include "PlaylistManager.h"
+#include "ClientManager.h"
 
 class SoundProcessor {
 public:
 
-    SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
-                   const std::shared_ptr<PlaylistManager> &playlistManager, const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients);
+    SoundProcessor(FileManager &fileManager, PlaylistManager &playlistManager, const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients) :
+            fileManager(fileManager), playlistManager(playlistManager), clients(clients), logger(MODULE_NAME){};
 
     void stream();
 
@@ -27,9 +26,11 @@ private:
 
     std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
 
-    std::shared_ptr<FileManager> fileManager;
+    FileManager &fileManager;
 
-    std::shared_ptr<PlaylistManager> playlistManager;
+    PlaylistManager &playlistManager;
+
+    Logger logger;
 
     std::atomic<bool> running;
 
@@ -50,8 +51,6 @@ private:
     Data *readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const;
 
     void sleep() const;
-
-    Logger *logger;
 };
 
 

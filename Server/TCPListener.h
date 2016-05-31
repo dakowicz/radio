@@ -9,21 +9,21 @@
 #include <unistd.h>
 #include <cstring>
 #include <atomic>
-
 #include <string>
 #include <atomic>
 #include <shared_mutex>
 #include "Data.h"
 #include "Logger.h"
 
+
 class TCPListener {
 public:
 
-    TCPListener(int socketDescriptor);
+    TCPListener(int socketDescriptor) :
+            socketDescriptor(socketDescriptor), logger(MODULE_NAME, socketDescriptor), isHeaderComplete(false), isMessageComplete(false),
+            bytesAlreadyRead(0), bytesToRead(0), header(nullptr), contentBuffer(nullptr), headerBuffer() {}
 
-    ~TCPListener();
-
-    Data *readMessage();
+    Data * readMessage();
 
 private:
 
@@ -75,7 +75,7 @@ private:
 
     void resetHeaderBuffer();
 
-    Logger *logger;
+    Logger logger;
 };
 
 

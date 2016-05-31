@@ -5,23 +5,18 @@
 #ifndef SERVER_DISPATCHER_H
 #define SERVER_DISPATCHER_H
 
-
-#include "Data.h"
-#include "AtomicQueue.h"
-#include "PlaylistManager.h"
-#include "FileManager.h"
 #include <thread>
 #include <atomic>
+#include "FileManager.h"
+#include "Data.h"
+#include "PlaylistManager.h"
 
-class PlaylistManager;
 
 class Dispatcher {
-
 public:
 
-    Dispatcher(const std::shared_ptr<FileManager> &fileManager, const std::shared_ptr<PlaylistManager> &playlistManager);
-
-    ~Dispatcher();
+    Dispatcher(FileManager &fileManager, PlaylistManager &playlistManager) :
+            fileManager(fileManager), playlistManager(playlistManager), atomicQueue(MODULE_NAME), logger(MODULE_NAME){};
 
     void start();
 
@@ -33,17 +28,19 @@ public:
 
 private:
 
+    static std::string MODULE_NAME;
+
     void wrongDataType();
 
     std::atomic<bool> running;
 
-    AtomicQueue<Data*> *atomicQueue;
+    AtomicQueue<Data*> atomicQueue;
 
-    static std::string MODULE_NAME;
+    FileManager &fileManager;
 
-    std::shared_ptr<FileManager> fileManager;
+    PlaylistManager &playlistManager;
 
-    std::shared_ptr<PlaylistManager> playlistManager;
+    Logger logger;
 
     bool isMessageEmpty(Data *newMessage) const;
 
@@ -54,8 +51,6 @@ private:
     void processConnectionMessage(Data *data);
 
     void processMessage(Data *data);
-
-    Logger *logger;
 };
 
 

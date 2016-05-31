@@ -7,18 +7,16 @@
 
 std::mutex Logger::mutex;
 
-void Logger::log(std::string message) {
+void Logger::log(std::string message) const {
     std::unique_lock<std::mutex> lock(mutex);
-    if(!moduleName.empty()){
-        logModuleName();
-        if(socketDescriptor != 0){
-            logSocketDescriptor();
-        }
-        if(!message.empty()){
-            logMessage(message);
-        }
-        logEnding();
+    logModuleName();
+    if(socketDescriptor != 0){
+        logSocketDescriptor();
     }
+    if(!message.empty()){
+        logMessage(message);
+    }
+    logEnding();
     lock.unlock();
 }
 

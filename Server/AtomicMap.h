@@ -18,13 +18,11 @@ template <typename K, typename V>
 class AtomicMap {
 public:
 
-    AtomicMap(std::string moduleName);
+    AtomicMap(std::string moduleName) : logger(moduleName) {}
 
     AtomicMap(const AtomicMap &) = delete;           // disable copying
 
     AtomicMap &operator=(const AtomicMap &) = delete; // disable assignment
-
-    ~AtomicMap();
 
     V get(K key);
 
@@ -42,21 +40,9 @@ private:
 
     std::shared_timed_mutex mutex;
 
-    std::string moduleName;
-
-    Logger *logger;
+    Logger logger;
 };
 
-
-template <typename K, typename V>
-AtomicMap<K, V>::AtomicMap(std::string moduleName) {
-    this->logger = new Logger(moduleName);
-}
-
-template <typename K, typename V>
-AtomicMap<K, V>::~AtomicMap() {
-    delete logger;
-}
 
 template <typename K, typename V>
 V AtomicMap<K, V>::get(K key) {
@@ -71,9 +57,9 @@ template <typename K, typename V>
 void AtomicMap<K, V>::erase(K key, V value) {
 
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
-    if(map[key] == value) {
+    if(*map[key] == *value) {
         map.erase(key);
-        logger->log("Erased from map");
+        logger.log("Erased from map");
     }
     lock.unlock();
 }
@@ -83,7 +69,7 @@ void AtomicMap<K, V>::insert(K key, V value) {
 
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
     map[key] = value;
-    logger->log("Inserted into map");
+    logger.log("Inserted into map");
     lock.unlock();
 }
 

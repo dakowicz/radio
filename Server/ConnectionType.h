@@ -6,8 +6,6 @@
 #define SERVER_CONNECTIONTYPE_H
 
 
-#include "DataType.h"
-
 enum class ConnectionType{
     CLOSED = 2
 };

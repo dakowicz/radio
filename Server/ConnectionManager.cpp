@@ -7,16 +7,11 @@
 #include <unistd.h>
 #include "ConnectionManager.h"
 
-int ConnectionManager::QUEUE_LIMIT = 5;
+const int ConnectionManager::QUEUE_LIMIT = 5;
 
-std::string ConnectionManager::MODULE_NAME = "ConnectionManager";
+const int ConnectionManager::READ_TIMEOUT_SEC = 2;
 
-ConnectionManager::ConnectionManager(const std::shared_ptr<Dispatcher> &dispatcher, int port,
-                                     const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients) {
-    this->port = port;
-    this->dispatcher = dispatcher;
-    this->clients = clients;
-}
+const std::string ConnectionManager::MODULE_NAME = "ConnectionManager";
 
 ConnectionManager::~ConnectionManager() {
     close(this->socketDescriptor);
@@ -43,11 +38,11 @@ void ConnectionManager::start() {
     Data *data3 = new Data(DataType::VOTE, new char[10], 10);
     Data *data4 = new Data((DataType)1, new char[10], 10);
 
-    dispatcher->addMessage(data1);
-    dispatcher->addMessage(data2);
-    dispatcher->addMessage(data3);
-    dispatcher->addMessage(data4);
-    dispatcher->addMessage(nullptr);
+    dispatcher.addMessage(data1);
+    dispatcher.addMessage(data2);
+    dispatcher.addMessage(data3);
+    dispatcher.addMessage(data4);
+    dispatcher.addMessage(nullptr);
 
     addClient(10);
     addClient(20);

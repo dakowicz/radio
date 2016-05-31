@@ -2,29 +2,12 @@
 // Created by tomasz on 25.05.16.
 //
 
-#include <iostream>
-#include <memory>
+
 #include "TCPListener.h"
 
 std::string TCPListener::MODULE_NAME = "TCPListener";
 
-TCPListener::TCPListener(int socketDescriptor) {
-    this->socketDescriptor = socketDescriptor;
-    this->logger = new Logger(MODULE_NAME, socketDescriptor);
-    isHeaderComplete = false;
-    isMessageComplete = false;
-    bytesAlreadyRead = 0;
-    bytesToRead = 0;
-    this->header = nullptr;
-    this->contentBuffer = nullptr;
-    this->headerBuffer = nullptr;
-}
-
-TCPListener::~TCPListener() {
-    delete logger;
-}
-
-Data *TCPListener::readMessage() {
+Data * TCPListener::readMessage() {
     if(isHeaderComplete) {
         readMessageContent();
     } else {
@@ -72,7 +55,7 @@ void TCPListener::resetHeader() {
 
 void TCPListener::readBytes(char *buffer) {
     int payload = (int) read(socketDescriptor, buffer + bytesAlreadyRead, bytesToRead);
-    logger->log("Loaded " + std::to_string(payload));
+    logger.log("Loaded " + std::to_string(payload));
     if(isReadSuccessful(payload)) {
         updatePayload(payload);
     }else if(connectionHasBeenClosed(payload)) {

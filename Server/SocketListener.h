@@ -6,20 +6,16 @@
 #define SERVER_SOCKETLISTENER_H
 
 
-#include "Data.h"
+#include <unistd.h>
 #include "TCPListener.h"
 #include "Dispatcher.h"
-#include <unistd.h>
-#include <atomic>
 
-class Dispatcher;
 
 class SocketListener {
 public:
 
-    SocketListener(const std::shared_ptr<Dispatcher> &dispatcher, int newSocketDescriptor);
-
-    ~SocketListener();
+    SocketListener(Dispatcher &dispatcher, int newSocketDescriptor) :
+            dispatcher(dispatcher), tcpListener(newSocketDescriptor), socketDescriptor(newSocketDescriptor), logger(MODULE_NAME, newSocketDescriptor) {};
 
     void handle();
 
@@ -37,9 +33,11 @@ private:
 
     int socketDescriptor;
 
-    std::shared_ptr<Dispatcher> dispatcher;
+    Dispatcher &dispatcher;
 
-    TCPListener *tcpListener;
+    TCPListener tcpListener;
+
+    Logger logger;
 
     int readRequestsCounter;
 
@@ -51,9 +49,7 @@ private:
 
     void waitForRequest();
 
-    Data *readMessage() const;
-
-    Logger *logger;
+    Data *readMessage();
 };
 
 #endif //SERVER_SOCKETLISTENER_H

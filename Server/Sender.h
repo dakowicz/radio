@@ -6,17 +6,17 @@
 #define SERVER_SENDER_H
 
 
-#include "SocketListener.h"
-#include "TCPSender.h"
 #include <unistd.h>
 #include <atomic>
+#include "TCPSender.h"
+#include "Data.h"
+#include "AtomicQueue.h"
 
 class Sender {
 public:
 
-    Sender(int socketDescriptor);
-
-    ~Sender();
+    Sender(int newSocketDescriptor) :
+            atomicQueue(MODULE_NAME + std::to_string(newSocketDescriptor)), tcpSender(newSocketDescriptor), socketDescriptor(newSocketDescriptor), logger(MODULE_NAME, socketDescriptor) {};
 
     void handle();
 
@@ -30,13 +30,15 @@ private:
 
     void wrongDataType();
 
-    AtomicQueue<Data*> *atomicQueue;
+    AtomicQueue<Data*> atomicQueue;
 
-    std::atomic<bool> running;
+    TCPSender tcpSender;
 
-    TCPSender *tcpSender;
+    Logger logger;
 
     int socketDescriptor;
+
+    std::atomic<bool> running;
 
     static std::string MODULE_NAME;
 
@@ -47,8 +49,6 @@ private:
     void sendData(Data *data);
 
     void sendStream(Data *data) const;
-
-    Logger *logger;
 };
 
 

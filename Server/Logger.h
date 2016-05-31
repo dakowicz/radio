@@ -11,13 +11,11 @@
 class Logger {
 public:
 
-    Logger() : moduleName(), socketDescriptor(){};
-
     Logger(std::string moduleName) : moduleName(moduleName), socketDescriptor(){};
 
     Logger(std::string moduleName, int socketDescriptor) : moduleName(moduleName), socketDescriptor(socketDescriptor){};
 
-    void log(std::string message);
+    void log(std::string message) const;
 
 private:
 
