@@ -3,7 +3,6 @@
 //
 
 #include "PlaylistManager.h"
-#include "PlaylistFileReader.h"
 
 std::string PlaylistManager::MODULE_NAME = "PlaylistManager";
 
@@ -12,12 +11,14 @@ std::string PlaylistManager::PLAYLIST_FILENAME = "playlist.csv";
 PlaylistManager::PlaylistManager(std::string prefix) {
     this->recordings = new AtomicQueue<Song*>(MODULE_NAME + "Recordings");
     this->playlistFileReader = new PlaylistFileReader(prefix);
+    this->logger = new Logger(MODULE_NAME);
     loadPlaylist();
 }
 
 PlaylistManager::~PlaylistManager() {
     delete recordings;
     delete playlistFileReader;
+    delete logger;
 }
 
 Song *PlaylistManager::getNextSong() {

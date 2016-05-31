@@ -6,7 +6,7 @@
 #define SERVER_CONNECTIONMANAGER_H
 
 
-static const int READ_TIMEOUT_SEC = 1;
+static const int READ_TIMEOUT_SEC = 2;
 
 #include <vector>
 #include <thread>

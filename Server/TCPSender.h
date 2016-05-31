@@ -6,6 +6,7 @@
 #define SERVER_TCPSENDER_H
 
 #include <string>
+#include "Logger.h"
 
 class TCPSender {
 public:
@@ -28,17 +29,25 @@ private:
 
     void send(char *header, char *message, int messageSize);
 
-    void addMessage(char *message, char *dataToSend, size_t messageSize) const;
+    void addMessage(char *message, char *dataToSend, size_t messageSize, char *pointerPosition) const;
 
-    void addHeader(char *header, char *dataToSend) const;
+    void addHeader(char *header, char *dataToSend);
 
-//    std::ofstream *file;
-
-    void log(std::string message);
+    std::ofstream *file;
 
     void writeData(char *dataToSend, int dataToSendSize) const;
 
     int getHeaderSize() const;
+
+    void addMessage(char *message, char *dataToSend, size_t messageSize, char *position, char *pointerPosition) const;
+
+    void addMessage(char *message, char *dataToSend, int messageSize) const;
+
+    int pointerPosition;
+
+    void sendBytes(char *header, int size);
+
+    Logger *logger;
 };
 
 

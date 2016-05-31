@@ -29,9 +29,9 @@ public:
 
     void addReadRequest();
 
-private:
+    void resetReadReaquestCounter();
 
-    void log(std::string message);
+private:
 
     std::atomic<bool> running;
 
@@ -52,6 +52,8 @@ private:
     void waitForRequest();
 
     Data *readMessage() const;
+
+    Logger *logger;
 };
 
 #endif //SERVER_SOCKETLISTENER_H

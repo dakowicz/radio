@@ -10,12 +10,11 @@
 #include <mutex>
 #include <iostream>
 #include <shared_mutex>
+#include "Logger.h"
 
 template <typename T>
 class AtomicQueue {
 public:
-
-    AtomicQueue();
 
     AtomicQueue(std::string moduleName);
 
@@ -41,25 +40,20 @@ private:
 
     std::string moduleName;
 
-    void log(std::string message);
-
     bool isEmpty();
+
+    Logger *logger;
 };
 
 
 template <typename T>
 AtomicQueue<T>::AtomicQueue(std::string moduleName) {
-    this->moduleName = moduleName;
-}
-
-template <typename T>
-AtomicQueue<T>::AtomicQueue() {
-
+    this->logger = new Logger(moduleName);
 }
 
 template <typename T>
 AtomicQueue<T>::~AtomicQueue() {
-
+    delete logger;
 }
 
 template <typename T>
@@ -70,7 +64,7 @@ T AtomicQueue<T>::pop() {
         condition_variable.wait(lock);
     }
     auto item = queue.front();
-    log("Popped message from queue");
+    logger->log("Popped message from queue");
     queue.pop();
     return item;
 }
@@ -83,7 +77,7 @@ void AtomicQueue<T>::pop(T &item) {
         condition_variable.wait(lock);
     }
     item = queue.front();
-    log("Popped message from queue");
+    logger->log("Popped message from queue");
     queue.pop();
 }
 
@@ -92,7 +86,7 @@ void AtomicQueue<T>::push(const T &item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     queue.push(item);
-    log("Pushed message to queue");
+    logger->log("Pushed message to queue");
     lock.unlock();
     condition_variable.notify_one();
 }
@@ -105,11 +99,5 @@ bool AtomicQueue<T>::isEmpty() {
     lock.unlock();
     return val;
 }
-
-template <typename T>
-void AtomicQueue<T>::log(std::string message) {
-    std::cout << this->moduleName << ": " <<  message << std::endl << std::flush;
-}
-
 
 #endif //SERVER_BLOCKINGQUEUE_H

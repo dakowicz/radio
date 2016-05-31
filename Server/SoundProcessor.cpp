@@ -18,6 +18,7 @@ SoundProcessor::SoundProcessor(const std::shared_ptr<FileManager> &fileManager,
     this->clients = clients;
     this->fileManager = fileManager;
     this->playlistManager = playlistManager;
+    this->logger = new Logger(MODULE_NAME);
 }
 
 void SoundProcessor::stream() {
@@ -32,18 +33,18 @@ void SoundProcessor::stream() {
 
 void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream) {
     if(fileStream == nullptr) {
-        log("Opening file error");
+        logger->log("Opening file error");
         return;
     }
     while(!endOf(fileStream) && isRunning()) {
         sleep();
         pushStreamData(fileStream);
-        log("New package of data");
+        logger->log("New package of data");
     }
 }
 
 void SoundProcessor::pushStreamData(std::shared_ptr<std::ifstream> fileStream) {
-    log("Position in current file: " + std::to_string(fileStream->tellg()));
+    logger->log("Position in current file: " + std::to_string(fileStream->tellg()));
     char *streamData = new char[PACKAGE_SIZE_B];
     Data *data = readFile(fileStream, streamData);
     broadcastToClients(data);
@@ -67,11 +68,6 @@ void SoundProcessor::broadcastToClients(Data *data) {
         }
     }
 }
-
-void SoundProcessor::log(std::string message) {
-    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
-}
-
 
 
 

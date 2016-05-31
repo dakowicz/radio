@@ -7,6 +7,6 @@ set(SOURCE_FILES
     CMakeLists.txt
     Header.cpp
     Header.h
-        AtomicQueue.h AtomicMap.h Dispatcher.cpp Dispatcher.h Application.cpp ConnectionManager.cpp ConnectionManager.h Sender.cpp Sender.h SocketListener.cpp SocketListener.h Data.cpp Data.h ClientManager.cpp ClientManager.h TCPSender.cpp TCPSender.h DataType.h TCPListener.cpp TCPListener.h SoundProcessor.cpp SoundProcessor.h FileManager.cpp FileManager.h PlaylistManager.cpp PlaylistManager.h Song.cpp Song.h PlaylistFileReader.cpp PlaylistFileReader.h ConnectionType.h)
+        AtomicQueue.h AtomicMap.h Dispatcher.cpp Dispatcher.h Application.cpp ConnectionManager.cpp ConnectionManager.h Sender.cpp Sender.h SocketListener.cpp SocketListener.h Data.cpp Data.h ClientManager.cpp ClientManager.h TCPSender.cpp TCPSender.h DataType.h TCPListener.cpp TCPListener.h SoundProcessor.cpp SoundProcessor.h FileManager.cpp FileManager.h PlaylistManager.cpp PlaylistManager.h Song.cpp Song.h PlaylistFileReader.cpp PlaylistFileReader.h ConnectionType.h Logger.cpp Logger.h)
 
 add_executable(Server ${SOURCE_FILES})

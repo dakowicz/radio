@@ -8,9 +8,12 @@ Dispatcher::Dispatcher(const std::shared_ptr<FileManager> &fileManager, const st
     this->fileManager = fileManager;
     this->playlistManager = playlistManager;
     this->atomicQueue = new AtomicQueue<Data*>(MODULE_NAME);
+    this->logger = new Logger(MODULE_NAME);
 }
 
 Dispatcher::~Dispatcher() {
+    delete atomicQueue;
+    delete logger;
 }
 
 void Dispatcher::start() {
@@ -53,25 +56,20 @@ void Dispatcher::processMessage(Data *data) {
 }
 
 void Dispatcher::processVote(Data *data) {
-    log("Processing - data type VOTE");
+    logger->log("Processing - data type VOTE");
 }
 
 void Dispatcher::processMusicFile(Data *data) {
-    log("Processing - data type MUSIC_FILE");
+    logger->log("Processing - data type MUSIC_FILE");
 }
 
 void Dispatcher::processConnectionMessage(Data *data) {
-    log("Processing - data type CONNECTION");
+    logger->log("Processing - data type CONNECTION");
 }
 
 void Dispatcher::wrongDataType() {
-    log("Processing - wrong data type");
+    logger->log("Processing - wrong data type");
 }
-
-void Dispatcher::log(std::string message) const {
-    std::cout << MODULE_NAME << ": " << message << std::endl << std::flush;
-}
-
 
 
 

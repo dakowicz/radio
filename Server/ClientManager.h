@@ -35,11 +35,11 @@ public:
 
     void addReadRequest();
 
+    void setNoReadRequests();
+
 private:
 
     void deleteClient();
-
-    void log(std::string) const;
 
     SocketListener *socketListener;
 
@@ -53,6 +53,7 @@ private:
 
     void unregisterThread(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
 
+    Logger *logger;
 };
 
 

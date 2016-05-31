@@ -43,6 +43,8 @@ private:
     void moveIterator();
 
     void addRecording(Song *recording);
+
+    Logger *logger;
 };
 
 

@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include "Song.h"
+#include "Logger.h"
 
 class FileManager {
 
@@ -15,11 +16,17 @@ public:
 
     FileManager(std::string &prefix);
 
+    ~FileManager();
+
     std::shared_ptr<std::ifstream> getFileStream(Song *song);
 
 private:
 
     std::string prefix;
+
+    Logger *logger;
+
+    static std::string MODULE_NAME;
 };
 
 

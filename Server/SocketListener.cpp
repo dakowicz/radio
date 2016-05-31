@@ -11,11 +11,13 @@ SocketListener::SocketListener(const std::shared_ptr<Dispatcher> &dispatcher, in
     this->tcpListener = new TCPListener(newSocketDescriptor);
     this->dispatcher = dispatcher;
     this->socketDescriptor = newSocketDescriptor;
+    this->logger = new Logger(MODULE_NAME, socketDescriptor);
 }
 
 
 SocketListener::~SocketListener() {
     delete tcpListener;
+    delete logger;
 }
 
 void SocketListener::handle() {
@@ -34,10 +36,6 @@ Data *SocketListener::readMessage() const {
     return newMessage;
 }
 
-void SocketListener::log(std::string message) {
-    std::cout << MODULE_NAME << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
-}
-
 void SocketListener::waitForRequest() {
     std::unique_lock<std::mutex> lock(mutex);
     while(readRequestsCounter == 0) {
@@ -48,10 +46,18 @@ void SocketListener::waitForRequest() {
 
 void SocketListener::addReadRequest() {
     std::unique_lock<std::mutex> lock(mutex);
-    readRequestsCounter++;
+    readRequestsCounter = 1;
     lock.unlock();
     cond.notify_one();
 }
+
+void SocketListener::resetReadReaquestCounter() {
+    std::unique_lock<std::mutex> lock(mutex);
+    readRequestsCounter = 0;
+    lock.unlock();
+}
+
+
 
 
 

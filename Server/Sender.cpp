@@ -13,12 +13,14 @@ Sender::Sender(int socketDescriptor) {
     this->atomicQueue = new AtomicQueue<Data*>(MODULE_NAME + std::to_string(socketDescriptor));
     this->tcpSender = new TCPSender(socketDescriptor);
     this->socketDescriptor = socketDescriptor;
+    this->logger = new Logger(MODULE_NAME, socketDescriptor);
     this->running = false;
 }
 
 Sender::~Sender() {
     delete atomicQueue;
     delete tcpSender;
+    delete logger;
 }
 
 void Sender::handle() {
@@ -51,17 +53,17 @@ void Sender::sendData(Data *data) {
 }
 
 void Sender::sendConnection(Data *data) const {
-    log("Sending data type CONNECTION");
+    logger->log("Sending data type CONNECTION");
     tcpSender->sendConnectionInfo(data->getContent(), data->getSize());
 }
 
 void Sender::sendVotes(Data *data) const {
-    log("Sending data type VOTES");
+    logger->log("Sending data type VOTES");
     tcpSender->sendVotes(data->getContent(), data->getSize());
 }
 
 void Sender::sendStream(Data *data) const {
-    log("Sending data type STREAM");
+    logger->log("Sending data type STREAM");
     tcpSender->sendMusic(data->getContent(), data->getSize());
 }
 
@@ -70,9 +72,5 @@ void Sender::addMessage(Data *message) {
 }
 
 void Sender::wrongDataType() {
-    log("Unknown operation type");
-}
-
-void Sender::log(std::string message) const {
-    std::cout << MODULE_NAME << this->socketDescriptor << ": " <<  message << std::endl << std::flush;
+    logger->log("Unknown operation type");
 }

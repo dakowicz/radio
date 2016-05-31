@@ -41,8 +41,6 @@ private:
 
     static std::string MODULE_NAME;
 
-    void log(std::string message) const;
-
     std::shared_ptr<FileManager> fileManager;
 
     std::shared_ptr<PlaylistManager> playlistManager;
@@ -56,6 +54,8 @@ private:
     void processConnectionMessage(Data *data);
 
     void processMessage(Data *data);
+
+    Logger *logger;
 };
 
 

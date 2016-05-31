@@ -14,6 +14,7 @@
 #include <atomic>
 #include <shared_mutex>
 #include "Data.h"
+#include "Logger.h"
 
 class TCPListener {
 public:
@@ -24,35 +25,13 @@ public:
 
     Data *readMessage();
 
-    /*unsigned char *readN(int num);
-
-    void setReady();*/
-
 private:
 
     int socketDescriptor;
 
     Header *header;
-/*
-    int collectedBytes; //actual number of read bytes
-
-    unsigned char *messageBuffer;
-
-    bool headerReady;*/
 
     static std::string MODULE_NAME;
-/*
-    void readHeader();
-
-    bool isUnavailable(int err) const;
-
-    bool wouldBlock(int err) const;
-
-    void checkReadError(int err) const;
-
-    void copyReadData(char *messagePortion, int n);
-
-    bool isMessageComplete(int totalBytesNumber) const;*/
 
     void readMessageContent();
 
@@ -84,7 +63,7 @@ private:
 
     bool isReadSuccessful(int payload) const;
 
-    bool hasConnectionBeenClosed(int payload) const;
+    bool connectionHasBeenClosed(int payload) const;
 
     void closeConnection();
 
@@ -92,11 +71,11 @@ private:
 
     void checkErrorCode(int payload);
 
-    void log(std::string message);
-
     void resetHeader();
 
     void resetHeaderBuffer();
+
+    Logger *logger;
 };
 
 

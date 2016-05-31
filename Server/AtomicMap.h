@@ -11,19 +11,20 @@
 #include <map>
 #include <iostream>
 #include <shared_mutex>
+#include "Logger.h"
 
 
 template <typename K, typename V>
 class AtomicMap {
 public:
 
-    AtomicMap();
-
     AtomicMap(std::string moduleName);
 
     AtomicMap(const AtomicMap &) = delete;           // disable copying
 
     AtomicMap &operator=(const AtomicMap &) = delete; // disable assignment
+
+    ~AtomicMap();
 
     V get(K key);
 
@@ -43,19 +44,18 @@ private:
 
     std::string moduleName;
 
-    void log(std::string message);
-
+    Logger *logger;
 };
 
 
 template <typename K, typename V>
-AtomicMap<K, V>::AtomicMap() {
-
+AtomicMap<K, V>::AtomicMap(std::string moduleName) {
+    this->logger = new Logger(moduleName);
 }
 
 template <typename K, typename V>
-AtomicMap<K, V>::AtomicMap(std::string moduleName) {
-    this->moduleName = moduleName;
+AtomicMap<K, V>::~AtomicMap() {
+    delete logger;
 }
 
 template <typename K, typename V>
@@ -63,7 +63,7 @@ V AtomicMap<K, V>::get(K key) {
 
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
     V val = map[key];
-    log("Loaded from map");
+//    log("Loaded from map");
     return val;
 }
 
@@ -73,7 +73,7 @@ void AtomicMap<K, V>::erase(K key, V value) {
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
     if(map[key] == value) {
         map.erase(key);
-        log("Erased from map");
+        logger->log("Erased from map");
     }
     lock.unlock();
 }
@@ -83,7 +83,7 @@ void AtomicMap<K, V>::insert(K key, V value) {
 
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
     map[key] = value;
-    log("Inserted into map");
+    logger->log("Inserted into map");
     lock.unlock();
 }
 
@@ -94,7 +94,7 @@ void AtomicMap<K, V>::getAllValues(std::vector<V> &values) {
     for(const auto &map_pairs : map) {
         values.push_back(map_pairs.second);
     }
-    log("Loaded all values");
+//    log("Loaded all values");
 };
 
 template <typename K, typename V>
@@ -104,13 +104,7 @@ void AtomicMap<K, V>::getAllKeys(std::vector<K> &values) {
     for(const auto &map_pairs : map) {
         values.push_back(map_pairs.first);
     }
-    log("Loaded all keys");
+//    log("Loaded all keys");
 };
-
-template <typename K, typename V>
-void AtomicMap<K, V>::log(std::string message) {
-    std::cout << this->moduleName << ": " <<  message << std::endl << std::flush;
-}
-
 
 #endif //SERVER_BLOCKINGMAP_H

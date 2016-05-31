@@ -49,8 +49,8 @@ void ConnectionManager::start() {
     dispatcher->addMessage(data4);
     dispatcher->addMessage(nullptr);
 
-    //addClient(4);
-    //addClient(5);
+    addClient(10);
+    addClient(20);
 
     this->running = true;
     while(isRunning()) {
@@ -76,9 +76,11 @@ void ConnectionManager::checkAllSocketsForIncomingData(fd_set &readSet) const {
     std::vector<int> clientSockets;
     getClientSockets(clientSockets);
     for(int actualSocket: clientSockets) {
+        ClientManager *clientManager = clients->get(actualSocket);
         if (isDataOnSocket(actualSocket, readSet)) {
-            ClientManager *clientManager = clients->get(actualSocket);
             clientManager->addReadRequest();
+        } else {
+            clientManager->setNoReadRequests();
         }
     }
 }
@@ -102,7 +104,7 @@ void ConnectionManager::checkSocketDescriptor(int newSocketDescriptor) {
     if (newSocketDescriptor < 0) {
         handleError("error on accept");
     } else {
-        //setNonBlockingSocketState(newSocketDescriptor);
+        setNonBlockingSocketState(newSocketDescriptor);
         addClient(newSocketDescriptor);
     }
 }
@@ -124,9 +126,11 @@ fd_set &ConnectionManager::selectInit(int serverSocketDescriptor, fd_set &readSe
 bool ConnectionManager::isSelectError(int activity) const { return (activity < 0) && (errno != EINTR); }
 
 void ConnectionManager::setNonBlockingSocketState(int newSocketDescriptor) const {
-    struct timeval timeout;
-    timeout = setTimeout(timeout);
+    struct timeval timeout = setTimeout(timeout);
     if (setsockopt (newSocketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
+        perror("setsockopt failed\n");
+    }
+    if (setsockopt (newSocketDescriptor, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
         perror("setsockopt failed\n");
     }
 }

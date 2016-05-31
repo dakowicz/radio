@@ -40,8 +40,6 @@ private:
 
     static std::string MODULE_NAME;
 
-    void log(std::string message) const;
-
     void sendConnection(Data *data) const;
 
     void sendVotes(Data *data) const;
@@ -50,6 +48,7 @@ private:
 
     void sendStream(Data *data) const;
 
+    Logger *logger;
 };
 
 

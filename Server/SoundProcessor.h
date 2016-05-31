@@ -33,8 +33,6 @@ private:
 
     std::atomic<bool> running;
 
-    void log(std::string message);
-
     static std::chrono::milliseconds TIME_INTERVAL_MS;
 
     static int PACKAGE_SIZE_B;
@@ -52,6 +50,8 @@ private:
     Data *readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const;
 
     void sleep() const;
+
+    Logger *logger;
 };
 
 
