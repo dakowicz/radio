@@ -63,7 +63,7 @@ public class Controller implements Runnable {
                 handleStreamingMusic(packet);
                 break;
             case Header.VOTES:
-                //playlist.handleVoting(packet);
+                handleVoting(packet);
                 break;
             default:
         }
@@ -101,16 +101,18 @@ public class Controller implements Runnable {
     }
 
 
-    private void handleVoting(Header header, byte[] data) {
+    private void handleVoting(DataPacket packet) {
         log.info("VOTING");
-        log.info(new String(data));
-        if (header.getParameters() == 0) {
+        //log.info(new String(data));
+        if (packet.getHeader().getParameters() == 0) {
             log.info("NEW PLAYLIST");
+            try {
+                playlist.handleNewPlaylist(packet.getMessageByte());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        if (header.getParameters() == 1) {
-            log.info("VOTE ACK");
-        }
         //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
