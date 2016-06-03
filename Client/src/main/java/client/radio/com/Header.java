@@ -1,14 +1,12 @@
 package client.radio.com;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Kamil on 2016-05-04.
  */
 
 @Data
-@Slf4j
 public class Header {
     static final byte CONNECT = 0;
     static final byte STREAM = 1;
@@ -17,7 +15,7 @@ public class Header {
     static final byte ID_PROT = 90;
     private byte type; //Here is also the zero-tail
     private byte parameters;
-    private int length;
+    private long length;
 
     public Header(byte head[]) throws Exception {
         if (head[0] != ID_PROT || head[1] > 3) {
@@ -25,20 +23,26 @@ public class Header {
         }
         type = head[1];
         parameters = head[2];
+        if (head[6] < 0)
+            head[5]++;
+        if (head[5] < 0)
+            head[4]++;
+        if (head[4] < 0)
+            head[3]++;
         length = head[3] << 24;
         length += head[4] << 16;
         length += head[5] << 8;
         length += head[6];
     }
 
-    public void createHeader(byte t, byte param, int lng) {
+    public void createHeader(byte t, byte param, long lng) {
         type = t;
         parameters = param;
         length = lng;
 
     }
 
-    public void createHeaderConnect(boolean start, boolean end, int lng) {
+    public void createHeaderConnect(boolean start, boolean end, long lng) {
         type = CONNECT;
         parameters = (byte) (start ? 1 : 0);
         parameters += (byte) (end ? 2 : 0);
@@ -46,14 +50,14 @@ public class Header {
     }
 
 
-    public void createHeaderVote(boolean cancelVote, int lng) {
+    public void createHeaderVote(boolean cancelVote, long lng) {
         type = VOTES;
         parameters = (byte) (cancelVote ? 1 : 0);
         parameters += 2;    //Since it's the client to server message
         length = lng;
     }
 
-    public void createHeaderFile(boolean priority, byte infoLength, int lng) {
+    public void createHeaderFile(boolean priority, byte infoLength, long lng) {
         type = FILE;
         if (infoLength < 0) {
             return;
@@ -63,4 +67,15 @@ public class Header {
         length = lng;
     }
 
+    public byte[] serializeHeader() {
+        byte[] head = new byte[7];
+        head[0] = ID_PROT;
+        head[1] = type;
+        head[2] = parameters;
+        head[3] = (byte) (length >>> 24);
+        head[4] = (byte) (length >>> 16);
+        head[5] = (byte) (length >>> 8);
+        head[6] = (byte) length;
+        return head;
+    }
 }
