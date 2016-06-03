@@ -67,5 +67,11 @@
             <artifactId>spock-core</artifactId>
             <version>1.0-groovy-2.4</version>
         </dependency>
+        <!-- http://mvnrepository.com/artifact/javazoom/jlayer -->
+        <dependency>
+            <groupId>javazoom</groupId>
+            <artifactId>jlayer</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 </project>

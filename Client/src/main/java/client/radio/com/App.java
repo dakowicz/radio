@@ -19,7 +19,7 @@ import java.io.File;
 @Slf4j
 @Data
 public class App extends Application implements Runnable {
-    private Player player;
+    private StreamPlayer streamPlayer;
     private Receiver receiver;
     private Playlist playlist;
     private Sender sender;

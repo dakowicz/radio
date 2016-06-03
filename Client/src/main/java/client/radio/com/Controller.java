@@ -22,6 +22,7 @@ public class Controller {
     private Receiver receiver;
     private Playlist playlist;
     private Sender sender;
+    private StreamPlayer streamPlayer;
     private Recorder recorder;
     private Socket socket;
     private App app;
@@ -30,7 +31,7 @@ public class Controller {
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 5;
+    private static long timeToWaitForPacketInSeconds = 35;
 
     private ExecutorService executor = Executors.newFixedThreadPool(5);
     private Thread receiverThread;
@@ -54,7 +55,8 @@ public class Controller {
             e.printStackTrace();
         }
     }
-    private void handlePacketsFromReceiver() throws Exception{
+
+    private void handlePacketsFromReceiver() throws Exception {
         while (true) {
             DataPacket packet = getReceiver().getDataPackets().poll(timeToWaitForPacketInSeconds, TimeUnit.SECONDS);
             if (packet != null) {
@@ -64,12 +66,15 @@ public class Controller {
             }
         }
     }
+
     private void resolveHeaderType(DataPacket packet) {
         switch (packet.getHeader().getType()) {
             case Header.CONNECT:
-                handleConnectionSignal(packet);
+                log.info("connect");
+                //handleConnectionSignal(packet);
                 break;
             case Header.STREAM:
+                log.info("stream");
                 handleStreamingMusic(packet);
                 break;
             case Header.VOTES:
@@ -92,18 +97,15 @@ public class Controller {
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
-    private void handleStreamingMusic(Header header, byte[] data) {
+    private void handleStreamingMusic(DataPacket packet) {
         log.info("MUSIC");
-        if (header.getParameters() == 0) {
+        if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
-            try {
-                songStreamFile.write(data);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (header.getParameters() == 2) {
+            streamPlayer.handleMusicStream(packet.getMessageByte());
+        } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
-        } else if (header.getParameters() == 1) {
+            streamPlayer.handleNewSong();
+        } else if (packet.getHeader().getParameters() == 1) {
             log.info("END OF SONG");
         }
     }
@@ -128,7 +130,7 @@ public class Controller {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
+        log.info("start");
         Controller controller = new Controller();
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
@@ -143,24 +145,29 @@ public class Controller {
         }
         DataInputStream in = new DataInputStream(controller.getSocket().getInputStream());
 
-        App app = new App();
-        controller.setApp(app);
-        controller.setAppThread(new Thread(controller.getApp()));
-        controller.startAppThread();
+        controller.setStreamPlayer(new StreamPlayer());
+        controller.setPlayerThread(new Thread(controller.getStreamPlayer()));
+        controller.getPlayerThread().start();
 
 
         Playlist playlist = new Playlist();
 
-        Receiver receiver = new Receiver(controller.getSocket(), playlist, app, controller, in);
+        Receiver receiver = new Receiver(playlist, controller, in);
         controller.setReceiver(receiver);
         controller.setReceiverThread(new Thread(controller.getReceiver()));
-        controller.startReceiverThread();
+        controller.getReceiverThread().start();
 
-        try{
+        try {
             controller.handlePacketsFromReceiver();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             //controller.closeApp();
+        }
+        controller.getExecutor().shutdown();
+        try {
+            controller.getExecutor().awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            log.info("executor shutdown error");
         }
     }
 
