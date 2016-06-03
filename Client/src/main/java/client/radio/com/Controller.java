@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,13 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 @Slf4j
-public class Controller {
+public class Controller implements Runnable {
     private Receiver receiver;
     private Playlist playlist;
     private Sender sender;
     private StreamPlayer streamPlayer;
     private Recorder recorder;
     private Socket socket;
+    private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
     private App app;
     private MediaPlayer mediaPlayer;
 
@@ -33,28 +36,10 @@ public class Controller {
      */
     private static long timeToWaitForPacketInSeconds = 35;
 
-    private ExecutorService executor = Executors.newFixedThreadPool(5);
     private Thread receiverThread;
     private Thread senderThread;
     private Thread playerThread;
     private Thread appThread;
-
-
-    private void startAppThread() {
-        try {
-            this.getExecutor().execute(appThread);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void startReceiverThread() {
-        try {
-            this.getExecutor().execute(receiverThread);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
-    }
 
     private void handlePacketsFromReceiver() throws Exception {
         while (true) {
@@ -129,13 +114,11 @@ public class Controller {
         //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        log.info("start");
-        Controller controller = new Controller();
-        String hostName = args[0];
-        int portNumber = Integer.parseInt(args[1]);
+    public void setupSocketAndStreams(String hostName, int portNumber) {
         try {
-            controller.setSocket(new Socket(hostName, portNumber));
+            setSocket(new Socket(hostName, portNumber));
+            dataInputStream = new DataInputStream(getSocket().getInputStream());
+            dataOutputStream = new DataOutputStream(getSocket().getOutputStream());
         } catch (UnknownHostException e) {
             log.error("Unknown host: " + hostName);
             System.exit(1);
@@ -143,32 +126,48 @@ public class Controller {
             log.error("No I/O");
             System.exit(1);
         }
-        DataInputStream in = new DataInputStream(controller.getSocket().getInputStream());
 
-        controller.setStreamPlayer(new StreamPlayer());
-        controller.setPlayerThread(new Thread(controller.getStreamPlayer()));
-        controller.getPlayerThread().start();
+    }
 
+    public void setupApplication() {
+        setStreamPlayer(new StreamPlayer());
+        setPlayerThread(new Thread(getStreamPlayer()));
 
         Playlist playlist = new Playlist();
 
-        Receiver receiver = new Receiver(playlist, controller, in);
-        controller.setReceiver(receiver);
-        controller.setReceiverThread(new Thread(controller.getReceiver()));
-        controller.getReceiverThread().start();
+        setReceiver(new Receiver(playlist, this, dataInputStream));
+        setReceiver(receiver);
+        setReceiverThread(new Thread(getReceiver()));
+    }
 
+    public void startApplication() {
+        playerThread.start();
+        receiverThread.start();
+    }
+
+    @Override
+    public void run() {
         try {
-            controller.handlePacketsFromReceiver();
+            handlePacketsFromReceiver();
         } catch (Exception e) {
             e.printStackTrace();
             //controller.closeApp();
         }
-        controller.getExecutor().shutdown();
-        try {
-            controller.getExecutor().awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            log.info("executor shutdown error");
-        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        log.info("start");
+        Controller controller = new Controller();
+        String hostName = args[0];
+        int portNumber = Integer.parseInt(args[1]);
+
+        controller.setupSocketAndStreams(hostName, portNumber);
+        controller.setupApplication();
+        controller.startApplication();
+
+        Thread controllerThread = new Thread(controller);
+        controllerThread.start();
+
     }
 
 }
