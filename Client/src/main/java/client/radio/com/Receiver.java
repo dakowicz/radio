@@ -19,16 +19,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Data
 public class Receiver implements Runnable {
 
-    private Playlist playlist;
-    private Controller controller;
     private boolean isPlayerRunning = false;
-    private FileOutputStream songStreamFile;
     private DataInputStream receiverStream;
     private BlockingQueue<DataPacket> dataPackets;
 
-    public Receiver(Playlist playlist, Controller controller, DataInputStream receiverStream) {
-        this.playlist = playlist;
-        this.controller = controller;
+    public Receiver(DataInputStream receiverStream) {
         this.receiverStream = receiverStream;
         this.dataPackets = new LinkedBlockingQueue<>();
     }

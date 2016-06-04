@@ -61,7 +61,6 @@ public class Controller implements Runnable {
             case Header.VOTES:
                 handleVoting(packet);
                 break;
-            default:
         }
     }
 
@@ -131,16 +130,20 @@ public class Controller implements Runnable {
         setStreamPlayer(new StreamPlayer());
         setPlayerThread(new Thread(getStreamPlayer()));
 
-        Playlist playlist = new Playlist();
+        playlist = new Playlist();
 
-        setReceiver(new Receiver(playlist, this, dataInputStream));
-        setReceiver(receiver);
+        setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));
+
+        setSender(new Sender(dataOutputStream));
+        setSenderThread(new Thread(getSender()));
+
     }
 
     public void startApplication() {
         playerThread.start();
         receiverThread.start();
+        senderThread.start();
     }
 
     @Override
