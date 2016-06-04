@@ -9,8 +9,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +26,6 @@ public class Controller implements Runnable {
     private Socket socket;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
-    private App app;
     private MediaPlayer mediaPlayer;
 
     /**
@@ -39,7 +36,6 @@ public class Controller implements Runnable {
     private Thread receiverThread;
     private Thread senderThread;
     private Thread playerThread;
-    private Thread appThread;
 
     private void handlePacketsFromReceiver() throws Exception {
         while (true) {
