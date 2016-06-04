@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Michał on 2016-04-23.
@@ -19,7 +21,7 @@ import java.util.Vector;
 @Data
 @Slf4j
 public class StreamPlayer implements Runnable {
-    private Stack<String> streamFilesPaths;
+    private BlockingQueue<String> streamFilesPaths;
     private String fileToPlayPath;
     private String fileToAppendPath;
     private File streamFile;
@@ -27,12 +29,12 @@ public class StreamPlayer implements Runnable {
     private AudioInputStream stream;
     private AudioFormat format;
     private static int fileNumber;
-    DataLine.Info info;
-    Clip clip;
+    private DataLine.Info info;
+    private Clip clip;
 
     public StreamPlayer() {
         fileNumber = 0;
-        streamFilesPaths = new Stack<>();
+        streamFilesPaths = new LinkedBlockingQueue<>();
         createFirstFile();
     }
     private void createFirstFile(){
@@ -42,7 +44,7 @@ public class StreamPlayer implements Runnable {
     @Override
     public void run() {
         try {
-            fileToPlayPath = streamFilesPaths.pop();
+            fileToPlayPath = streamFilesPaths.poll();
             while(fileToPlayPath != null) {
                 fileInputStream = new FileInputStream(fileToPlayPath);
                 while (fileInputStream.available() < 100) {
@@ -51,11 +53,7 @@ public class StreamPlayer implements Runnable {
                 Player playMP3 = new Player(fileInputStream);
                 playMP3.play();
                 while(!playMP3.isComplete()){};
-                if(streamFilesPaths.empty()){
-                    fileToPlayPath = null;
-                }else {
-                    fileToPlayPath = streamFilesPaths.pop();
-                }
+                fileToPlayPath = streamFilesPaths.poll();
             }
         } catch (Exception e) {
             log.info("Player MP3 error");
