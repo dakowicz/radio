@@ -130,7 +130,7 @@ public class Controller implements Runnable {
         setStreamPlayer(new StreamPlayer());
         setPlayerThread(new Thread(getStreamPlayer()));
 
-        playlist = new Playlist();
+        playlist = new Playlist(streamPlayer);
 
         setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));

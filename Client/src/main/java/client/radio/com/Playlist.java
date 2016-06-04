@@ -19,17 +19,62 @@ import org.apache.commons.csv.*;
 public class Playlist {
 
     public static char separator = '\n';
-    private ConcurrentMap<Integer, Song> CurrentPlaylist;
+    private ConcurrentMap<Integer, Song> currentPlaylist;
     private CSVParser parser;
+    private Vector<ConcurrentMap> mapVector;
+    private StreamPlayer streamPlayer;
 
 
     public Playlist() {
-        CurrentPlaylist = new ConcurrentHashMap<Integer, Song>();
+        currentPlaylist = new ConcurrentHashMap<Integer, Song>();
+        mapVector = new Vector<>();
     }
 
+    public Playlist(StreamPlayer player) {
+        currentPlaylist = new ConcurrentHashMap<Integer, Song>();
+        mapVector = new Vector<>();
+        streamPlayer = player;
+    }
+
+    public List<Song> getSongsSorted() {
+        List<Song> list = new ArrayList<Song>(currentPlaylist.values());
+        Comparator<Song> votingComparator = new Comparator<Song>() {
+            public int compare(Song song1, Song song2) {
+                return song2.getVotesNumber() - song1.getVotesNumber(); // use your logic
+            }
+        };
+        list.sort(votingComparator);
+        return list;
+    }
+
+    private Map<Integer, Song> songsToPlay() {
+        List<Song> list = getSongsSorted();
+        int size = streamPlayer.getStreamFilesPaths().size();
+        // currentPlaylist.values().iterator()
+        Iterator<Song> iterator = list.iterator();
+        Map<Integer, Song> songs = new HashMap<>();
+        for (int i = 0; i < size; i++) {
+            Song song = iterator.next();
+            songs.put(song.getId(), song);
+        }
+        return songs;
+    }
+
+    /*
+        private List<Song> songsToPlay(){
+            List<Song> list= getSongsSorted();
+            int size= streamPlayer.getStreamFilesPaths().size();
+           // currentPlaylist.values().iterator()
+            Iterator<Song> iterator=list.iterator();
+            List<Song> songs = new ArrayList<>();
+            for(int i=0;i<size;i++)
+                songs.add(iterator.next());
+            return songs;
+        }
+        */
     public void checkVoted(int songId) {
         try {
-            CurrentPlaylist.get(songId).setVoted(true);
+            currentPlaylist.get(songId).setVoted(true);
         } catch (NullPointerException e) {
             log.info("No such a song");
         }
@@ -37,28 +82,32 @@ public class Playlist {
 
     public void checkUnvoted(int songId) {
         try {
-            CurrentPlaylist.get(songId).setVoted(false);
+            currentPlaylist.get(songId).setVoted(false);
         } catch (NullPointerException e) {
             log.info("No such a song");
         }
     }
 
     private void createPlaylist(List<CSVRecord> list) {
-        log.info(list.get(0).toString());
+        //log.info(list.get(0).toString());
         Iterator<CSVRecord> iterator = list.iterator();
         while (iterator.hasNext()) {
             CSVRecord record = iterator.next();
+            log.info(record.toString());
             Song song = new Song(record.get(1), record.get(2), Integer.valueOf(record.get(0).trim()), Integer.valueOf(record.get(3).trim()));
             updateOrPutSong(song);
         }
+        log.info(getSongsSorted().toString());
     }
 
     public void updateOrPutSong(Song song) {
-        if (CurrentPlaylist.containsKey(song))
-            CurrentPlaylist.replace(song.getId(), song);
-        else {
-            CurrentPlaylist.put(song.getId(), song);
-        }
+        Map<Integer, Song> songsToBePlayed = songsToPlay();
+        if (currentPlaylist.containsKey(song))
+            if (!songsToBePlayed.containsKey(song.getId()))
+                currentPlaylist.replace(song.getId(), song);
+            else {
+                currentPlaylist.put(song.getId(), song);
+            }
     }
 
     public void handleNewPlaylist(byte[] data) throws IOException {
@@ -67,6 +116,7 @@ public class Playlist {
         Reader targetReader = new InputStreamReader(new ByteArrayInputStream(data));
         parser = new CSVParser(targetReader, CSVFormat.DEFAULT.withRecordSeparator(separator));
         createPlaylist(parser.getRecords());
+        //streamPlayer.getStreamFilesPaths().size();
         targetReader.close();
     }
 }
