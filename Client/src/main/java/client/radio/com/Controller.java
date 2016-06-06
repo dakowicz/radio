@@ -50,6 +50,17 @@ public class Controller implements Runnable {
             }
         }
     }
+    public void gentleExit(){
+        receiver.stopReceiverThread();
+        streamPlayer.stopPlayerThread();
+        try {
+            receiverThread.join();
+            playerThread.join();
+        } catch (InterruptedException e){
+            return;
+        }
+        running = false;
+    }
 
     private void resolveHeaderType(DataPacket packet) {
         switch (packet.getHeader().getType()) {
@@ -164,17 +175,7 @@ public class Controller implements Runnable {
         }
     }
 
-    public void gentleExit(){
-        receiver.stopReceiverThread();
-        streamPlayer.stopPlayerThread();
-        try {
-            receiverThread.join();
-            playerThread.join();
-        } catch (InterruptedException e){
-            return;
-        }
-        running = false;
-    }
+
 
     public static void main(String[] args) throws IOException, InterruptedException {
         log.info("start");
@@ -188,7 +189,7 @@ public class Controller implements Runnable {
 
         Thread controllerThread = new Thread(controller);
         controllerThread.start();
-
+        controllerThread.join();
     }
 
 }
