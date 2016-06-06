@@ -32,37 +32,44 @@ public class Receiver implements Runnable {
             while (running) {
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {
-                    if (running) {
-                        while (receiverStream.available() <= 0 && running) {
-                        }
+                    while (receiverStream.available() <= 0 && running) {
+                    }
+                    if(running) {
                         head[i] = receiverStream.readByte();
                         log.info(String.valueOf(head[i]));
                     }
                 }
-                Header header = new Header(head);
-                data = new byte[(int) header.getLength()];
-                for (int i = 0; i < (int) header.getLength(); i++) {
-                    if (running) {
-                        while (receiverStream.available() <= 0 && running) {
-                        }
-                        try {
-                            data[i] = receiverStream.readByte();
-                        } catch (EOFException e) {
-                            log.info("eof");
-                            //e.printStackTrace();
-                            continue;
+                if (running) {
+                    Header header = new Header(head);
+                    data = new byte[(int) header.getLength()];
+                    for (int i = 0; i < (int) header.getLength(); i++) {
+                        if (running) {
+                            while (receiverStream.available() <= 0 && running) {
+                            }
+                            try {
+                                data[i] = receiverStream.readByte();
+                            } catch (EOFException e) {
+                                log.info("eof");
+                                //e.printStackTrace();
+                                continue;
+                            }
                         }
                     }
+                    dataPackets.add(new DataPacket(header, data));
                 }
-                dataPackets.add(new DataPacket(header, data));
             }
         } catch (InterruptedException e) {
             log.info("Thread interrupted");
             return;
-        } catch (Exception e) {
+        } catch (
+                Exception e
+                )
+
+        {
             log.info("Header error");
             e.printStackTrace();
         }
+
         log.info("receiver thread done");
     }
 
