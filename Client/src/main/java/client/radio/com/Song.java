@@ -24,4 +24,11 @@ public class Song {
         this.votesNumber = votesNumber;
         this.isVoted = false;
     }
+
+    public void incVotesNumber(){
+        votesNumber++;
+    }
+    public void decVotesNumber(){
+        votesNumber--;
+    }
 }

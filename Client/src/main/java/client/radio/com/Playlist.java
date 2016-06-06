@@ -72,17 +72,14 @@ public class Playlist {
             return songs;
         }
         */
-    public void checkVoted(int songId) {
+    public void vote(int songId, boolean cancelVote) {
         try {
-            currentPlaylist.get(songId).setVoted(true);
-        } catch (NullPointerException e) {
-            log.info("No such a song");
-        }
-    }
-
-    public void checkUnvoted(int songId) {
-        try {
-            currentPlaylist.get(songId).setVoted(false);
+            currentPlaylist.get(songId).setVoted(!cancelVote);
+            if(cancelVote){
+                currentPlaylist.get(songId).decVotesNumber();
+            } else{
+                currentPlaylist.get(songId).incVotesNumber();
+            }
         } catch (NullPointerException e) {
             log.info("No such a song");
         }

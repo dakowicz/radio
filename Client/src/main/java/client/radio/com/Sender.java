@@ -1,11 +1,15 @@
 package client.radio.com;
 
+import groovy.json.internal.ArrayUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * Created by Michał on 2016-04-23.
@@ -23,7 +27,16 @@ public class Sender implements Runnable {
             log.info("null");
     }
 
-    public void sendVote(Song song, boolean isGood) {
+    public void sendVote(int songId, boolean cancelVote) {
+            Header header = new Header();
+            header.createHeaderVote(cancelVote, (long)32);
+        try {
+            senderStream.write(header.serializeHeader());
+            senderStream.write(intToByteArray(songId));
+        } catch (IOException e){
+            log.info("Error sending vote");
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(File file) {
@@ -46,5 +59,12 @@ public class Sender implements Runnable {
 //                e.printStackTrace();
 //            }
 //        }
+    }
+    private byte[] intToByteArray(int value){
+        return new byte[] {
+                (byte)(value >>> 24),
+                (byte)(value >>> 16),
+                (byte)(value >>> 8),
+                (byte)value};
     }
 }

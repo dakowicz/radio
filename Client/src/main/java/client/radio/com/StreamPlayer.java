@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sound.sampled.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -31,39 +33,45 @@ public class StreamPlayer implements Runnable {
     private static int fileNumber;
     private DataLine.Info info;
     private Clip clip;
+    private boolean running = true;
 
     public StreamPlayer() {
         fileNumber = 0;
         streamFilesPaths = new LinkedBlockingQueue<>();
         createFirstFile();
     }
-    private void createFirstFile(){
-       createNewStreamFile("songStream0");
+
+    private void createFirstFile() {
+        createNewStreamFile("songStream0");
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         try {
             fileToPlayPath = streamFilesPaths.poll();
-            while(fileToPlayPath != null) {
+            while (running && fileToPlayPath != null) {
                 fileInputStream = new FileInputStream(fileToPlayPath);
-                while (fileInputStream.available() < 100) {
+                while (fileInputStream.available() < 100 && running) {
                     fileInputStream = new FileInputStream(fileToPlayPath);
                 }
                 Player playMP3 = new Player(fileInputStream);
                 playMP3.play();
-                while(!playMP3.isComplete()){};
+                while (!playMP3.isComplete() && running) {
+                }
                 fileToPlayPath = streamFilesPaths.poll();
             }
-        } catch (Exception e) {
-            log.info("Player MP3 error");
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void handleNewSong(){
+
+    public void handleNewSong() {
         String newName = "songStream" + fileNumber;
+        if(fileNumber > 0) {
+            createNewStreamFile(newName);
+        }
         fileNumber++;
-        createNewStreamFile(newName);
+
     }
 
     public void handleMusicStream(byte[] data) {
@@ -77,11 +85,14 @@ public class StreamPlayer implements Runnable {
     private void createNewStreamFile(String streamFilePath) {
         streamFilesPaths.add(streamFilePath);
         File newFile = new File(streamFilePath);
-        try{
+        try {
             newFile.createNewFile();
-        } catch (IOException e){
+        } catch (IOException e) {
             log.info("Error during new file creation");
         }
         fileToAppendPath = streamFilePath;
+    }
+    public void stopPlayerThread(){
+        running = false;
     }
 }

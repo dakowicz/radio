@@ -28,22 +28,25 @@ public class Controller implements Runnable {
     private DataOutputStream dataOutputStream;
     private MediaPlayer mediaPlayer;
 
+    private boolean running = true;
+
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 35;
+    private static long timeToWaitForPacketInSeconds = 10;
 
     private Thread receiverThread;
     private Thread senderThread;
     private Thread playerThread;
 
-    private void handlePacketsFromReceiver() throws Exception {
-        while (true) {
+    private void handlePacketsFromReceiver() throws Exception{
+        while (running) {
             DataPacket packet = getReceiver().getDataPackets().poll(timeToWaitForPacketInSeconds, TimeUnit.SECONDS);
             if (packet != null) {
                 resolveHeaderType(packet);
             } else {
-                throw new Exception("Packet too large!");
+                gentleExit();
+                log.info("Time to wait for packet expired!");
             }
         }
     }
@@ -85,6 +88,7 @@ public class Controller implements Runnable {
         } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
             streamPlayer.handleNewSong();
+            streamPlayer.handleMusicStream(packet.getMessageByte());
         } else if (packet.getHeader().getParameters() == 1) {
             log.info("END OF SONG");
         }
@@ -146,6 +150,10 @@ public class Controller implements Runnable {
         senderThread.start();
     }
 
+    public void vote(int songId, boolean cancelVote) {
+        sender.sendVote(songId, cancelVote);
+    }
+
     @Override
     public void run() {
         try {
@@ -154,6 +162,18 @@ public class Controller implements Runnable {
             e.printStackTrace();
             //controller.closeApp();
         }
+    }
+
+    public void gentleExit(){
+        receiver.stopReceiverThread();
+        streamPlayer.stopPlayerThread();
+        try {
+            receiverThread.join();
+            playerThread.join();
+        } catch (InterruptedException e){
+            return;
+        }
+        running = false;
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
