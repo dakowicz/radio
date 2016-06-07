@@ -4,9 +4,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.RoundRectangle2D;
 
 /**
  * Created by Kamil on 2016-06-06.
@@ -17,7 +18,7 @@ import java.awt.geom.RoundRectangle2D;
 public class View extends JFrame implements Runnable{
     private Playlist playlistData;
     private JPanel rootPanel;
-    private JList playlist;
+    private JList<Object> playlist;
     private JLabel radioLabel;
     private JButton voteButton;
     private JButton playButton;
@@ -29,6 +30,7 @@ public class View extends JFrame implements Runnable{
     public View(Playlist playlistInData) {
         super("TINy RADIO");
         playlistData = playlistInData;
+
         playlist.setListData(playlistData.getSongsToDisplay().toArray());
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -45,6 +47,8 @@ public class View extends JFrame implements Runnable{
         ImageIcon stopIcon = new ImageIcon("Client/ref/stop.png");
         ImageIcon playIcon = new ImageIcon("Client/ref/playMy.png");
         ImageIcon recordIcon = new ImageIcon("Client/ref/record.png");
+        ImageIcon exitIcon = new ImageIcon("Client/ref/exitsmall.png");
+
         playButton.setIcon(playIcon);
         playButton.setOpaque(false);
         playButton.setContentAreaFilled(false);
@@ -55,7 +59,6 @@ public class View extends JFrame implements Runnable{
         recordButton.setContentAreaFilled(false);
         recordButton.setBorderPainted(false);
 
-        ImageIcon exitIcon = new ImageIcon("Client/ref/exitsmall.png");
         exitButton.setIcon(exitIcon);
         exitButton.setOpaque(false);
         exitButton.setContentAreaFilled(false);
@@ -74,13 +77,14 @@ public class View extends JFrame implements Runnable{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
         voteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //JOptionPane.showMessageDialog(View.this,playlist.getSelectedValue());
-                System.out.println(playlist.getSelectedIndex());
-                //selectSongPrompt();
+                if(playlist.getSelectedIndex()==-1)
+                    selectSongPrompt();
             }
         });
+
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

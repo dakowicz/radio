@@ -167,6 +167,7 @@ public class Controller implements Runnable {
     }
 
     public void startApplication() {        //start Threads
+        senderThread.start();
         viewThread.start();
     }
 
@@ -195,16 +196,19 @@ public class Controller implements Runnable {
                 //notImplementedPrompt();
                 if (isPlaying) {
                     isPlaying = false;
+                    streamPlayer.stopPlayerThread();
+                    try {
+                        playerThread.join();
+                        receiverThread.join();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+
                 } else {
                     isPlaying = true;
-                    String hostName = "localhost";      //@TODO Just for tasting!
-                    int portNumber =4004;// Integer.parseInt(args[1]);
-
-                    setupSocketAndStreams(hostName, portNumber);
                     //setupApplication();
-                    playerThread.start();
                     receiverThread.start();
-                    senderThread.start();
+                    playerThread.start();
 
                 }
             }
@@ -231,13 +235,16 @@ public class Controller implements Runnable {
         });
 
 
-
     }
 
 
     public static void main(String[] args) throws Exception {
         log.info("start");
         Controller controller = new Controller();
+        String hostName = args[0];      //@TODO Just for tasting!
+        int portNumber = Integer.parseInt(args[1]);
+
+        controller.setupSocketAndStreams(hostName, portNumber);
 
         controller.setupApplication();
         controller.startApplication();
