@@ -42,15 +42,19 @@ private:
 
     void broadcastToClients(Data *data);
 
-    void divideFile(std::shared_ptr<std::ifstream> fileStream);
+    void divideFile(std::shared_ptr<std::ifstream> fileStream, int songID);
 
     bool endOf(std::shared_ptr<std::ifstream> fileStream) const;
 
-    void pushStreamData(std::shared_ptr<std::ifstream> fileStream);
+    void pushStreamData(std::shared_ptr<std::ifstream> fileStream, int songID);
 
-    Data *readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const;
+    Data * readFile(std::shared_ptr<std::ifstream> fileStream, char *streamData, int songID);
 
     void sleep() const;
+
+    static int ID_SIZE;
+
+    void saveSongID(char *streamData, int songID);
 };
 
 

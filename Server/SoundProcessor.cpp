@@ -10,32 +10,34 @@ std::chrono::milliseconds SoundProcessor::TIME_INTERVAL_MS(1000);
 
 int SoundProcessor::PACKAGE_SIZE_B = 200000;
 
+int SoundProcessor::ID_SIZE = 4;
+
 void SoundProcessor::stream() {
-//    this->running = true;
-//    while(isRunning()) {
-//        Song *nextSong = playlistManager->getNextSong();
-//        std::shared_ptr<std::ifstream> fileStream = fileManager->getFileStream(nextSong);
-//        divideFile(fileStream);
-//        this->running = false;
-//    }
+    this->running = true;
+    while(isRunning()) {
+        Song *nextSong = playlistManager.getNextSong();
+        std::shared_ptr<std::ifstream> fileStream = fileManager.getFileStream(nextSong);
+        divideFile(fileStream, nextSong->getID());
+        this->running = false;
+    }
 }
 
-void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream) {
+void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream, int songID) {
     if(fileStream == nullptr) {
         logger.log("Opening file error");
         return;
     }
     while(!endOf(fileStream) && isRunning()) {
         sleep();
-        pushStreamData(fileStream);
+        pushStreamData(fileStream, songID);
         logger.log("New package of data");
     }
 }
 
-void SoundProcessor::pushStreamData(std::shared_ptr<std::ifstream> fileStream) {
+void SoundProcessor::pushStreamData(std::shared_ptr<std::ifstream> fileStream, int songID) {
     logger.log("Position in current file: " + std::to_string(fileStream->tellg()));
-    char *streamData = new char[PACKAGE_SIZE_B];
-    Data *data = readFile(fileStream, streamData);
+    char *streamData = new char[ID_SIZE + PACKAGE_SIZE_B];
+    Data *data = readFile(fileStream, streamData, songID);
     broadcastToClients(data);
 }
 
@@ -43,9 +45,10 @@ void SoundProcessor::sleep() const { std::this_thread::sleep_for(TIME_INTERVAL_M
 
 bool SoundProcessor::endOf(std::shared_ptr<std::ifstream> fileStream) const { return fileStream->eof(); }
 
-Data *SoundProcessor::readFile(std::shared_ptr<std::ifstream> &fileStream, char *streamData) const {
-    fileStream->read(streamData, PACKAGE_SIZE_B);
-    return new Data(DataType::STREAM, streamData, (int) fileStream->gcount());
+Data * SoundProcessor::readFile(std::shared_ptr<std::ifstream> fileStream, char *streamData, int songID) {
+    saveSongID(streamData, songID);
+    fileStream->read(streamData + ID_SIZE, PACKAGE_SIZE_B);
+    return new Data(DataType::STREAM, streamData, (int) fileStream->gcount() + ID_SIZE);
 }
 
 void SoundProcessor::broadcastToClients(Data *data) {
@@ -56,6 +59,13 @@ void SoundProcessor::broadcastToClients(Data *data) {
             clientManager->send(data);
         }
     }
+}
+
+void SoundProcessor::saveSongID(char *streamData, int songID) {
+    streamData[0] = (char) (songID >> 24);
+    streamData[1] = (char) (songID >> 16);
+    streamData[2] = (char) (songID >> 8);
+    streamData[3] = (char) songID;
 }
 
 

@@ -20,6 +20,8 @@ public:
 
     const std::string &getFileName() const { return fileName; }
 
+    int getID();
+
 private:
 
     std::string title;
@@ -27,6 +29,10 @@ private:
     std::string author;
 
     std::string fileName;
+
+    int ID;
+
+    static int globalID;
 };
 
 
