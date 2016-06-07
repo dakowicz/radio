@@ -34,6 +34,7 @@ public class StreamPlayer implements Runnable {
     private DataLine.Info info;
     private Clip clip;
     private boolean running = true;
+    private Player playMP3;
 
     public StreamPlayer() {
         fileNumber = 0;
@@ -54,7 +55,7 @@ public class StreamPlayer implements Runnable {
                 while (fileInputStream.available() < 100 && running) {
                     fileInputStream = new FileInputStream(fileToPlayPath);
                 }
-                Player playMP3 = new Player(fileInputStream);
+                playMP3 = new Player(fileInputStream);
                 playMP3.play();
                 while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
                 }
@@ -95,6 +96,7 @@ public class StreamPlayer implements Runnable {
         fileToAppendPath = streamFilePath;
     }
     public void stopPlayerThread(){
+        playMP3.close();
         File file= new File("songStream0");
         file.delete();
         running = false;

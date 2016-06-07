@@ -42,8 +42,12 @@
                 <item value="Song2"/>
                 <item value="Song3"/>
               </model>
+              <selectedIndex value="2"/>
               <selectionMode value="0"/>
             </properties>
+            <clientProperties>
+              <List.isFileList class="java.lang.Boolean" value="false"/>
+            </clientProperties>
           </component>
         </children>
       </grid>
