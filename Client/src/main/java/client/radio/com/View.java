@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
 
 @Data
 @Slf4j
-public class View extends JFrame{
+public class View extends JFrame {
     private Playlist playlistData;
     private JPanel rootPanel;
     private JList playlist;
@@ -23,12 +23,12 @@ public class View extends JFrame{
     private JButton playButton;
     private JButton exitButton;
     private JButton recordButton;
-    private boolean isplaying=false;
+    private boolean isplaying = false;
 
 
     public View(Playlist playlistInData) {
         super("TINy RADIO");
-        playlistData=playlistInData;
+        playlistData = playlistInData;
         //playlist.setListData(playlistData.getSongsToDisplay().toArray());
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -85,12 +85,11 @@ public class View extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //notImplementedPrompt();
-                if(isplaying) {
+                if (isplaying) {
                     playButton.setIcon(playIcon);
-                    isplaying=false;
-                }
-                else {
-                    isplaying=true;
+                    isplaying = false;
+                } else {
+                    isplaying = true;
                     playButton.setIcon(stopIcon);
                 }
             }
@@ -111,16 +110,17 @@ public class View extends JFrame{
 
     }
 
-    private void selectSongPrompt(){
-        JOptionPane.showMessageDialog(View.this,"Please select a song");
-    }
-    public void notImplementedPrompt(){
-        //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
-        JOptionPane.showMessageDialog(View.this,"Not implemented yet");
+    private void selectSongPrompt() {
+        JOptionPane.showMessageDialog(View.this, "Please select a song");
     }
 
-    private void premiumVersionPrompt(){
+    public void notImplementedPrompt() {
         //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
-        JOptionPane.showMessageDialog(View.this,"Upgrade to the premium version for only $0.99/month");
+        JOptionPane.showMessageDialog(View.this, "Not implemented yet");
+    }
+
+    private void premiumVersionPrompt() {
+        //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
+        JOptionPane.showMessageDialog(View.this, "Upgrade to the premium version for only $0.99/month");
     }
 }

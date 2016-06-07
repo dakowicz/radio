@@ -30,11 +30,12 @@ public class Receiver implements Runnable {
         byte[] data;
         try {
             while (running) {
+
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {
                     while (receiverStream.available() <= 0 && running) {
                     }
-                    if(running) {
+                    if (running) {
                         head[i] = receiverStream.readByte();
                         log.info(String.valueOf(head[i]));
                     }

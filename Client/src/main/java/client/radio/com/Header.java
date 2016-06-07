@@ -34,7 +34,9 @@ public class Header {
         length += head[5] << 8;
         length += head[6];
     }
-    public Header(){};
+
+    public Header() {
+    }
 
     public void createHeader(byte t, byte param, long lng) {
         type = t;
