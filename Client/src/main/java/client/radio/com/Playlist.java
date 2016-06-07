@@ -22,7 +22,7 @@ public class Playlist {
     private ConcurrentMap<Integer, Song> currentPlaylist;       //Sprawdzić jak działa
     private CSVParser parser;
     private Vector<ConcurrentMap> mapVector;
-    private StreamPlayer streamPlayer;
+   // private StreamPlayer streamPlayer;
 
 
     public Playlist() {
@@ -30,12 +30,31 @@ public class Playlist {
         mapVector = new Vector<>();
     }
 
-    public Playlist(StreamPlayer player) {
+  /*  public Playlist(StreamPlayer player) {
         currentPlaylist = new ConcurrentHashMap<Integer, Song>();
         mapVector = new Vector<>();
         streamPlayer = player;
+    }*/
+
+    public Song getNextSongToStream() {
+        List<Song> list = getSongsSorted();
+        Iterator<Song> iterator = list.iterator();
+        while (true) {
+            Song song = iterator.next();
+            if (!song.isPlayed() && !song.isStreamed())
+                return song;
+        }
     }
 
+    public Song getNextSongToPlay() {
+        List<Song> list = getSongsSorted();
+        Iterator<Song> iterator = list.iterator();
+        while (true) {
+            Song song = iterator.next();
+            if (!song.isPlayed() && song.isStreamed())
+                return song;
+        }
+    }
     public List<String> getSongsToDisplay() {
         List<Song> list = new ArrayList<Song>(currentPlaylist.values());
         Comparator<Song> votingComparator = new Comparator<Song>() {
@@ -44,12 +63,27 @@ public class Playlist {
             }
         };
         list.sort(votingComparator);
-        Iterator<Song> iterator= list.iterator();
-        List<String> toDisplay= new ArrayList<>();
+        Iterator<Song> iterator = list.iterator();
+        List<String> toDisplay = new ArrayList<>();
+        List<String> streamedSongs = new ArrayList<>();
+        streamedSongs.add("");
         StringBuilder stringBuilder;
-        while(iterator.hasNext()) {
-            Song song=iterator.next();
-            toDisplay.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+        String playedSong = new String("");
+        while (iterator.hasNext()) {
+            Song song = iterator.next();
+            if (!(song.isPlayed() | song.isStreamed()))
+                toDisplay.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+            else {
+                if (song.isPlayed())
+                    playedSong = ("Now Playing: " + song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand());
+                else
+                    streamedSongs.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+            }
+        }
+        if (playedSong.length() > 0) {
+            streamedSongs.add(0, playedSong);
+            streamedSongs.addAll(toDisplay);
+            return streamedSongs;
         }
         return toDisplay;
     }
@@ -65,7 +99,7 @@ public class Playlist {
         return list;
     }
 
-    private Map<Integer, Song> songsToPlay() {
+   /* private Map<Integer, Song> songsToPlay() {
         List<Song> list = getSongsSorted();
         int size = streamPlayer.getStreamFilesPaths().size();
         // currentPlaylist.values().iterator()
@@ -77,7 +111,7 @@ public class Playlist {
         }
         return songs;
     }
-
+*/
     /*
         private List<Song> songsToPlay(){
             List<Song> list= getSongsSorted();
@@ -93,9 +127,9 @@ public class Playlist {
     public void vote(int songId, boolean cancelVote) {
         try {
             currentPlaylist.get(songId).setVoted(!cancelVote);
-            if(cancelVote){
+            if (cancelVote) {
                 currentPlaylist.get(songId).decVotesNumber();
-            } else{
+            } else {
                 currentPlaylist.get(songId).incVotesNumber();
             }
         } catch (NullPointerException e) {
@@ -116,13 +150,13 @@ public class Playlist {
     }
 
     public void updateOrPutSong(Song song) {
-       // Map<Integer, Song> songsToBePlayed = songsToPlay();
-        if (currentPlaylist.containsKey(song))
-          //  if (!songsToBePlayed.containsKey(song.getId()))
+        // Map<Integer, Song> songsToBePlayed = songsToPlay();
+        if (currentPlaylist.containsKey(song)) {
+            if (!(song.isPlayed() || song.isStreamed()))
                 currentPlaylist.replace(song.getId(), song);
-            else {
-                currentPlaylist.put(song.getId(), song);
-            }
+        } else {
+            currentPlaylist.put(song.getId(), song);
+        }
     }
 
     public void handleNewPlaylist(byte[] data) throws IOException {

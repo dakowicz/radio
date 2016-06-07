@@ -16,6 +16,9 @@ public class Song {
     private int id;
     private int votesNumber;
     private boolean isVoted;
+    private boolean isPlayed;
+    private boolean isStreamed;
+    private String fileName;
 
     public Song(String title, String band, int id, int votesNumber) {
         this.title = title;
@@ -23,6 +26,9 @@ public class Song {
         this.id = id;
         this.votesNumber = votesNumber;
         this.isVoted = false;
+        this.isStreamed = false;
+        this.isPlayed = false;
+
     }
 
     public void incVotesNumber(){

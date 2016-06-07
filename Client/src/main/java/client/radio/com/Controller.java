@@ -152,7 +152,7 @@ public class Controller implements Runnable {
         setStreamPlayer(new StreamPlayer());
         setPlayerThread(new Thread(getStreamPlayer()));
 
-        playlist = new Playlist(streamPlayer);
+        playlist = new Playlist();
 
         setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));
