@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
 
 @Data
 @Slf4j
-public class View extends JFrame {
+public class View extends JFrame implements Runnable{
     private Playlist playlistData;
     private JPanel rootPanel;
     private JList playlist;
@@ -29,7 +29,7 @@ public class View extends JFrame {
     public View(Playlist playlistInData) {
         super("TINy RADIO");
         playlistData = playlistInData;
-        //playlist.setListData(playlistData.getSongsToDisplay().toArray());
+        playlist.setListData(playlistData.getSongsToDisplay().toArray());
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -122,5 +122,9 @@ public class View extends JFrame {
     private void premiumVersionPrompt() {
         //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
         JOptionPane.showMessageDialog(View.this, "Upgrade to the premium version for only $0.99/month");
+    }
+
+    public void run() {
+
     }
 }
