@@ -19,7 +19,7 @@ import org.apache.commons.csv.*;
 public class Playlist {
 
     public static char separator = '\n';
-    private ConcurrentMap<Integer, Song> currentPlaylist;
+    private ConcurrentMap<Integer, Song> currentPlaylist;       //Sprawdzić jak działa
     private CSVParser parser;
     private Vector<ConcurrentMap> mapVector;
     private StreamPlayer streamPlayer;
@@ -34,6 +34,24 @@ public class Playlist {
         currentPlaylist = new ConcurrentHashMap<Integer, Song>();
         mapVector = new Vector<>();
         streamPlayer = player;
+    }
+
+    public List<String> getSongsToDisplay() {
+        List<Song> list = new ArrayList<Song>(currentPlaylist.values());
+        Comparator<Song> votingComparator = new Comparator<Song>() {
+            public int compare(Song song1, Song song2) {
+                return song2.getVotesNumber() - song1.getVotesNumber(); // use your logic
+            }
+        };
+        list.sort(votingComparator);
+        Iterator<Song> iterator= list.iterator();
+        List<String> toDisplay= new ArrayList<>();
+        StringBuilder stringBuilder;
+        while(iterator.hasNext()) {
+            Song song=iterator.next();
+            toDisplay.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+        }
+        return toDisplay;
     }
 
     public List<Song> getSongsSorted() {
@@ -98,9 +116,9 @@ public class Playlist {
     }
 
     public void updateOrPutSong(Song song) {
-        Map<Integer, Song> songsToBePlayed = songsToPlay();
+       // Map<Integer, Song> songsToBePlayed = songsToPlay();
         if (currentPlaylist.containsKey(song))
-            if (!songsToBePlayed.containsKey(song.getId()))
+          //  if (!songsToBePlayed.containsKey(song.getId()))
                 currentPlaylist.replace(song.getId(), song);
             else {
                 currentPlaylist.put(song.getId(), song);

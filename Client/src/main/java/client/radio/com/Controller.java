@@ -4,6 +4,9 @@ import javafx.scene.media.MediaPlayer;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,6 +30,9 @@ public class Controller implements Runnable {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private MediaPlayer mediaPlayer;
+    private View view;
+    private boolean isPlaying =false;
+    private boolean newSong=false;
 
     private boolean running = true;
 
@@ -101,6 +107,7 @@ public class Controller implements Runnable {
             streamPlayer.handleNewSong();
             streamPlayer.handleMusicStream(packet.getMessageByte());
         } else if (packet.getHeader().getParameters() == 1) {
+            newSong=false;
             log.info("END OF SONG");
         }
     }
@@ -155,7 +162,7 @@ public class Controller implements Runnable {
 
     }
 
-    public void startApplication() {
+    public void startApplication() {        //start Threads
         playerThread.start();
         receiverThread.start();
         senderThread.start();
@@ -168,6 +175,7 @@ public class Controller implements Runnable {
     @Override
     public void run() {
         try {
+            //while (!isPlaying);
             handlePacketsFromReceiver();
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,9 +183,48 @@ public class Controller implements Runnable {
         }
     }
 
+    public void startView(){
+
+        view = new View(playlist);
+        view.getPlayButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //notImplementedPrompt();
+                if (isPlaying) {
+                    isPlaying = false;
+                } else {
+                    isPlaying = true;
+
+                }
+            }
+
+        });
+        //JList listOfSongs= new JList(playlist.getSongsSorted().toArray());
+        view.setPlaylist(new JList(playlist.getSongsSorted().toArray()));
+        view.getExitButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //notImplementedPrompt();
+                gentleExit();
+            }
+
+        });
+
+        view.getVoteButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.notImplementedPrompt();
+
+            }
+
+        });
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+
+    }
+
+
+    public static void main(String[] args) throws Exception {
         log.info("start");
         Controller controller = new Controller();
         String hostName = args[0];
@@ -186,10 +233,12 @@ public class Controller implements Runnable {
         controller.setupSocketAndStreams(hostName, portNumber);
         controller.setupApplication();
         controller.startApplication();
+        controller.handlePacketsFromReceiver();
 
-        Thread controllerThread = new Thread(controller);
-        controllerThread.start();
-        controllerThread.join();
+        controller.startView();
+        //Thread controllerThread = new Thread(controller);
+        //controllerThread.start();
+        //controllerThread.join();
     }
 
 }
