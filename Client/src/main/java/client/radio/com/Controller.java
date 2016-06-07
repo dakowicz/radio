@@ -44,6 +44,7 @@ public class Controller implements Runnable {
     private Thread receiverThread;
     private Thread senderThread;
     private Thread playerThread;
+    private Thread viewThread;
 
     private void handlePacketsFromReceiver() throws Exception{
         while (running) {
@@ -154,6 +155,9 @@ public class Controller implements Runnable {
 
         playlist = new Playlist();
 
+        view = new View(playlist);
+        viewThread=new Thread(view);
+
         setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));
 
@@ -163,9 +167,7 @@ public class Controller implements Runnable {
     }
 
     public void startApplication() {        //start Threads
-        playerThread.start();
-        receiverThread.start();
-        senderThread.start();
+        viewThread.start();
     }
 
     public void vote(int songId, boolean cancelVote) {
@@ -174,6 +176,7 @@ public class Controller implements Runnable {
 
     @Override
     public void run() {
+        startView();
         try {
             //while (!isPlaying);
             handlePacketsFromReceiver();
@@ -185,7 +188,7 @@ public class Controller implements Runnable {
 
     public void startView(){
 
-        view = new View(playlist);
+        //view = new View(playlist);
         view.getPlayButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,6 +197,14 @@ public class Controller implements Runnable {
                     isPlaying = false;
                 } else {
                     isPlaying = true;
+                    String hostName = "localhost";      //@TODO Just for tasting!
+                    int portNumber =4004;// Integer.parseInt(args[1]);
+
+                    setupSocketAndStreams(hostName, portNumber);
+                    //setupApplication();
+                    playerThread.start();
+                    receiverThread.start();
+                    senderThread.start();
 
                 }
             }
@@ -227,18 +238,14 @@ public class Controller implements Runnable {
     public static void main(String[] args) throws Exception {
         log.info("start");
         Controller controller = new Controller();
-        String hostName = args[0];
-        int portNumber = Integer.parseInt(args[1]);
 
-        controller.setupSocketAndStreams(hostName, portNumber);
         controller.setupApplication();
         controller.startApplication();
-        controller.handlePacketsFromReceiver();
 
-        controller.startView();
-        //Thread controllerThread = new Thread(controller);
-        //controllerThread.start();
-        //controllerThread.join();
+        //controller.startView();
+        Thread controllerThread = new Thread(controller);
+        controllerThread.start();
+        controllerThread.join();
     }
 
 }
