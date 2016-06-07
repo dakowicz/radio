@@ -56,13 +56,15 @@ public class StreamPlayer implements Runnable {
                 }
                 Player playMP3 = new Player(fileInputStream);
                 playMP3.play();
-                while (!playMP3.isComplete() && running) {
+                while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
                 }
+                File file= new File(fileToPlayPath);
+                file.delete();
                 fileToPlayPath = streamFilesPaths.poll();
             }
         } catch (Exception e){
             e.printStackTrace();
-        }
+        }//Usuwanie pliku jeśli wyjątek
     }
 
     public void handleNewSong() {
@@ -93,6 +95,8 @@ public class StreamPlayer implements Runnable {
         fileToAppendPath = streamFilePath;
     }
     public void stopPlayerThread(){
+        File file= new File("songStream0");
+        file.delete();
         running = false;
     }
 }
