@@ -72,6 +72,7 @@ public class Receiver implements Runnable {
         }
 
         log.info("receiver thread done");
+        return;
     }
 
     public void stopReceiverThread() {
