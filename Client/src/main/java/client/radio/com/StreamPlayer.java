@@ -23,34 +23,36 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Data
 @Slf4j
 public class StreamPlayer implements Runnable {
-    private BlockingQueue<String> streamFilesPaths;
     private String fileToPlayPath;
     private String fileToAppendPath;
-    private File streamFile;
     private FileInputStream fileInputStream;
-    private AudioInputStream stream;
-    private AudioFormat format;
-    private static int fileNumber;
-    private DataLine.Info info;
-    private Clip clip;
     private boolean running = true;
     private Player playMP3;
+    private Playlist playlist;
 
-    public StreamPlayer() {
-        fileNumber = 0;
-        streamFilesPaths = new LinkedBlockingQueue<>();
-        createFirstFile();
-    }
-
-    private void createFirstFile() {
-        createNewStreamFile("songStream0");
+    public StreamPlayer(Playlist playlist) {
+        this.playlist = playlist;
     }
 
     @Override
     public synchronized void run() {
         try {
-            fileToPlayPath = streamFilesPaths.poll();
+            while (playlist.getNextSongToPlay() == null) {
+                System.out.println("czekam");
+                try {
+                    synchronized (Thread.currentThread()) {
+                        Thread.currentThread().wait();
+                    }
+                    System.out.println("elo");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            Song nextSong = playlist.getNextSongToPlay();
+            fileToPlayPath = nextSong.getFileName();
+            System.out.println(fileToPlayPath);
             while (running && fileToPlayPath != null) {
+                nextSong.setPlayed(true);
                 fileInputStream = new FileInputStream(fileToPlayPath);
                 while (fileInputStream.available() < 100 && running) {
                     fileInputStream = new FileInputStream(fileToPlayPath);
@@ -59,22 +61,30 @@ public class StreamPlayer implements Runnable {
                 playMP3.play();
                 while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
                 }
-                File file= new File(fileToPlayPath);
+                File file = new File(fileToPlayPath);
                 file.delete();
-                fileToPlayPath = streamFilesPaths.poll();
+                nextSong.setPlayed(false);
+                nextSong.setStreamed(false);
+                nextSong.setVotesNumber(0);
+
+                nextSong = playlist.getNextSongToPlay();
+                if(nextSong != null) {
+                    fileToPlayPath = nextSong.getFileName();
+                } else{
+                    fileToPlayPath = null;
+                }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }//Usuwanie pliku jeśli wyjątek
+        return;
     }
 
     public void handleNewSong() {
-        String newName = "songStream" + fileNumber;
-        if(fileNumber > 0) {
-            createNewStreamFile(newName);
-        }
-        fileNumber++;
-
+        Song song = playlist.getNextSongToStream();
+        song.setStreamed(true);
+        song.setFileName("stream" + song.getId());
+        createNewStreamFile(song.getFileName());
     }
 
     public void handleMusicStream(byte[] data) {
@@ -86,7 +96,6 @@ public class StreamPlayer implements Runnable {
     }
 
     private void createNewStreamFile(String streamFilePath) {
-        streamFilesPaths.add(streamFilePath);
         File newFile = new File(streamFilePath);
         try {
             newFile.createNewFile();
@@ -95,10 +104,24 @@ public class StreamPlayer implements Runnable {
         }
         fileToAppendPath = streamFilePath;
     }
-    public void stopPlayerThread(){
-        playMP3.close();
-        File file= new File("songStream0");
-        file.delete();
+
+    public void stopPlayerThread() {
+        if (playMP3 != null) {
+            playMP3.close();
+        }
         running = false;
+
+//        playlist.getCurrentPlaylist().forEach((k, v) -> {
+//            {
+//                if (Files.exists(Paths.get(v.getFileName()))) {
+//                    try {
+//                        Files.delete(Paths.get(v.getFileName()));
+//                    } catch (IOException e) {
+//                        log.info("Unable to delete a file");
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
     }
 }
