@@ -1,5 +1,6 @@
 package client.radio.com;
 
+import javazoom.jl.player.Player;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
+import java.io.IOException;
 
 /**
  * Created by Kamil on 2016-06-06.
@@ -125,8 +127,40 @@ public class View extends JFrame implements Runnable{
                 if (isPlaying) {
                     playButton.setIcon(playIcon);
                     isPlaying = false;
+
+                    //playlist.deleteRemainingFiles();
+                    isPlaying = false;
+                    controller1.getStreamPlayer().stopPlayerThread();
+                    controller1.getReceiver().stopReceiverThread();
+                    try {
+                        controller1.getReceiverThread().join();
+                        controller1.getPlayerThread().join();
+                        controller1.getSenderThread().join();
+                        controller1.getControllerThread().interrupt();
+                    } catch (InterruptedException e2) {
+                        log.info("Threads haven't finished!");
+                        return;
+                    }
+                    try {
+                        controller1.getSocket().close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    log.info("Nowa Playlista");
+                    controller1.setPlaylist(new Playlist());
+                    log.info(playlist.toString());
+                    updatePlaylist();
+                    controller1.setupSocketAndStreams(controller1.getHostname(), controller1.getPortNumber());
+                    controller1.setupThreads();
                 } else {
+                    controller1.setControllerThread(new Thread(controller1));
+                    controller1.getControllerThread().start();
                     isPlaying = true;
+                    //setupApplication();
+                    controller1.getSenderThread().start();
+                    controller1.getReceiverThread().start();
+                    controller1.getPlayerThread().start();
+                    //isPlaying = true;
                     playButton.setIcon(stopIcon);
                 }
             }
@@ -167,7 +201,9 @@ public class View extends JFrame implements Runnable{
 
     public void updatePlaylist(){
         Song[] songs=new Song[1];
-        playlist.setListData(playlistData.getSongsToDisplay().toArray(songs));
+        playlist.setListData(songs);
+        playlist.setListData(controller.getPlaylist().getSongsToDisplay().toArray(songs));
+        //log.info(playlistData.toString());
     }
 
     public void run() {
