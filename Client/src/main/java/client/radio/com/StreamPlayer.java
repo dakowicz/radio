@@ -61,17 +61,19 @@ public class StreamPlayer implements Runnable {
                 playMP3.play();
                 while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
                 }
-                File file = new File(fileToPlayPath);
-                file.delete();
-                nextSong.setPlayed(false);
-                nextSong.setStreamed(false);
-                nextSong.setVotesNumber(0);
+                if(running) {
+                    File file = new File(fileToPlayPath);
+                    file.delete();
+                    nextSong.setPlayed(false);
+                    nextSong.setStreamed(false);
+                    nextSong.setVotesNumber(0);
 
-                nextSong = playlist.getNextSongToPlay();
-                if(nextSong != null) {
-                    fileToPlayPath = nextSong.getFileName();
-                } else{
-                    fileToPlayPath = null;
+                    nextSong = playlist.getNextSongToPlay();
+                    if (nextSong != null) {
+                        fileToPlayPath = nextSong.getFileName();
+                    } else {
+                        fileToPlayPath = null;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -110,7 +112,7 @@ public class StreamPlayer implements Runnable {
             playMP3.close();
         }
         running = false;
-
+        playlist.deleteRemainingFiles();
 //        playlist.getCurrentPlaylist().forEach((k, v) -> {
 //            {
 //                if (Files.exists(Paths.get(v.getFileName()))) {

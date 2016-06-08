@@ -140,7 +140,7 @@ public class Playlist {
         Iterator<Song> iterator = currentPlaylist.values().iterator();
         while (iterator.hasNext()){
             Song song= iterator.next();
-            if(song.getFileName().length()!=0) {
+            if(song.getFileName()!=null && song.getFileName().length()!=0) {
                 File file = new File(song.getFileName());
                 file.delete();
             }

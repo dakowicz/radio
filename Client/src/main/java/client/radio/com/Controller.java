@@ -34,6 +34,8 @@ public class Controller implements Runnable {
     private View view;
     private boolean isPlaying = false;
     private boolean newSong = false;
+    private String hostname;
+    private int portNumber;
 
     private boolean running = true;
 
@@ -60,7 +62,6 @@ public class Controller implements Runnable {
     }
 
     public void gentleExit() {
-        playlist.deleteRemainingFiles();
         if(!receiverThread.isAlive()){
             running = false;
             return;
@@ -179,25 +180,27 @@ public class Controller implements Runnable {
     }
 
     public void setupApplication() {
+        setupSocketAndStreams(hostname, portNumber);
         playlist = new Playlist();
 
         View view1 = new View(this);
         view = view1;
         viewThread = new Thread(view);
 
+        setupThreads();
+    }
+
+    public void setupThreads(){
         setStreamPlayer(new StreamPlayer(playlist));
-        setPlayerThread(new Thread(getStreamPlayer()));
-
         setReceiver(new Receiver(dataInputStream));
-        setReceiverThread(new Thread(getReceiver()));
-
         setSender(new Sender(dataOutputStream));
-        setSenderThread(new Thread(getSender()));
 
+        setPlayerThread(new Thread(getStreamPlayer()));
+        setReceiverThread(new Thread(getReceiver()));
+        setSenderThread(new Thread(getSender()));
     }
 
     public void startApplication() {        //start Threads
-        senderThread.start();
         viewThread.start();
     }
 
@@ -207,7 +210,7 @@ public class Controller implements Runnable {
         startView();
         try {
             //while (!isPlaying);
-            view.getController().handlePacketsFromReceiver();
+            handlePacketsFromReceiver();
         } catch (Exception e2) {
             e2.printStackTrace();
             //controller.closeApp();
@@ -222,18 +225,29 @@ public class Controller implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 //notImplementedPrompt();
                 if (isPlaying) {
+                    playlist.deleteRemainingFiles();
                     isPlaying = false;
                     streamPlayer.stopPlayerThread();
+                    receiver.stopReceiverThread();
                     try {
-                        playerThread.join();
                         receiverThread.join();
-                    } catch (InterruptedException e1) {
+                        playerThread.join();
+                        senderThread.join();
+                    } catch (InterruptedException e2) {
+                        log.info("Threads haven't finished!");
+                        return;
+                    }
+                    try {
+                        socket.close();
+                    } catch (IOException e1) {
                         e1.printStackTrace();
                     }
-
+                    setupThreads();
+                    setupSocketAndStreams(hostname, portNumber);
                 } else {
                     isPlaying = true;
                     //setupApplication();
+                    senderThread.start();
                     receiverThread.start();
                     playerThread.start();
 
@@ -256,11 +270,11 @@ public class Controller implements Runnable {
 
     public static void main(String[] args) throws Exception {
         log.info("start");
-        Controller controller = new Controller();
-        String hostName = args[0];      //@TODO Just for tasting!
-        int portNumber = Integer.parseInt(args[1]);
 
-        controller.setupSocketAndStreams(hostName, portNumber);
+        Controller controller = new Controller();
+        controller.setHostname(args[0]);      //@TODO Just for tasting!
+        controller.setPortNumber(Integer.parseInt(args[1]));
+        controller.setupSocketAndStreams(controller.getHostname(), controller.getPortNumber());
 
         controller.setupApplication();
         controller.startApplication();
