@@ -20,6 +20,8 @@ public class Song {
     private boolean isStreamed;
     private String fileName;
 
+    public Song(){}
+
     public Song(String title, String band, int id, int votesNumber) {
         this.title = title;
         this.band = band;
@@ -31,6 +33,9 @@ public class Song {
 
     }
 
+    public String toString(){
+        return(getVotesNumber() + " " + getTitle() + "-" + getBand());
+    }
     public void incVotesNumber(){
         votesNumber++;
     }

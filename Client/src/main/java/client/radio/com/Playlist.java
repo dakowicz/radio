@@ -30,11 +30,6 @@ public class Playlist {
         mapVector = new Vector<>();
     }
 
-  /*  public Playlist(StreamPlayer player) {
-        currentPlaylist = new ConcurrentHashMap<Integer, Song>();
-        mapVector = new Vector<>();
-        streamPlayer = player;
-    }*/
 
     public Song getNextSongToStream() {
         List<Song> list = getSongsSorted();
@@ -55,7 +50,7 @@ public class Playlist {
                 return song;
         }
     }
-    public List<String> getSongsToDisplay() {
+    public ArrayList<Song> getSongsToDisplay() {
         List<Song> list = new ArrayList<Song>(currentPlaylist.values());
         Comparator<Song> votingComparator = new Comparator<Song>() {
             public int compare(Song song1, Song song2) {
@@ -64,23 +59,23 @@ public class Playlist {
         };
         list.sort(votingComparator);
         Iterator<Song> iterator = list.iterator();
-        List<String> toDisplay = new ArrayList<>();
-        List<String> streamedSongs = new ArrayList<>();
-        streamedSongs.add("");
+        ArrayList<Song> toDisplay = new ArrayList<>();
+        ArrayList<Song> streamedSongs = new ArrayList<>();
+        streamedSongs.add(new Song());
         StringBuilder stringBuilder;
-        String playedSong = new String("");
+        Song playedSong= new Song();
         while (iterator.hasNext()) {
             Song song = iterator.next();
             if (!(song.isPlayed() | song.isStreamed()))
-                toDisplay.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+                toDisplay.add(song);
             else {
                 if (song.isPlayed())
-                    playedSong = ("Now Playing: " + song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand());
+                    playedSong = song;//("Now Playing: " + song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand());
                 else
-                    streamedSongs.add((song.getVotesNumber() + " " + song.getTitle() + "-" + song.getBand()));
+                    streamedSongs.add(song);
             }
         }
-        if (playedSong.length() > 0) {
+        if (playedSong.getId()!=0) {
             streamedSongs.add(0, playedSong);
             streamedSongs.addAll(toDisplay);
             return streamedSongs;
@@ -99,31 +94,6 @@ public class Playlist {
         return list;
     }
 
-   /* private Map<Integer, Song> songsToPlay() {
-        List<Song> list = getSongsSorted();
-        int size = streamPlayer.getStreamFilesPaths().size();
-        // currentPlaylist.values().iterator()
-        Iterator<Song> iterator = list.iterator();
-        Map<Integer, Song> songs = new HashMap<>();
-        for (int i = 0; i < size; i++) {
-            Song song = iterator.next();
-            songs.put(song.getId(), song);
-        }
-        return songs;
-    }
-*/
-    /*
-        private List<Song> songsToPlay(){
-            List<Song> list= getSongsSorted();
-            int size= streamPlayer.getStreamFilesPaths().size();
-           // currentPlaylist.values().iterator()
-            Iterator<Song> iterator=list.iterator();
-            List<Song> songs = new ArrayList<>();
-            for(int i=0;i<size;i++)
-                songs.add(iterator.next());
-            return songs;
-        }
-        */
     public void vote(int songId, boolean cancelVote) {
         try {
             currentPlaylist.get(songId).setVoted(!cancelVote);
