@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 @Slf4j
-@EqualsAndHashCode(exclude="view")
+@EqualsAndHashCode(exclude = "view")
 public class Controller implements Runnable {
     private Receiver receiver;
     private Playlist playlist;
@@ -40,7 +40,7 @@ public class Controller implements Runnable {
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 1000;
+    private static long timeToWaitForPacketInSeconds = 10;
 
     private Thread receiverThread;
     private Thread senderThread;
@@ -48,7 +48,7 @@ public class Controller implements Runnable {
     private Thread viewThread;
 
     private void handlePacketsFromReceiver() throws Exception {
-        while (running) {
+        while (running ) {
             DataPacket packet = getReceiver().getDataPackets().poll(timeToWaitForPacketInSeconds, TimeUnit.SECONDS);
             if (packet != null) {
                 resolveHeaderType(packet);
@@ -111,7 +111,7 @@ public class Controller implements Runnable {
                 log.info("Already unvoted");
         } else if (!playlist.getCurrentPlaylist().get(songId).isVoted()) {
             sender.sendVote(songId, cancelVote);
-            playlist.vote(songId,cancelVote);
+            playlist.vote(songId, cancelVote);
         } else
             log.info("Already voted");
         view.updatePlaylist();
@@ -125,6 +125,9 @@ public class Controller implements Runnable {
         } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
             streamPlayer.handleNewSong();
+            synchronized (playerThread) {
+                playerThread.notify();
+            }
             streamPlayer.handleMusicStream(packet.getMessageByte());
         } else if (packet.getHeader().getParameters() == 1) {
             newSong = false;
@@ -146,13 +149,13 @@ public class Controller implements Runnable {
             try {
                 playlist.handleNewPlaylist(packet.getMessageByte());
                 view.updatePlaylist();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }catch(IOException e){
+            e.printStackTrace();
         }
-        //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
+    //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
+    //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
+}
 
     public void setupSocketAndStreams(String hostName, int portNumber) {
         try {
@@ -170,14 +173,14 @@ public class Controller implements Runnable {
     }
 
     public void setupApplication() {
-        setStreamPlayer(new StreamPlayer());
-        setPlayerThread(new Thread(getStreamPlayer()));
-
         playlist = new Playlist();
 
         View view1 = new View(this);
-        view=view1;
+        view = view1;
         viewThread = new Thread(view);
+
+        setStreamPlayer(new StreamPlayer(playlist));
+        setPlayerThread(new Thread(getStreamPlayer()));
 
         setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));
@@ -198,7 +201,6 @@ public class Controller implements Runnable {
         startView();
         try {
             //while (!isPlaying);
-            handlePacketsFromReceiver();
         } catch (Exception e) {
             e.printStackTrace();
             //controller.closeApp();
@@ -228,9 +230,13 @@ public class Controller implements Runnable {
                     receiverThread.start();
                     playerThread.start();
 
+                    try {
+                        handlePacketsFromReceiver();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
                 }
             }
-
         });
         //JList listOfSongs= new JList(playlist.getSongsSorted().toArray());
         //view.setPlaylist(new JList(playlist.getSongsSorted().toArray()));
@@ -262,5 +268,4 @@ public class Controller implements Runnable {
         controllerThread.start();
         controllerThread.join();
     }
-
 }
