@@ -36,6 +36,7 @@ public class Controller implements Runnable {
     private boolean newSong = false;
     private String hostname;
     private int portNumber;
+    private Controller controller;
 
     private boolean running = true;
 
@@ -48,6 +49,7 @@ public class Controller implements Runnable {
     private Thread senderThread;
     private Thread playerThread;
     private Thread viewThread;
+    private Thread controllerThread;
 
     private void handlePacketsFromReceiver() throws Exception {
         while (running ) {
@@ -66,6 +68,7 @@ public class Controller implements Runnable {
             running = false;
             return;
         }
+
 
         receiver.stopReceiverThread();
         streamPlayer.stopPlayerThread();
@@ -220,42 +223,17 @@ public class Controller implements Runnable {
     public void startView() {
 
         //view = new View(playlist);
-        view.getPlayButton().addActionListener(new ActionListener() {
+     /*   view.getPlayButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //notImplementedPrompt();
                 if (isPlaying) {
-                    playlist.deleteRemainingFiles();
-                    isPlaying = false;
-                    streamPlayer.stopPlayerThread();
-                    receiver.stopReceiverThread();
-                    try {
-                        receiverThread.join();
-                        playerThread.join();
-                        senderThread.join();
-                    } catch (InterruptedException e2) {
-                        log.info("Threads haven't finished!");
-                        return;
-                    }
-                    try {
-                        socket.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    setupThreads();
-                    setupSocketAndStreams(hostname, portNumber);
+
                 } else {
-                    isPlaying = true;
-                    //setupApplication();
-                    senderThread.start();
-                    receiverThread.start();
-                    playerThread.start();
 
                 }
             }
-        });
-        //JList listOfSongs= new JList(playlist.getSongsSorted().toArray());
-        //view.setPlaylist(new JList(playlist.getSongsSorted().toArray()));
+        });*/
         view.getExitButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -276,12 +254,10 @@ public class Controller implements Runnable {
         controller.setPortNumber(Integer.parseInt(args[1]));
         controller.setupSocketAndStreams(controller.getHostname(), controller.getPortNumber());
 
+
         controller.setupApplication();
         controller.startApplication();
 
         //controller.startView();
-        Thread controllerThread = new Thread(controller);
-        controllerThread.start();
-        controllerThread.join();
     }
 }
