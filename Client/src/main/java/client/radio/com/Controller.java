@@ -2,6 +2,7 @@ package client.radio.com;
 
 import javafx.scene.media.MediaPlayer;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @Data
 @Slf4j
+@EqualsAndHashCode(exclude="view")
 public class Controller implements Runnable {
     private Receiver receiver;
     private Playlist playlist;
@@ -31,8 +33,8 @@ public class Controller implements Runnable {
     private DataOutputStream dataOutputStream;
     private MediaPlayer mediaPlayer;
     private View view;
-    private boolean isPlaying =false;
-    private boolean newSong=false;
+    private boolean isPlaying = false;
+    private boolean newSong = false;
 
     private boolean running = true;
 
@@ -46,7 +48,7 @@ public class Controller implements Runnable {
     private Thread playerThread;
     private Thread viewThread;
 
-    private void handlePacketsFromReceiver() throws Exception{
+    private void handlePacketsFromReceiver() throws Exception {
         while (running) {
             DataPacket packet = getReceiver().getDataPackets().poll(timeToWaitForPacketInSeconds, TimeUnit.SECONDS);
             if (packet != null) {
@@ -57,13 +59,14 @@ public class Controller implements Runnable {
             }
         }
     }
-    public void gentleExit(){
+
+    public void gentleExit() {
         receiver.stopReceiverThread();
         streamPlayer.stopPlayerThread();
         try {
             receiverThread.join();
             playerThread.join();
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             return;
         }
         running = false;
@@ -98,6 +101,23 @@ public class Controller implements Runnable {
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
+    public void sendVote(int songId, boolean cancelVote) {
+        //log.info("Send Vote");
+        if (cancelVote) {
+            if (playlist.getCurrentPlaylist().get(songId).isVoted()) {
+                playlist.getCurrentPlaylist().get(songId).setVoted(false);
+                playlist.vote(songId, cancelVote);
+                sender.sendVote(songId, cancelVote);
+            } else
+                log.info("Already unvoted");
+        } else if (!playlist.getCurrentPlaylist().get(songId).isVoted()) {
+            sender.sendVote(songId, cancelVote);
+            playlist.vote(songId,cancelVote);
+        } else
+            log.info("Already voted");
+        view.updatePlaylist();
+    }
+
     private void handleStreamingMusic(DataPacket packet) {
         log.info("MUSIC");
         if (packet.getHeader().getParameters() == 0) {
@@ -108,7 +128,7 @@ public class Controller implements Runnable {
             streamPlayer.handleNewSong();
             streamPlayer.handleMusicStream(packet.getMessageByte());
         } else if (packet.getHeader().getParameters() == 1) {
-            newSong=false;
+            newSong = false;
             log.info("END OF SONG");
         }
     }
@@ -126,6 +146,7 @@ public class Controller implements Runnable {
             log.info("NEW PLAYLIST");
             try {
                 playlist.handleNewPlaylist(packet.getMessageByte());
+                view.updatePlaylist();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -155,8 +176,9 @@ public class Controller implements Runnable {
 
         playlist = new Playlist();
 
-        view = new View(playlist);
-        viewThread=new Thread(view);
+        View view1 = new View(this);
+        view=view1;
+        viewThread = new Thread(view);
 
         setReceiver(new Receiver(dataInputStream));
         setReceiverThread(new Thread(getReceiver()));
@@ -171,9 +193,6 @@ public class Controller implements Runnable {
         viewThread.start();
     }
 
-    public void vote(int songId, boolean cancelVote) {
-        sender.sendVote(songId, cancelVote);
-    }
 
     @Override
     public void run() {
@@ -187,7 +206,7 @@ public class Controller implements Runnable {
         }
     }
 
-    public void startView(){
+    public void startView() {
 
         //view = new View(playlist);
         view.getPlayButton().addActionListener(new ActionListener() {
@@ -215,7 +234,7 @@ public class Controller implements Runnable {
 
         });
         //JList listOfSongs= new JList(playlist.getSongsSorted().toArray());
-        view.setPlaylist(new JList(playlist.getSongsSorted().toArray()));
+        //view.setPlaylist(new JList(playlist.getSongsSorted().toArray()));
         view.getExitButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -224,16 +243,6 @@ public class Controller implements Runnable {
             }
 
         });
-
-        view.getVoteButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                view.notImplementedPrompt();
-
-            }
-
-        });
-
 
     }
 

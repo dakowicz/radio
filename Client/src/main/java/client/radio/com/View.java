@@ -1,13 +1,16 @@
 package client.radio.com;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 
 /**
  * Created by Kamil on 2016-06-06.
@@ -15,23 +18,41 @@ import java.awt.event.ActionListener;
 
 @Data
 @Slf4j
+@EqualsAndHashCode(exclude="controller")
 public class View extends JFrame implements Runnable{
+    private Controller controller;
     private Playlist playlistData;
     private JPanel rootPanel;
-    private JList<Object> playlist;
+    public JList<Song> playlist;
     private JLabel radioLabel;
     private JButton voteButton;
     private JButton playButton;
     private JButton exitButton;
     private JButton recordButton;
-    private boolean isplaying = false;
+    private boolean isPlaying = false;
 
 
-    public View(Playlist playlistInData) {
+    class MyCellRenderer extends DefaultListCellRenderer
+    {
+        public Component getListCellRendererComponent(JList<? extends Song> list, Song value, int index, boolean isSelected, boolean cellHasFocus) {
+        {
+            //super.getListCellRendererComponent(list,value, index, isSelected, cellHasFocus);
+            Color bg = new Color(160, 255, 155);
+            if(value.isVoted())
+                setBackground(bg);
+            setOpaque(true); // otherwise, it's transparent
+            return this;  // DefaultListCellRenderer derived from JLabel, DefaultListCellRenderer.getListCellRendererComponent returns this as well.
+        }
+        }
+    }
+
+    public View(Controller controller1) {
         super("TINy RADIO");
-        playlistData = playlistInData;
-
-        playlist.setListData(playlistData.getSongsToDisplay().toArray());
+        controller=controller1;
+        playlistData = controller.getPlaylist();
+        Song[] songs=new Song[1];
+        playlist.setListData(playlistData.getSongsToDisplay().toArray(songs));
+        playlist.setCellRenderer(new MyCellRenderer());
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -82,6 +103,18 @@ public class View extends JFrame implements Runnable{
             public void actionPerformed(ActionEvent e) {
                 if(playlist.getSelectedIndex()==-1)
                     selectSongPrompt();
+                else {
+                    Song song=playlist.getSelectedValue();
+                    if (song.isVoted()) {
+                        log.info("Send unvote");
+                        controller.sendVote(song.getId(),true);
+                    }
+                    else
+                    if (!song.isVoted()) {
+                        log.info("Send vote");
+                        controller.sendVote(song.getId(),false);
+                    }
+                }
             }
         });
 
@@ -89,11 +122,11 @@ public class View extends JFrame implements Runnable{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //notImplementedPrompt();
-                if (isplaying) {
+                if (isPlaying) {
                     playButton.setIcon(playIcon);
-                    isplaying = false;
+                    isPlaying = false;
                 } else {
-                    isplaying = true;
+                    isPlaying = true;
                     playButton.setIcon(stopIcon);
                 }
             }
@@ -112,6 +145,19 @@ public class View extends JFrame implements Runnable{
             }
         });
 
+        playlist.addFocusListener(new FocusAdapter() {
+        });
+        playlist.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                log.info(playlist.getSelectedValue().toString());
+                if(playlist.getSelectedValue().isVoted()) {
+                    voteButton.setText("Unvote");
+                }
+                else
+                    voteButton.setText("Vote");
+            }
+        });
     }
 
     private void selectSongPrompt() {
@@ -126,6 +172,15 @@ public class View extends JFrame implements Runnable{
     private void premiumVersionPrompt() {
         //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
         JOptionPane.showMessageDialog(View.this, "Upgrade to the premium version for only $0.99/month");
+    }
+    private void alreadyVotedPrompt() {
+        //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
+        JOptionPane.showMessageDialog(View.this, "You've already voted on this song");
+    }
+
+    public void updatePlaylist(){
+        Song[] songs=new Song[1];
+        playlist.setListData(playlistData.getSongsToDisplay().toArray(songs));
     }
 
     public void run() {
