@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -41,7 +40,7 @@ public class Controller implements Runnable {
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 10;
+    private static long timeToWaitForPacketInSeconds = 1000;
 
     private Thread receiverThread;
     private Thread senderThread;
@@ -83,7 +82,7 @@ public class Controller implements Runnable {
                 handleStreamingMusic(packet);
                 break;
             case Header.VOTES:
-                handleVoting(packet);
+                handlePlaylist(packet);
                 break;
         }
     }
@@ -139,7 +138,7 @@ public class Controller implements Runnable {
     }
 
 
-    private void handleVoting(DataPacket packet) {
+    private void handlePlaylist(DataPacket packet) {
         log.info("VOTING");
         //log.info(new String(data));
         if (packet.getHeader().getParameters() == 0) {

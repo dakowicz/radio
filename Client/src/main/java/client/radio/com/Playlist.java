@@ -35,9 +35,13 @@ public class Playlist {
         List<Song> list = getSongsSorted();
         Iterator<Song> iterator = list.iterator();
         while (true) {
-            Song song = iterator.next();
-            if (!song.isPlayed() && !song.isStreamed())
-                return song;
+            try {
+                Song song = iterator.next();
+                if (!song.isPlayed() && !song.isStreamed())
+                    return song;
+            }catch (NoSuchElementException e){
+                return null;
+            }
         }
     }
 
@@ -45,9 +49,13 @@ public class Playlist {
         List<Song> list = getSongsSorted();
         Iterator<Song> iterator = list.iterator();
         while (true) {
-            Song song = iterator.next();
-            if (!song.isPlayed() && song.isStreamed())
-                return song;
+            try {
+                Song song = iterator.next();
+                if (!song.isPlayed() && song.isStreamed())
+                    return song;
+            }catch (NoSuchElementException e){
+                return null;
+            }
         }
     }
     public ArrayList<Song> getSongsToDisplay() {
