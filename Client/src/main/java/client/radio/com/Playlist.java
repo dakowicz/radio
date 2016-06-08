@@ -136,6 +136,17 @@ public class Playlist {
             currentPlaylist.put(song.getId(), song);
         }
     }
+    public void deleteRemainingFiles(){
+        Iterator<Song> iterator = currentPlaylist.values().iterator();
+        while (iterator.hasNext()){
+            Song song= iterator.next();
+            if(song.getFileName().length()!=0) {
+                File file = new File(song.getFileName());
+                file.delete();
+            }
+
+        }
+    }
 
     public void handleNewPlaylist(byte[] data) throws IOException {
         //StringReader buffer= new StringReader(data.toString());
