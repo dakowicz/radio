@@ -145,19 +145,6 @@ public class View extends JFrame implements Runnable{
             }
         });
 
-        playlist.addFocusListener(new FocusAdapter() {
-        });
-        playlist.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                log.info(playlist.getSelectedValue().toString());
-                if(playlist.getSelectedValue().isVoted()) {
-                    voteButton.setText("Unvote");
-                }
-                else
-                    voteButton.setText("Vote");
-            }
-        });
     }
 
     private void selectSongPrompt() {

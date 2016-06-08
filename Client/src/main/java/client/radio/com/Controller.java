@@ -40,7 +40,7 @@ public class Controller implements Runnable {
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 10;
+    private static long timeToWaitForPacketInSeconds = 1000;
 
     private Thread receiverThread;
     private Thread senderThread;
@@ -60,6 +60,12 @@ public class Controller implements Runnable {
     }
 
     public void gentleExit() {
+        playlist.deleteRemainingFiles();
+        if(!receiverThread.isAlive()){
+            running = false;
+            return;
+        }
+
         receiver.stopReceiverThread();
         streamPlayer.stopPlayerThread();
         try {
@@ -201,8 +207,9 @@ public class Controller implements Runnable {
         startView();
         try {
             //while (!isPlaying);
-        } catch (Exception e) {
-            e.printStackTrace();
+            view.getController().handlePacketsFromReceiver();
+        } catch (Exception e2) {
+            e2.printStackTrace();
             //controller.closeApp();
         }
     }
@@ -230,11 +237,6 @@ public class Controller implements Runnable {
                     receiverThread.start();
                     playerThread.start();
 
-                    try {
-                        handlePacketsFromReceiver();
-                    } catch (Exception e2) {
-                        e2.printStackTrace();
-                    }
                 }
             }
         });
