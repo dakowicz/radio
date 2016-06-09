@@ -67,10 +67,10 @@ public class View extends JFrame implements Runnable{
         }
         //this.setAlwaysOnTop(true);
 
-        ImageIcon stopIcon = new ImageIcon("ref/stop.png");
-        ImageIcon playIcon = new ImageIcon("ref/playMy.png");
-        ImageIcon recordIcon = new ImageIcon("ref/record.png");
-        ImageIcon exitIcon = new ImageIcon("ref/exitsmall.png");
+        ImageIcon stopIcon = new ImageIcon("Client/ref/stop.png");
+        ImageIcon playIcon = new ImageIcon("Client/ref/playMy.png");
+        ImageIcon recordIcon = new ImageIcon("Client/ref/record.png");
+        ImageIcon exitIcon = new ImageIcon("Client/ref/exitsmall.png");
 
         playButton.setIcon(playIcon);
         playButton.setOpaque(false);
@@ -103,18 +103,16 @@ public class View extends JFrame implements Runnable{
 
         voteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(playlist.getSelectedIndex()==-1)
+                if (playlist.getSelectedIndex() == -1)
                     selectSongPrompt();
                 else {
-                    Song song=playlist.getSelectedValue();
+                    Song song = playlist.getSelectedValue();
                     if (song.isVoted()) {
                         log.info("Send unvote");
-                        controller.sendVote(song.getId(),true);
-                    }
-                    else
-                    if (!song.isVoted()) {
+                        controller.sendVote(song.getId(), false);
+                    } else if (!song.isVoted()) {
                         log.info("Send vote");
-                        controller.sendVote(song.getId(),false);
+                        controller.sendVote(song.getId(), true);
                     }
                 }
             }
@@ -180,6 +178,21 @@ public class View extends JFrame implements Runnable{
             }
         });
 
+        playlist.addFocusListener(new FocusAdapter() {
+        });
+                playlist.addListSelectionListener(new ListSelectionListener() {
+                        @Override
+                       public void valueChanged(ListSelectionEvent e) {
+                                //log.info(playlist.getSelectedValue().toString());
+                            if(playlist.getSelectedValue()!=null)
+                                if(playlist.getSelectedValue().isVoted()) {
+                                        voteButton.setText("Unvote");
+                                    }
+                                else
+                                    voteButton.setText("Vote");
+                            }
+                    });
+
     }
 
     private void selectSongPrompt() {
@@ -202,7 +215,7 @@ public class View extends JFrame implements Runnable{
 
     public void updatePlaylist(){
         Song[] songs=new Song[1];
-        playlist.setListData(songs);
+        //playlist.setListData(songs);
         playlist.setListData(controller.getPlaylist().getSongsToDisplay().toArray(songs));
         //log.info(playlistData.toString());
     }
