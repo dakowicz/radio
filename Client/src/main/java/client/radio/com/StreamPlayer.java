@@ -116,7 +116,7 @@ public class StreamPlayer implements Runnable {
             playMP3.close();
         }
         running = false;
-        playlist.deleteRemainingFiles();
+        playlist.deleteRemainingFiles();    //@TODO Deleting last file
 //        playlist.getCurrentPlaylist().forEach((k, v) -> {
 //            {
 //                if (Files.exists(Paths.get(v.getFileName()))) {

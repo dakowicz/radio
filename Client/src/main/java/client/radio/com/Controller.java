@@ -108,13 +108,27 @@ public class Controller implements Runnable {
     }
 
     public void sendVote(int songId, boolean isGoodSong) {
-        playlist.getCurrentPlaylist().get(songId).setVoted(isGoodSong);
-        playlist.vote(songId, isGoodSong);
-        if (sender.addVoteToSend(songId, isGoodSong)) {
-            synchronized (senderThread) {
-                senderThread.notify();
+        //log.info("Send Vote");
+        if (isGoodSong) {
+            if (!playlist.getCurrentPlaylist().get(songId).isVoted()) {
+                //playlist.getCurrentPlaylist().get(songId).setVoted(isGoodSong);
+                playlist.vote(songId, isGoodSong);
+                if (sender.addVoteToSend(songId, isGoodSong)) {
+                    synchronized (senderThread) {
+                        senderThread.notify();
+                    }
+                }
+            } else
+                log.info("Already unvoted");
+        } else if (playlist.getCurrentPlaylist().get(songId).isVoted()) {
+            if (sender.addVoteToSend(songId, isGoodSong)) {
+                synchronized (senderThread) {
+                    senderThread.notify();
+                }
             }
-        }
+            playlist.vote(songId, isGoodSong);
+        } else
+            log.info("Already voted");
         view.updatePlaylist();
     }
 
@@ -133,6 +147,8 @@ public class Controller implements Runnable {
         songId += songIdb[3];
         log.info("SongId " + String.valueOf(songId));
 
+
+        //int songId=
         if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
             //if(playlist.)
@@ -164,16 +180,16 @@ public class Controller implements Runnable {
         if (packet.getHeader().getParameters() == 0) {
             log.info("NEW PLAYLIST");
             try {
-                if (playlist.getCurrentPlaylist().isEmpty())
-                    updatePlaylist();
                 playlist.handleNewPlaylist(packet.getMessageByte());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                if(playlist.getCurrentPlaylist().isEmpty())
+                    updatePlaylist();
+        }catch(IOException e){
+            e.printStackTrace();
         }
-        //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
-        //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
+    //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
+    //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
+}
 
     public void setupSocketAndStreams(String hostName, int portNumber) {
         try {

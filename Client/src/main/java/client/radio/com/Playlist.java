@@ -74,7 +74,7 @@ public class Playlist {
         Song playedSong= new Song();
         while (iterator.hasNext()) {
             Song song = iterator.next();
-            if (!(song.isPlayed() | song.isStreamed()))
+            if (!(song.isPlayed() && !song.isStreamed()))
                 toDisplay.add(song);
             else {
                 if (song.isPlayed())
