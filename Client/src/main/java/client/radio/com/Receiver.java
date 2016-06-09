@@ -73,7 +73,6 @@ public class Receiver implements Runnable {
             log.info("Header error");
             e.printStackTrace();
         }
-
         log.info("receiver thread done");
         return;
     }

@@ -52,7 +52,7 @@ public class Controller implements Runnable {
     private Thread controllerThread;
 
     private void handlePacketsFromReceiver() throws Exception {
-        while (running ) {
+        while (running) {
             DataPacket packet = getReceiver().getDataPackets().poll(timeToWaitForPacketInSeconds, TimeUnit.SECONDS);
             if (packet != null) {
                 resolveHeaderType(packet);
@@ -64,12 +64,9 @@ public class Controller implements Runnable {
     }
 
     public void gentleExit() {
-        if(!receiverThread.isAlive()){
+        if (!receiverThread.isAlive()) {
             running = false;
-            return;
         }
-
-
         receiver.stopReceiverThread();
         streamPlayer.stopPlayerThread();
         try {
@@ -110,45 +107,37 @@ public class Controller implements Runnable {
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
 
-    public void sendVote(int songId, boolean cancelVote) {
-        //log.info("Send Vote");
-        if (cancelVote) {
-            if (playlist.getCurrentPlaylist().get(songId).isVoted()) {
-                playlist.getCurrentPlaylist().get(songId).setVoted(false);
-                playlist.vote(songId, cancelVote);
-                sender.sendVote(songId, cancelVote);
-            } else
-                log.info("Already unvoted");
-        } else if (!playlist.getCurrentPlaylist().get(songId).isVoted()) {
-            sender.sendVote(songId, cancelVote);
-            playlist.vote(songId, cancelVote);
-        } else
-            log.info("Already voted");
+    public void sendVote(int songId, boolean isGoodSong) {
+        playlist.getCurrentPlaylist().get(songId).setVoted(isGoodSong);
+        playlist.vote(songId, isGoodSong);
+        if (sender.addVoteToSend(songId, isGoodSong)) {
+            synchronized (senderThread) {
+                senderThread.notify();
+            }
+        }
         view.updatePlaylist();
     }
 
     private void handleStreamingMusic(DataPacket packet) {
         log.info("MUSIC");
-        byte[] songIdb= new byte[4];
-        byte[] songData= new byte[packet.getMessageByte().length-4];
-        for(int i=0;i<4;i++)
-            songIdb[i]=packet.getMessageByte()[i];
-        for(int i=0;i<packet.getMessageByte().length-4;i++)
-            songData[i]=packet.getMessageByte()[i+4];
+        byte[] songIdb = new byte[4];
+        byte[] songData = new byte[packet.getMessageByte().length - 4];
+        for (int i = 0; i < 4; i++)
+            songIdb[i] = packet.getMessageByte()[i];
+        for (int i = 0; i < packet.getMessageByte().length - 4; i++)
+            songData[i] = packet.getMessageByte()[i + 4];
         int songId;
         songId = songIdb[0] << 24;
         songId += songIdb[1] << 16;
         songId += songIdb[2] << 8;
         songId += songIdb[3];
-        log.info("SongId "+String.valueOf(songId));
+        log.info("SongId " + String.valueOf(songId));
 
-
-        //int songId=
         if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
             //if(playlist.)
             //streamPlayer.handleMusicStream(packet.getMessageByte());
-            streamPlayer.handleMusicStream(songData,songId);
+            streamPlayer.handleMusicStream(songData, songId);
         } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
             streamPlayer.handleNewSong(songId);
@@ -175,16 +164,16 @@ public class Controller implements Runnable {
         if (packet.getHeader().getParameters() == 0) {
             log.info("NEW PLAYLIST");
             try {
-                if(playlist.getCurrentPlaylist().isEmpty())
+                if (playlist.getCurrentPlaylist().isEmpty())
                     updatePlaylist();
                 playlist.handleNewPlaylist(packet.getMessageByte());
-        }catch(IOException e){
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
+        //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
-    //handleList(Arrays.copyOfRange(h_data, 7, header.length + 7));
-    //ackVote(Arrays.copyOfRange(h_data, 7, header.length + 7));
-}
 
     public void setupSocketAndStreams(String hostName, int portNumber) {
         try {
@@ -212,11 +201,12 @@ public class Controller implements Runnable {
         setupThreads();
     }
 
-    public void updatePlaylist(){
+    public void updatePlaylist() {
         log.info("updatePlaylist");
         view.updatePlaylist();
     }
-    public void setupThreads(){
+
+    public void setupThreads() {
         setStreamPlayer(new StreamPlayer(playlist));
         setReceiver(new Receiver(dataInputStream));
         setSender(new Sender(dataOutputStream));

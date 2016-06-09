@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
 /**
@@ -20,23 +22,20 @@ import java.util.stream.Stream;
 public class Sender implements Runnable {
     private Socket socket;
     private DataOutputStream senderStream;
+    private BlockingQueue<DataPacket> dataPackets;
+    private boolean running;
 
     public Sender(DataOutputStream senderStream) {
         this.senderStream = senderStream;
-        if(senderStream == null)
-            log.info("null");
+        this.dataPackets = new LinkedBlockingQueue<>();
     }
 
-    public void sendVote(int songId, boolean cancelVote) {
-            Header header = new Header();
-            header.createHeaderVote(cancelVote, (long)32);
-        try {
-            senderStream.write(header.serializeHeader());
-            senderStream.write(intToByteArray(songId));
-        } catch (IOException e){
-            log.info("Error sending vote");
-            e.printStackTrace();
-        }
+    public boolean addVoteToSend(int songId, boolean isSongGood) {
+        Header header = new Header();
+        header.createHeaderVote(isSongGood, (long) 32);
+        DataPacket votePacket = new DataPacket(header, intToByteArray(songId));
+        dataPackets.add(votePacket);
+        return true;
     }
 
     public void sendMessage(File file) {
@@ -46,25 +45,27 @@ public class Sender implements Runnable {
     }
 
     public void run() {
-        //test protocol data
-//        byte[] content2 = {90, 0, 2, 0, 0, 0, 4, (byte) 254, (byte) 255, (byte) 254, (byte) 255};
-//        byte[] content = {1, 2, 3, 4};
-//
-//        while (true) {
-//            try {
-//                for (int i = 0; i < content2.length; i++) {
-//                    senderStream.writeByte(content2[i]);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+        while(running){
+            DataPacket packetToSend = dataPackets.poll();
+            try {
+                if (packetToSend == null) {
+                    synchronized (Thread.currentThread()) {
+                        Thread.currentThread().wait();
+                    }
+                }
+                senderStream.write(packetToSend.getHeader().serializeHeader());
+                senderStream.write(packetToSend.getMessageByte());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
-    private byte[] intToByteArray(int value){
-        return new byte[] {
-                (byte)(value >>> 24),
-                (byte)(value >>> 16),
-                (byte)(value >>> 8),
-                (byte)value};
+
+    private byte[] intToByteArray(int value) {
+        return new byte[]{
+                (byte) (value >>> 24),
+                (byte) (value >>> 16),
+                (byte) (value >>> 8),
+                (byte) value};
     }
 }

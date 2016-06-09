@@ -39,7 +39,7 @@ public class StreamPlayer implements Runnable {
     public synchronized void run() {
         try {
             while (playlist.getNextSongToPlay() == null) {
-                //log.info("czekam");
+                log.info("czekam");
                 try {
                     synchronized (Thread.currentThread()) {
                         Thread.currentThread().wait();
