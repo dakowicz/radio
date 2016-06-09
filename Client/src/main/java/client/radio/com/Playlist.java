@@ -130,7 +130,7 @@ public class Playlist {
     public void updateOrPutSong(Song song) {
         // Map<Integer, Song> songsToBePlayed = songsToPlay();
         if (currentPlaylist.containsKey(song)) {
-            if (!(song.isPlayed() || song.isStreamed()))
+            if (!song.isPlayed() && !song.isStreamed())
                 currentPlaylist.replace(song.getId(), song);
         } else {
             currentPlaylist.put(song.getId(), song);
