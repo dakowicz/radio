@@ -250,9 +250,9 @@ public class Controller implements Runnable {
         log.info("start");
 
         Controller controller = new Controller();
-        controller.setHostname(args[0]);      //@TODO Just for tasting!
+        controller.setHostname(args[0]);
         controller.setPortNumber(Integer.parseInt(args[1]));
-        controller.setupSocketAndStreams(controller.getHostname(), controller.getPortNumber());
+        //controller.setupSocketAndStreams(controller.getHostname(), controller.getPortNumber());
 
 
         controller.setupApplication();
