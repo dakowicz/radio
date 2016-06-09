@@ -102,13 +102,13 @@ public class Playlist {
         return list;
     }
 
-    public void vote(int songId, boolean cancelVote) {
+    public void vote(int songId, boolean isGoodSong){
         try {
-            currentPlaylist.get(songId).setVoted(!cancelVote);
-            if (cancelVote) {
-                currentPlaylist.get(songId).decVotesNumber();
-            } else {
+            currentPlaylist.get(songId).setVoted(isGoodSong);
+            if (isGoodSong) {
                 currentPlaylist.get(songId).incVotesNumber();
+            } else {
+                currentPlaylist.get(songId).decVotesNumber();
             }
         } catch (NullPointerException e) {
             log.info("No such a song");
