@@ -38,7 +38,6 @@ public class StreamPlayer implements Runnable {
     @Override
     public synchronized void run() {
         try {
-            controller.updatePlaylist();
             while (playlist.getNextSongToPlay() == null) {
                 //log.info("czekam");
                 try {
@@ -49,6 +48,7 @@ public class StreamPlayer implements Runnable {
                     e.printStackTrace();
                 }
             }
+            controller.updatePlaylist();
             Song nextSong = playlist.getNextSongToPlay();
             fileToPlayPath = nextSong.getFileName();
             System.out.println(fileToPlayPath);
@@ -60,7 +60,7 @@ public class StreamPlayer implements Runnable {
                 }
                 playMP3 = new Player(fileInputStream);
                 playMP3.play();
-                while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
+                while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?+ sleep
                 }
                 if(running) {
                     controller.updatePlaylist();
@@ -85,7 +85,7 @@ public class StreamPlayer implements Runnable {
     }
 
     public void handleNewSong(int songId) {
-        //Song song = playlist.getCurrentPlaylist().get(songId);
+        Song song = playlist.getCurrentPlaylist().get(songId);
                 //getNextSongToStream();
         song.setStreamed(true);
         song.setFileName("stream" + song.getId());
