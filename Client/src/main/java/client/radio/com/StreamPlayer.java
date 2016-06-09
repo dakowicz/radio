@@ -29,6 +29,7 @@ public class StreamPlayer implements Runnable {
     private boolean running = true;
     private Player playMP3;
     private Playlist playlist;
+    private Controller controller;
 
     public StreamPlayer(Playlist playlist) {
         this.playlist = playlist;
@@ -37,13 +38,13 @@ public class StreamPlayer implements Runnable {
     @Override
     public synchronized void run() {
         try {
+            controller.updatePlaylist();
             while (playlist.getNextSongToPlay() == null) {
-                System.out.println("czekam");
+                //log.info("czekam");
                 try {
                     synchronized (Thread.currentThread()) {
                         Thread.currentThread().wait();
                     }
-                    System.out.println("elo");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -62,6 +63,7 @@ public class StreamPlayer implements Runnable {
                 while (!playMP3.isComplete() && running) {          //Aktywne oczekiwanie?
                 }
                 if(running) {
+                    controller.updatePlaylist();
                     File file = new File(fileToPlayPath);
                     file.delete();
                     nextSong.setPlayed(false);
@@ -82,14 +84,16 @@ public class StreamPlayer implements Runnable {
         return;
     }
 
-    public void handleNewSong() {
-        Song song = playlist.getNextSongToStream();
+    public void handleNewSong(int songId) {
+        //Song song = playlist.getCurrentPlaylist().get(songId);
+                //getNextSongToStream();
         song.setStreamed(true);
         song.setFileName("stream" + song.getId());
         createNewStreamFile(song.getFileName());
     }
 
-    public void handleMusicStream(byte[] data) {
+    public void handleMusicStream(byte[] data, int songId) {
+        fileToAppendPath=playlist.getCurrentPlaylist().get(songId).getFileName();
         try (FileOutputStream output = new FileOutputStream(fileToAppendPath, true)) {
             output.write(data);
         } catch (Exception e) {

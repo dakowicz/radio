@@ -129,16 +129,35 @@ public class Controller implements Runnable {
 
     private void handleStreamingMusic(DataPacket packet) {
         log.info("MUSIC");
+        byte[] songIdb= new byte[4];
+        byte[] songData= new byte[packet.getMessageByte().length-4];
+        for(int i=0;i<4;i++)
+            songIdb[i]=packet.getMessageByte()[i];
+        for(int i=0;i<packet.getMessageByte().length-4;i++)
+            songData[i]=packet.getMessageByte()[i+4];
+        int songId;
+        songId = songIdb[0] << 24;
+        songId += songIdb[1] << 16;
+        songId += songIdb[2] << 8;
+        songId += songIdb[3];
+        log.info("SongId "+String.valueOf(songId));
+
+
+        //int songId=
         if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
-            streamPlayer.handleMusicStream(packet.getMessageByte());
+            //if(playlist.)
+            streamPlayer.handleNewSong(songId);
+            //streamPlayer.handleMusicStream(packet.getMessageByte());
+            streamPlayer.handleMusicStream(songData,songId);
         } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
-            streamPlayer.handleNewSong();
+
             synchronized (playerThread) {
                 playerThread.notify();
             }
-            streamPlayer.handleMusicStream(packet.getMessageByte());
+            //streamPlayer.handleMusicStream(packet.getMessageByte());
+            streamPlayer.handleMusicStream(songData, songId);
         } else if (packet.getHeader().getParameters() == 1) {
             newSong = false;
             log.info("END OF SONG");
@@ -158,7 +177,6 @@ public class Controller implements Runnable {
             log.info("NEW PLAYLIST");
             try {
                 playlist.handleNewPlaylist(packet.getMessageByte());
-                view.updatePlaylist();
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -193,11 +211,15 @@ public class Controller implements Runnable {
         setupThreads();
     }
 
+    public void updatePlaylist(){
+        view.updatePlaylist();
+    }
     public void setupThreads(){
         setStreamPlayer(new StreamPlayer(playlist));
         setReceiver(new Receiver(dataInputStream));
         setSender(new Sender(dataOutputStream));
 
+        streamPlayer.setController(this);
         setPlayerThread(new Thread(getStreamPlayer()));
         setReceiverThread(new Thread(getReceiver()));
         setSenderThread(new Thread(getSender()));
@@ -215,7 +237,8 @@ public class Controller implements Runnable {
             //while (!isPlaying);
             handlePacketsFromReceiver();
         } catch (Exception e2) {
-            e2.printStackTrace();
+            //e2.printStackTrace();
+            return;
             //controller.closeApp();
         }
     }
