@@ -128,7 +128,7 @@ public class View extends JFrame implements Runnable{
                     playButton.setIcon(playIcon);
                     isPlaying = false;
 
-                    //playlist.deleteRemainingFiles();
+                    //controller1.getPlaylist().deleteRemainingFiles();
                     isPlaying = false;
                     controller1.getStreamPlayer().stopPlayerThread();
                     controller1.getReceiver().stopReceiverThread();
@@ -168,6 +168,7 @@ public class View extends JFrame implements Runnable{
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                controller1.getPlaylist().deleteRemainingFiles();
                 setVisible(false);
                 dispose();
             }
