@@ -30,6 +30,7 @@ public class Receiver implements Runnable {
         byte[] data;
         try {
             while (running) {
+                log.info("Receiver thread start");
 
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {
@@ -43,6 +44,7 @@ public class Receiver implements Runnable {
                 if (running) {
                     Header header = new Header(head);
                     data = new byte[(int) header.getLength()];
+                    log.info(String.valueOf(header.getLength()));
                     for (int i = 0; i < (int) header.getLength(); i++) {
                         if (running) {
                             while (receiverStream.available() <= 0 && running) {
@@ -57,6 +59,7 @@ public class Receiver implements Runnable {
                         }
                     }
                     dataPackets.add(new DataPacket(header, data));
+                    log.info("Added new packet");
                 }
             }
         } catch (InterruptedException e) {
