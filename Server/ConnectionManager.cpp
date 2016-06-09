@@ -44,9 +44,6 @@ void ConnectionManager::start() {
     dispatcher.addMessage(data4);
     dispatcher.addMessage(nullptr);
 
-    addClient(10);
-    addClient(20);
-
     this->running = true;
     while(isRunning()) {
         readSet = selectInit(serverSocketDescriptor, readSet);
@@ -128,6 +125,7 @@ void ConnectionManager::setNonBlockingSocketState(int newSocketDescriptor) const
     if (setsockopt (newSocketDescriptor, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(timeout)) < 0) {
         perror("setsockopt failed\n");
     }
+
 }
 
 timeval &ConnectionManager::setTimeout(timeval &timeout) const {

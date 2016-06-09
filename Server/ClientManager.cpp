@@ -13,7 +13,8 @@ void ClientManager::handle(const std::shared_ptr<AtomicMap <int, ClientManager *
     std::thread senderThread(&Sender::handle, &sender);
 
     socketListenerThread.join();
-    senderThread.join();
+//    sender.setConnectionClosed(true);
+//    senderThread.join();
 
     deleteClient();
     unregisterThread(blockingMap);

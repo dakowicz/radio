@@ -59,6 +59,7 @@ void AtomicMap<K, V>::erase(K key, V value) {
     std::unique_lock<std::shared_timed_mutex> lock(mutex);
     if(*map[key] == *value) {
         map.erase(key);
+        delete value;
         logger.log("Erased from map");
     }
     lock.unlock();

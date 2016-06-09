@@ -17,9 +17,9 @@ Data * TCPListener::readMessage() {
 }
 
 Data *TCPListener::getMessage() const {
-    if(isConnectionClosed){
-        return new Data(DataType::CLOSED, nullptr, 0);
-    }
+//    if(connectionClosed){
+//        return new Data(DataType::CLOSED, nullptr, 0);
+//    }
     if(isMessageComplete){
         return new Data((DataType) header->getType(), contentBuffer, header->getLength());
     }
@@ -39,6 +39,7 @@ void TCPListener::readMessageContent() {
 void TCPListener::readHeader() {
     if(headerBuffer == nullptr) {
         resetHeader();
+        isMessageComplete = false;
         contentBuffer = nullptr;
         headerBuffer = new char[Header::SIZE];
         bytesToRead = Header::SIZE;
@@ -59,7 +60,8 @@ void TCPListener::readBytes(char *buffer) {
     if(isReadSuccessful(payload)) {
         updatePayload(payload);
     }else if(connectionHasBeenClosed(payload)) {
-        //closeConnection();
+
+        closeConnection();
     } else {
         checkErrorCode(payload);
     }
@@ -98,7 +100,7 @@ void TCPListener::checkIfMessageComplete() {
 bool TCPListener::isReadingComplete() const { return bytesToRead == 0; }
 
 void TCPListener::closeConnection() {
-    isConnectionClosed = true;
+    connectionClosed = true;
 }
 
 void TCPListener::checkErrorCode(int payload) {

@@ -9,6 +9,7 @@
 #include <fstream>
 #include <cstring>
 #include <unistd.h>
+#include <atomic>
 #include "Logger.h"
 
 
@@ -24,11 +25,15 @@ public:
         delete file;
     }
 
-    void sendMusic(char *message, int messageSize)const;
+    void sendMusic(char *message, int messageSize);
 
-    void sendVotes(char *message, int messageSize)const;
+    void sendVotes(char *message, int messageSize);
 
-    void sendConnectionInfo(char *message, int messageSize)const;
+    void sendConnectionInfo(char *message, int messageSize);
+
+    bool isConnectionClosed();
+
+    void setConnectionClosed();
 
 private:
 
@@ -38,17 +43,19 @@ private:
 
     static std::string MODULE_NAME;
 
-    void send(char *header, char *message, int messageSize)const;
+    void sendMessage(char *header, char *message, int messageSize);
 
     void addHeader(char *header, char *dataToSend);
 
     std::ofstream *file;
 
-    void writeData(char *dataToSend, int dataToSendSize) const;
+    void writeData(char *dataToSend, int dataToSendSize);
 
     void addMessage(char *message, char *dataToSend, int messageSize) const;
 
     int pointerPosition;
+
+    std::atomic<bool> connectionClosed;
 };
 
 

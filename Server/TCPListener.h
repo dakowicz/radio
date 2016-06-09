@@ -25,6 +25,8 @@ public:
 
     Data * readMessage();
 
+    const bool isConnectionsClosed() const { return connectionClosed.load(); }
+
 private:
 
     int socketDescriptor;
@@ -67,7 +69,7 @@ private:
 
     void closeConnection();
 
-    bool isConnectionClosed;
+    std::atomic<bool>connectionClosed;
 
     void checkErrorCode(int payload);
 

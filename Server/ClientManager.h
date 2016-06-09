@@ -16,6 +16,9 @@ public:
 
     ClientManager(Dispatcher &dispatcher, int newSocketDescriptor) : socketDescriptor(newSocketDescriptor), socketListener(dispatcher, newSocketDescriptor),
             sender(newSocketDescriptor), logger(MODULE_NAME, newSocketDescriptor) {}
+    ~ClientManager(){
+        logger.log("destructor");
+    }
 
     void handle(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
 

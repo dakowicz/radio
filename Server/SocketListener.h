@@ -19,17 +19,11 @@ public:
 
     void handle();
 
-    const bool isRunning() const { return running.load(); }
-
-    void setRunning(bool val) { this->running = val; }
-
     void addReadRequest();
 
     void resetReadReaquestCounter();
 
 private:
-
-    std::atomic<bool> running;
 
     int socketDescriptor;
 
@@ -50,6 +44,8 @@ private:
     void waitForRequest();
 
     Data *readMessage();
+
+    bool isConnectionClosed();
 };
 
 #endif //SERVER_SOCKETLISTENER_H

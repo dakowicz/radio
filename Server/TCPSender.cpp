@@ -2,39 +2,45 @@
 // Created by tomasz on 24.05.16.
 //
 
+#include <sys/socket.h>
 #include "TCPSender.h"
 #include "Header.h"
 
 
 std::string TCPSender::MODULE_NAME = "TCPSender";
 
-void TCPSender::sendMusic(char *message, int messageSize)const {
+void TCPSender::sendMusic(char *message, int messageSize) {
     char *header = Header::createHeaderStream();
-    send(header, message, messageSize);
+    sendMessage(header, message, messageSize);
 }
 
-void TCPSender::sendVotes(char *message, int messageSize)const {
+void TCPSender::sendVotes(char *message, int messageSize) {
     char *header = Header::createHeaderVote();
-    send(header, message, messageSize);
+    sendMessage(header, message, messageSize);
 }
 
-void TCPSender::sendConnectionInfo(char *message, int messageSize)const {
+void TCPSender::sendConnectionInfo(char *message, int messageSize) {
     char *header = Header::createHeaderConnect();
-    send(header, message, messageSize);
+    sendMessage(header, message, messageSize);
 }
 
-void TCPSender::send(char *header, char *message, int messageSize)const {
+void TCPSender::sendMessage(char *header, char *message, int messageSize) {
     writeData(header, Header::SIZE);
     writeData(message, messageSize);
 //    if(messageSize < 80000)
 //        file->close();
 }
 
-void TCPSender::writeData(char *dataToSend, int dataToSendSize) const {
+void TCPSender::writeData(char *dataToSend, int dataToSendSize) {
     if(dataToSend != nullptr) {
 //        file->write(dataToSend, dataToSendSize);
-        int n = (int) write(socketDescriptor, dataToSend, dataToSendSize);
-        logger.log(std::to_string(dataToSendSize));
+        int bytesSent = (int) send(socketDescriptor, dataToSend, dataToSendSize, MSG_NOSIGNAL);
+        if ( bytesSent < 0 && errno == EPIPE) {
+            logger.log("EPIPE error");
+            setConnectionClosed();
+        } else {
+            logger.log(std::to_string(bytesSent));
+        }
     }
 }
 
@@ -50,5 +56,17 @@ void TCPSender::addMessage(char *message, char *dataToSend, int messageSize) con
         memcpy(dataToSend + pointerPosition, message, messageSize);
     }
 }
+
+void TCPSender::setConnectionClosed() {
+    connectionClosed = true;
+}
+
+bool TCPSender::isConnectionClosed() {
+    return connectionClosed.load();
+}
+
+
+
+
 
 

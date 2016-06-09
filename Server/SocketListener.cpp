@@ -8,8 +8,8 @@
 std::string SocketListener::MODULE_NAME = "SocketListener";
 
 void SocketListener::handle() {
-    this->running = true;
-    while(isRunning()) {
+
+    while(!isConnectionClosed()) {
         waitForRequest();
         Data *newMessage = readMessage();
         if(newMessage != nullptr) {
@@ -42,6 +42,12 @@ void SocketListener::resetReadReaquestCounter() {
     readRequestsCounter = 0;
     lock.unlock();
 }
+
+bool SocketListener::isConnectionClosed() {
+    return this->tcpListener.isConnectionsClosed();
+}
+
+
 
 
 

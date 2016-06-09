@@ -8,8 +8,8 @@ std::string Sender::MODULE_NAME = "Sender";
 
 void Sender::handle() {
     Data *dataFromQueue;
-    this->running = true;
-    while(isRunning()) {
+
+    while(!isConnectionClosed()) {
         dataFromQueue = atomicQueue.pop();
         sendData(dataFromQueue);
     }
@@ -35,17 +35,17 @@ void Sender::sendData(Data *data) {
     }
 }
 
-void Sender::sendConnection(Data *data) const {
+void Sender::sendConnection(Data *data) {
     logger.log("Sending data type CONNECTION");
     tcpSender.sendConnectionInfo(data->getContent(), data->getSize());
 }
 
-void Sender::sendVotes(Data *data) const {
+void Sender::sendVotes(Data *data) {
     logger.log("Sending data type VOTES");
     tcpSender.sendVotes(data->getContent(), data->getSize());
 }
 
-void Sender::sendStream(Data *data) const {
+void Sender::sendStream(Data *data) {
     logger.log("Sending data type STREAM");
     tcpSender.sendMusic(data->getContent(), data->getSize());
 }
@@ -57,3 +57,14 @@ void Sender::addMessage(Data *message) {
 void Sender::wrongDataType() {
     logger.log("Unknown operation type");
 }
+
+bool Sender::isConnectionClosed() {
+    return tcpSender.isConnectionClosed();
+}
+
+void Sender::setConnectionClosed(bool i) {
+    tcpSender.setConnectionClosed();
+}
+
+
+

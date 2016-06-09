@@ -20,11 +20,9 @@ public:
 
     void handle();
 
-    const bool isRunning() const { return running.load(); }
-
-    void setRunning(bool val) { this->running = val; }
-
     void addMessage(Data *message);
+
+    void setConnectionClosed(bool i);
 
 private:
 
@@ -42,13 +40,15 @@ private:
 
     static std::string MODULE_NAME;
 
-    void sendConnection(Data *data) const;
+    void sendConnection(Data *data);
 
-    void sendVotes(Data *data) const;
+    void sendVotes(Data *data);
 
     void sendData(Data *data);
 
-    void sendStream(Data *data) const;
+    void sendStream(Data *data);
+
+    bool isConnectionClosed();
 };
 
 
