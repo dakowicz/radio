@@ -68,7 +68,9 @@ public class StreamPlayer implements Runnable {
                     file.delete();
                     nextSong.setPlayed(false);
                     nextSong.setStreamed(false);
+                    nextSong.setVoted(false);
                     nextSong.setVotesNumber(0);
+                    log.info("Set Votes to 0");
 
                     nextSong = playlist.getNextSongToPlay();
                     if (nextSong != null) {

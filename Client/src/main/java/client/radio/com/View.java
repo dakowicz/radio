@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -20,8 +21,8 @@ import java.io.IOException;
 
 @Data
 @Slf4j
-@EqualsAndHashCode(exclude="controller")
-public class View extends JFrame implements Runnable{
+@EqualsAndHashCode(exclude = "controller")
+public class View extends JFrame implements Runnable {
     private Controller controller;
     private Playlist playlistData;
     private JPanel rootPanel;
@@ -31,29 +32,38 @@ public class View extends JFrame implements Runnable{
     private JButton playButton;
     private JButton exitButton;
     private JButton recordButton;
+    private JRadioButton sendFileRadioButton;
+    private JProgressBar progressBar1;
+    private JButton chooseFileButton;
+    private JButton sendFileButton;
+    private JPanel fileSendSection;
+    private JTextArea flieNameArea;
+    private JPanel fileSendingPanel;
+    private JTextPane fileName;
     private boolean isPlaying = false;
+    public File fileToSend;
 
 
-    class MyCellRenderer extends DefaultListCellRenderer
-    {
+    class MyCellRenderer extends DefaultListCellRenderer {
         public Component getListCellRendererComponent(JList<? extends Song> list, Song value, int index, boolean isSelected, boolean cellHasFocus) {
-        {
-            //super.getListCellRendererComponent(list,value, index, isSelected, cellHasFocus);
-            Color bg = new Color(160, 255, 155);
-            if(value.isVoted())
-                setBackground(bg);
-            setOpaque(true); // otherwise, it's transparent
-            return this;  // DefaultListCellRenderer derived from JLabel, DefaultListCellRenderer.getListCellRendererComponent returns this as well.
-        }
+            {
+                //super.getListCellRendererComponent(list,value, index, isSelected, cellHasFocus);
+                Color bg = new Color(160, 255, 155);
+                if (value.isVoted())
+                    setBackground(bg);
+                setOpaque(true); // otherwise, it's transparent
+                return this;  // DefaultListCellRenderer derived from JLabel, DefaultListCellRenderer.getListCellRendererComponent returns this as well.
+            }
         }
     }
 
     public View(Controller controller1) {
         super("TINy RADIO");
-        controller=controller1;
+        controller = controller1;
         playlistData = controller.getPlaylist();
-        Song[] songs=new Song[1];
-        playlist.setListData(playlistData.getSongsToDisplay().toArray(songs));
+        Song[] songs = new Song[1];
+        if (!playlistData.getCurrentPlaylist().isEmpty())
+            playlist.setListData(playlistData.getSongsToDisplay().toArray(songs));
         playlist.setCellRenderer(new MyCellRenderer());
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -86,6 +96,10 @@ public class View extends JFrame implements Runnable{
         exitButton.setOpaque(false);
         exitButton.setContentAreaFilled(false);
         exitButton.setBorderPainted(false);
+
+        fileSendSection.setVisible(false);
+        fileSendingPanel.setVisible(false);
+
 
         MoveMouseListener mml = new MoveMouseListener(rootPanel);
         rootPanel.addMouseListener(mml);
@@ -180,19 +194,62 @@ public class View extends JFrame implements Runnable{
 
         playlist.addFocusListener(new FocusAdapter() {
         });
-                playlist.addListSelectionListener(new ListSelectionListener() {
-                        @Override
-                       public void valueChanged(ListSelectionEvent e) {
-                                //log.info(playlist.getSelectedValue().toString());
-                            if(playlist.getSelectedValue()!=null)
-                                if(playlist.getSelectedValue().isVoted()) {
-                                        voteButton.setText("Unvote");
-                                    }
-                                else
-                                    voteButton.setText("Vote");
-                            }
-                    });
+        playlist.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                //log.info(playlist.getSelectedValue().toString());
+                if (playlist.getSelectedValue() != null)
+                    if (playlist.getSelectedValue().isVoted()) {
+                        voteButton.setText("Unvote");
+                    } else
+                        voteButton.setText("Vote");
+            }
+        });
 
+        sendFileRadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (getSendFileRadioButton().isSelected()) {
+                    fileSendSection.setVisible(true);
+                    pack();
+                } else {
+                    fileSendSection.setVisible(false);
+                    pack();
+                }
+            }
+        });
+
+        JFileChooser fileChooser = new JFileChooser();
+        //fileChooser.setCurrentDirectory(new File(System.getProperties("user.home")));
+        chooseFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int result = fileChooser.showOpenDialog(new JFrame());
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    fileToSend = fileChooser.getSelectedFile();
+                    getFlieNameArea().append(fileToSend.toString());
+                    log.info(fileToSend.toString());
+                    fileSendingPanel.setVisible(true);
+                    pack();
+                }
+
+            }
+        });
+        sendFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fileToSend != null) {
+                    sendFileButton.setEnabled(false);
+                    voteButton.setEnabled(false);
+                    controller1.getSender().sendFile(fileToSend);
+                }
+            }
+        });
+    }
+
+    public void updateProgressBar(int progress) {
+        if (progress > 0 && progress < 100)
+            progressBar1.setValue(progress);
     }
 
     private void selectSongPrompt() {
@@ -208,13 +265,14 @@ public class View extends JFrame implements Runnable{
         //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
         JOptionPane.showMessageDialog(View.this, "Upgrade to the premium version for only $0.99/month");
     }
+
     private void alreadyVotedPrompt() {
         //JOptionPane.showConfirmDialog(View.this, "Not implemented yet");
         JOptionPane.showMessageDialog(View.this, "You've already voted on this song");
     }
 
-    public void updatePlaylist(){
-        Song[] songs=new Song[1];
+    public void updatePlaylist() {
+        Song[] songs = new Song[1];
         //playlist.setListData(songs);
         playlist.setListData(controller.getPlaylist().getSongsToDisplay().toArray(songs));
         //log.info(playlistData.toString());

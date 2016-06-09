@@ -181,7 +181,8 @@ public class Controller implements Runnable {
             log.info("NEW PLAYLIST");
             try {
                 playlist.handleNewPlaylist(packet.getMessageByte());
-                if(playlist.getCurrentPlaylist().isEmpty())
+                log.info(String.valueOf(view.getPlaylist().getModel().getSize()));
+                if(view.getPlaylist().getModel().getSize()==1)
                     updatePlaylist();
         }catch(IOException e){
             e.printStackTrace();
