@@ -151,12 +151,16 @@ public class Controller implements Runnable {
         //int songId=
         if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
-            //if(playlist.)
+            if(playlist.getCurrentPlaylist().get(songId).getFileName()==null)
+                streamPlayer.handleNewSong(songId);
+            synchronized (playerThread) {
+                playerThread.notify();
+            }
             //streamPlayer.handleMusicStream(packet.getMessageByte());
             streamPlayer.handleMusicStream(songData, songId);
         } else if (packet.getHeader().getParameters() == 2) {
             log.info("NEW SONG");
-            streamPlayer.handleNewSong(songId);
+            //streamPlayer.handleNewSong(songId);
             synchronized (playerThread) {
                 playerThread.notify();
             }
@@ -182,7 +186,7 @@ public class Controller implements Runnable {
             try {
                 playlist.handleNewPlaylist(packet.getMessageByte());
                 log.info(String.valueOf(view.getPlaylist().getModel().getSize()));
-                if(view.getPlaylist().getModel().getSize()==1)
+                if(view.getPlaylist().getModel().getSize()==0)
                     updatePlaylist();
         }catch(IOException e){
             e.printStackTrace();
