@@ -1,6 +1,5 @@
 package client.radio.com;
 
-import javazoom.jl.player.Player;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -37,8 +37,10 @@ public class View extends JFrame implements Runnable {
     private JButton chooseFileButton;
     private JButton sendFileButton;
     private JPanel fileSendSection;
-    private JTextArea flieNameArea;
+    private JTextArea fileNameArea;
     private JPanel fileSendingPanel;
+    private JTextArea artistField;
+    private JTextArea titleField;
     private JTextPane fileName;
     private boolean isPlaying = false;
     public File fileToSend;
@@ -227,7 +229,7 @@ public class View extends JFrame implements Runnable {
                 int result = fileChooser.showOpenDialog(new JFrame());
                 if (result == JFileChooser.APPROVE_OPTION) {
                     fileToSend = fileChooser.getSelectedFile();
-                    getFlieNameArea().append(fileToSend.toString());
+                    getFileNameArea().append(fileToSend.toString());
                     log.info(fileToSend.toString());
                     fileSendingPanel.setVisible(true);
                     pack();
@@ -239,17 +241,70 @@ public class View extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (fileToSend != null) {
+                    String author= artistField.getText();
+                    if(author.equals("Artist")){
+                        JOptionPane.showMessageDialog(View.this, "Please give the Artist name");
+                        return;
+                    }
+                    String title= titleField.getText();
+                    if(title.equals("Title")){
+                        JOptionPane.showMessageDialog(View.this, "Please give the Song name");
+                        return;
+                    }
+
+                    String titleAndArtist=title+'|'+author;
+                    if(titleAndArtist.getBytes().length>128){
+                        JOptionPane.showMessageDialog(View.this, "Artist and song names are to long");
+                        return;
+                    }
                     sendFileButton.setEnabled(false);
                     voteButton.setEnabled(false);
-                    controller1.getSender().sendFile(fileToSend);
+                    artistField.setEnabled(false);
+                    titleField.setEnabled(false);
+                    controller1.getSender().sendFile(fileToSend,titleAndArtist.getBytes());
                 }
+            }
+        });
+        artistField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                artistField.setText("");
+            }
+
+            public void focusLost(FocusEvent e) {
+                if (artistField.getText().trim().equals(""))
+                    artistField.setText("Artist");
+            }
+        });
+
+        titleField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                titleField.setText("");
+            }
+            public void focusLost( FocusEvent e) {
+                if(titleField.getText().trim().equals(""))
+                    titleField.setText("Title");
             }
         });
     }
 
     public void updateProgressBar(int progress) {
         if (progress > 0 && progress < 100)
+            if(progress<progressBar1.getValue())
+                return;
             progressBar1.setValue(progress);
+    }
+
+    public void fileSendFinished(){
+
+        sendFileButton.setEnabled(true);
+        voteButton.setEnabled(true);
+        artistField.setEnabled(true);
+        titleField.setEnabled(true);
+        artistField.setText("Artist");
+        titleField.setText("Title");
+        fileNameArea.setText("");
     }
 
     private void selectSongPrompt() {

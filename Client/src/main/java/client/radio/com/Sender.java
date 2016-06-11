@@ -41,7 +41,7 @@ public class Sender implements Runnable {
     public void sendMessage(File file) {
     }
 
-    public void sendFile(File file) {
+    public void sendFile(File file,byte[] bytes) {
     }
 
     public void run() {
