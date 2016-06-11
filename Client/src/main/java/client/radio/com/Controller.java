@@ -41,7 +41,7 @@ public class Controller implements Runnable {
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 10;
+    private static long timeToWaitForPacketInSeconds = 15;
 
     private Thread receiverThread;
     private Thread senderThread;
@@ -62,14 +62,14 @@ public class Controller implements Runnable {
     }
 
     public void gentleExit() {
-        if (!receiverThread.isAlive()) {
-            running = false;
-        }
         receiver.stopReceiverThread();
         streamPlayer.stopPlayerThread();
+        sender.stopSenderThread();
+        controllerThread.interrupt();
         try {
             receiverThread.join();
             playerThread.join();
+            controllerThread.join();
         } catch (InterruptedException e) {
             return;
         }
@@ -104,6 +104,7 @@ public class Controller implements Runnable {
         }
         // disconnect(Arrays.copyOfRange(h_data, 7, header.length + 7));
     }
+
 
     public void sendVote(int songId, boolean isGoodSong) {
         //log.info("Send Vote");
@@ -146,7 +147,6 @@ public class Controller implements Runnable {
         log.info("SongId " + String.valueOf(songId));
 
 
-        //int songId=
         if (packet.getHeader().getParameters() == 0) {
             log.info("MP3 DATA");
             if(playlist.getCurrentPlaylist().get(songId).getFileName()==null)
@@ -230,6 +230,7 @@ public class Controller implements Runnable {
         setSender(new Sender(dataOutputStream));
 
         streamPlayer.setController(this);
+        sender.setController(this);
         setPlayerThread(new Thread(getStreamPlayer()));
         setReceiverThread(new Thread(getReceiver()));
         setSenderThread(new Thread(getSender()));

@@ -61,7 +61,7 @@ public class StreamPlayer implements Runnable {
                 playMP3 = new Player(fileInputStream);
                 playMP3.play();
                 while (!playMP3.isComplete() && running) {
-                    Thread.currentThread().sleep(500);
+                    Thread.sleep(5);
                 }
                 if(running) {
                     controller.updatePlaylist();
@@ -110,6 +110,7 @@ public class StreamPlayer implements Runnable {
         try (FileOutputStream output = new FileOutputStream(fileToAppendPath, true)) {
             output.write(data);
         } catch (Exception e) {
+            log.info("BOOM!");
             e.printStackTrace();
         }
     }
@@ -129,18 +130,9 @@ public class StreamPlayer implements Runnable {
             playMP3.close();
         }
         running = false;
+        synchronized (controller.getPlayerThread()){
+            controller.getPlayerThread().notify();
+        }
         playlist.deleteRemainingFiles();    //@TODO Deleting last file
-//        playlist.getCurrentPlaylist().forEach((k, v) -> {
-//            {
-//                if (Files.exists(Paths.get(v.getFileName()))) {
-//                    try {
-//                        Files.delete(Paths.get(v.getFileName()));
-//                    } catch (IOException e) {
-//                        log.info("Unable to delete a file");
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
     }
 }
