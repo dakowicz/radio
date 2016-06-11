@@ -22,7 +22,7 @@ public class Playlist {
     private ConcurrentMap<Integer, Song> currentPlaylist;       //Sprawdzić jak działa
     private CSVParser parser;
     private Vector<ConcurrentMap> mapVector;
-   // private StreamPlayer streamPlayer;
+    // private StreamPlayer streamPlayer;
 
 
     public Playlist() {
@@ -39,7 +39,7 @@ public class Playlist {
                 Song song = iterator.next();
                 if (!song.isPlayed() && !song.isStreamed())
                     return song;
-            }catch (NoSuchElementException e){
+            } catch (NoSuchElementException e) {
                 return null;
             }
         }
@@ -53,11 +53,12 @@ public class Playlist {
                 Song song = iterator.next();
                 if (!song.isPlayed() && song.isStreamed())
                     return song;
-            }catch (NoSuchElementException e){
+            } catch (NoSuchElementException e) {
                 return null;
             }
         }
     }
+
     public ArrayList<Song> getSongsToDisplay() {
         List<Song> list = new ArrayList<Song>(currentPlaylist.values());
         Comparator<Song> votingComparator = new Comparator<Song>() {
@@ -70,8 +71,7 @@ public class Playlist {
         ArrayList<Song> toDisplay = new ArrayList<>();
         ArrayList<Song> streamedSongs = new ArrayList<>();
         streamedSongs.add(new Song());
-        StringBuilder stringBuilder;
-        Song playedSong= new Song();
+        Song playedSong = new Song();
         while (iterator.hasNext()) {
             Song song = iterator.next();
             if (!(song.isPlayed() && !song.isStreamed()))
@@ -83,7 +83,7 @@ public class Playlist {
                     streamedSongs.add(song);
             }
         }
-        if (playedSong.getId()!=0) {
+        if (playedSong.getId() != 0) {
             streamedSongs.add(0, playedSong);
             streamedSongs.addAll(toDisplay);
             return streamedSongs;
@@ -102,7 +102,7 @@ public class Playlist {
         return list;
     }
 
-    public void vote(int songId, boolean isGoodSong){
+    public void vote(int songId, boolean isGoodSong) {
         try {
             currentPlaylist.get(songId).setVoted(isGoodSong);
             if (isGoodSong) {
@@ -136,15 +136,15 @@ public class Playlist {
             currentPlaylist.put(song.getId(), song);
         }
     }
-    public void deleteRemainingFiles(){
+
+    public void deleteRemainingFiles() {
         Iterator<Song> iterator = currentPlaylist.values().iterator();
-        while (iterator.hasNext()){
-            Song song= iterator.next();
-            if(song.getFileName()!=null && song.getFileName().length()!=0) {
+        while (iterator.hasNext()) {
+            Song song = iterator.next();
+            if (song.getFileName() != null && song.getFileName().length() != 0) {
                 File file = new File(song.getFileName());
                 file.delete();
             }
-
         }
     }
 
