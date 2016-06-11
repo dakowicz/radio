@@ -79,10 +79,10 @@ public class View extends JFrame implements Runnable {
         }
         //this.setAlwaysOnTop(true);
 
-        ImageIcon stopIcon = new ImageIcon("Client/ref/stop.png");
-        ImageIcon playIcon = new ImageIcon("Client/ref/playMy.png");
-        ImageIcon recordIcon = new ImageIcon("Client/ref/record.png");
-        ImageIcon exitIcon = new ImageIcon("Client/ref/exitsmall.png");
+        ImageIcon stopIcon = new ImageIcon("ref/stop.png");
+        ImageIcon playIcon = new ImageIcon("ref/playMy.png");
+        ImageIcon recordIcon = new ImageIcon("ref/record.png");
+        ImageIcon exitIcon = new ImageIcon("ref/exitsmall.png");
 
         playButton.setIcon(playIcon);
         playButton.setOpaque(false);

@@ -1,13 +1,16 @@
 package client.radio.com;
 
-import groovy.json.internal.ArrayUtils;
+import com.sun.tools.javac.util.ArrayUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,13 +27,14 @@ public class Sender implements Runnable {
     private DataOutputStream senderStream;
     private BlockingQueue<DataPacket> dataPackets;
     private boolean running;
+    private Controller controller;
 
     public Sender(DataOutputStream senderStream) {
         this.senderStream = senderStream;
         this.dataPackets = new LinkedBlockingQueue<>();
     }
 
-    public boolean addVoteToSend(int songId, boolean isSongGood) {
+    public boolean sendVote(int songId, boolean isSongGood) {
         Header header = new Header();
         header.createHeaderVote(isSongGood, (long) 32);
         DataPacket votePacket = new DataPacket(header, intToByteArray(songId));
@@ -41,11 +45,35 @@ public class Sender implements Runnable {
     public void sendMessage(File file) {
     }
 
-    public void sendFile(File file,byte[] bytes) {
+    public boolean sendFile(File file, byte[] songInfoByteArray){
+        try {
+            byte[] fileByteArray = Files.readAllBytes(file.toPath());
+            return addFileToSend(fileByteArray, songInfoByteArray);
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    private boolean addFileToSend(byte[] fileByteArray, byte[] songInfoByteArray) {
+        Header header = new Header();
+
+        header.createHeaderFile(false, (byte) songInfoByteArray.length, fileByteArray.length);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            outputStream.write(songInfoByteArray);
+            outputStream.write(fileByteArray);
+        } catch (Exception e) {
+            return false;
+        }
+
+        byte byteArrayToSend[] = outputStream.toByteArray();
+        dataPackets.add(new DataPacket(header, byteArrayToSend));
+        return true;
     }
 
     public void run() {
-        while(running){
+        while (running) {
             DataPacket packetToSend = dataPackets.poll();
             try {
                 if (packetToSend == null) {
@@ -55,10 +83,18 @@ public class Sender implements Runnable {
                 }
                 senderStream.write(packetToSend.getHeader().serializeHeader());
                 senderStream.write(packetToSend.getMessageByte());
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopSenderThread() {
+        running = false;
+        synchronized (controller.getSenderThread()) {
+            controller.getSenderThread().notify();
+        }
+
     }
 
     private byte[] intToByteArray(int value) {

@@ -30,20 +30,18 @@ public class Controller implements Runnable {
     private Socket socket;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
-    private MediaPlayer mediaPlayer;
     private View view;
     private boolean isPlaying = false;
     private boolean newSong = false;
     private String hostname;
     private int portNumber;
-    private Controller controller;
 
     private boolean running = true;
 
     /**
      * To prevent from too large packets
      */
-    private static long timeToWaitForPacketInSeconds = 1000;
+    private static long timeToWaitForPacketInSeconds = 10;
 
     private Thread receiverThread;
     private Thread senderThread;
@@ -113,7 +111,7 @@ public class Controller implements Runnable {
             if (!playlist.getCurrentPlaylist().get(songId).isVoted()) {
                 //playlist.getCurrentPlaylist().get(songId).setVoted(isGoodSong);
                 playlist.vote(songId, isGoodSong);
-                if (sender.addVoteToSend(songId, isGoodSong)) {
+                if (sender.sendVote(songId, isGoodSong)) {
                     synchronized (senderThread) {
                         senderThread.notify();
                     }
@@ -121,7 +119,7 @@ public class Controller implements Runnable {
             } else
                 log.info("Already unvoted");
         } else if (playlist.getCurrentPlaylist().get(songId).isVoted()) {
-            if (sender.addVoteToSend(songId, isGoodSong)) {
+            if (sender.sendVote(songId, isGoodSong)) {
                 synchronized (senderThread) {
                     senderThread.notify();
                 }
@@ -215,9 +213,8 @@ public class Controller implements Runnable {
         setupSocketAndStreams(hostname, portNumber);
         playlist = new Playlist();
 
-        View view1 = new View(this);
-        view = view1;
-        viewThread = new Thread(view);
+        setView(new View(this));
+        viewThread = new Thread(getView());
 
         setupThreads();
     }
