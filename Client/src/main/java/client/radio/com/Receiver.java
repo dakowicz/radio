@@ -29,8 +29,8 @@ public class Receiver implements Runnable {
     public synchronized void run() {
         byte[] data;
         try {
+            log.info("Receiver thread start");
             while (running) {
-                log.info("Receiver thread start");
 
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {

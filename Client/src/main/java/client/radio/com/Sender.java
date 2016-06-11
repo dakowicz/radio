@@ -1,20 +1,19 @@
 package client.radio.com;
 
-import com.sun.tools.javac.util.ArrayUtils;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
+
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.Arrays;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Stream;
+
 
 /**
  * Created by Michał on 2016-04-23.
@@ -83,7 +82,10 @@ public class Sender implements Runnable {
                 }
                 senderStream.write(packetToSend.getHeader().serializeHeader());
                 senderStream.write(packetToSend.getMessageByte());
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return;
+            } catch (Exception e){
                 e.printStackTrace();
             }
         }
@@ -92,7 +94,7 @@ public class Sender implements Runnable {
     public void stopSenderThread() {
         running = false;
         synchronized (controller.getSenderThread()) {
-            controller.getSenderThread().notify();
+            controller.getSenderThread().interrupt();
         }
 
     }

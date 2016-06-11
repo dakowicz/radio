@@ -183,6 +183,7 @@ public class View extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller1.getPlaylist().deleteRemainingFiles();
+                controller1.gentleExit();
                 setVisible(false);
                 dispose();
             }
