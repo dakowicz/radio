@@ -146,6 +146,7 @@ public class View extends JFrame implements Runnable {
                     isPlaying = false;
                     controller1.getStreamPlayer().stopPlayerThread();
                     controller1.getReceiver().stopReceiverThread();
+                    controller1.getSender().stopSenderThread();
                     try {
                         controller1.getReceiverThread().join();
                         controller1.getPlayerThread().join();

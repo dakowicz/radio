@@ -84,6 +84,7 @@ public class Sender implements Runnable {
                 senderStream.write(packetToSend.getMessageByte());
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                log.info("sender thread done");
                 return;
             } catch (Exception e){
                 e.printStackTrace();

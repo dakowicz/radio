@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -31,14 +32,13 @@ public class Receiver implements Runnable {
         try {
             log.info("Receiver thread start");
             while (running) {
-
                 byte[] head = new byte[7];
                 for (int i = 0; i < 7; i++) {
-                    while (receiverStream.available() <= 0 && running) {
+                    while (running && receiverStream.available() <= 0) {
                     }
                     if (running) {
                         head[i] = receiverStream.readByte();
-                        log.info(String.valueOf(head[i]));
+                        //log.info(String.valueOf(head[i]));
                     }
                 }
                 if (running) {
@@ -65,11 +65,7 @@ public class Receiver implements Runnable {
         } catch (InterruptedException e) {
             log.info("Thread interrupted");
             return;
-        } catch (
-                Exception e
-                )
-
-        {
+        } catch (Exception e) {
             log.info("Header error");
             e.printStackTrace();
         }
@@ -79,5 +75,10 @@ public class Receiver implements Runnable {
 
     public void stopReceiverThread() {
         running = false;
+        try {
+            receiverStream.close();
+        } catch (IOException e) {
+            log.info("Error closing input stream");
+        }
     }
 }
