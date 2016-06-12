@@ -39,24 +39,26 @@ public class StreamPlayer implements Runnable {
     public synchronized void run() {
         log.info("player thread start");
         try {
+            Song nextSong = null;
             while (playlist.getNextSongToPlay() == null) {
                 log.info("czekam");
                 try {
                     synchronized (Thread.currentThread()) {
                         Thread.currentThread().wait();
+                        nextSong = playlist.getNextSongToPlay();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    deleteActiveFile();
+                    return;
                 }
             }
             controller.updatePlaylist();
-            Song nextSong = playlist.getNextSongToPlay();
+
             fileToPlayPath = nextSong.getFileName();
-            System.out.println(fileToPlayPath);
             while (running && fileToPlayPath != null) {
                 nextSong.setPlayed(true);
                 fileInputStream = new FileInputStream(fileToPlayPath);
-                log.info("songToPlay:"+ fileToPlayPath);
+                log.info("songToPlay:" + fileToPlayPath);
                 while (fileInputStream.available() < 100 && running) {
                     fileInputStream = new FileInputStream(fileToPlayPath);
                 }
@@ -72,7 +74,7 @@ public class StreamPlayer implements Runnable {
                     File file = new File(fileToPlayPath);
                     try {
                         file.delete();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     nextSong.setPlayed(false);
@@ -81,6 +83,12 @@ public class StreamPlayer implements Runnable {
                     nextSong.setVotesNumber(0);
                     log.info("Set Votes to 0");
 
+                    while (playlist.getNextSongToPlay() == null) {
+                        synchronized (Thread.currentThread()) {
+                            Thread.currentThread().wait();
+                            log.info("player thread awaken");
+                        }
+                    }
                     nextSong = playlist.getNextSongToPlay();
                     if (nextSong != null) {
                         fileToPlayPath = nextSong.getFileName();
@@ -89,9 +97,19 @@ public class StreamPlayer implements Runnable {
                     }
                 }
             }
+        } catch (InterruptedException ie) {
+            deleteActiveFile();
+            return;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        deleteActiveFile();
+        log.info("playerThread done");
+        return;
+
+    }
+
+    private void deleteActiveFile() {
         try {
             fileInputStream.close();
             File file = new File(fileToPlayPath);
@@ -100,8 +118,6 @@ public class StreamPlayer implements Runnable {
             log.info("playerThread done");
             return;
         }
-        log.info("playerThread done");
-        return;
     }
 
     public void handleNewSong(int songId) {
@@ -138,7 +154,7 @@ public class StreamPlayer implements Runnable {
         }
         running = false;
         synchronized (controller.getPlayerThread()) {
-            controller.getPlayerThread().notify();
+            controller.getPlayerThread().interrupt();
         }
         playlist.deleteRemainingFiles();    //@TODO Deleting last file
     }

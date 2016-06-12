@@ -243,19 +243,19 @@ public class View extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (fileToSend != null) {
-                    String author= artistField.getText();
-                    if(author.equals("Artist")){
+                    String author = artistField.getText();
+                    if (author.equals("Artist")) {
                         JOptionPane.showMessageDialog(View.this, "Please give the Artist name");
                         return;
                     }
-                    String title= titleField.getText();
-                    if(title.equals("Title")){
+                    String title = titleField.getText();
+                    if (title.equals("Title")) {
                         JOptionPane.showMessageDialog(View.this, "Please give the Song name");
                         return;
                     }
 
-                    String titleAndArtist=title+'|'+author;
-                    if(titleAndArtist.getBytes().length>128){
+                    String titleAndArtist = title + '|' + author;
+                    if (titleAndArtist.getBytes().length > 128) {
                         JOptionPane.showMessageDialog(View.this, "Artist and song names are to long");
                         return;
                     }
@@ -263,7 +263,7 @@ public class View extends JFrame implements Runnable {
                     voteButton.setEnabled(false);
                     artistField.setEnabled(false);
                     titleField.setEnabled(false);
-                    controller1.getSender().sendFile(fileToSend,titleAndArtist.getBytes());
+                    controller1.getSender().sendFile(fileToSend, titleAndArtist.getBytes());
                 }
             }
         });
@@ -284,8 +284,9 @@ public class View extends JFrame implements Runnable {
             public void focusGained(FocusEvent e) {
                 titleField.setText("");
             }
-            public void focusLost( FocusEvent e) {
-                if(titleField.getText().trim().equals(""))
+
+            public void focusLost(FocusEvent e) {
+                if (titleField.getText().trim().equals(""))
                     titleField.setText("Title");
             }
         });
@@ -293,12 +294,12 @@ public class View extends JFrame implements Runnable {
 
     public void updateProgressBar(int progress) {
         if (progress > 0 && progress < 100)
-            if(progress<progressBar1.getValue())
+            if (progress < progressBar1.getValue())
                 return;
-            progressBar1.setValue(progress);
+        progressBar1.setValue(progress);
     }
 
-    public void fileSendFinished(){
+    public void fileSendFinished() {
 
         sendFileButton.setEnabled(true);
         voteButton.setEnabled(true);

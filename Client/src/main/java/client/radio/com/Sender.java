@@ -25,7 +25,7 @@ public class Sender implements Runnable {
     private Socket socket;
     private DataOutputStream senderStream;
     private BlockingQueue<DataPacket> dataPackets;
-    private boolean running;
+    private boolean running = true;
     private Controller controller;
 
     public Sender(DataOutputStream senderStream) {
@@ -72,18 +72,22 @@ public class Sender implements Runnable {
     }
 
     public void run() {
+        log.info("sender thread start");
         while (running) {
-            DataPacket packetToSend = dataPackets.poll();
             try {
+                DataPacket packetToSend = dataPackets.take();
+                log.info("packet taken");
                 if (packetToSend == null) {
+                    log.info("waiting");
                     synchronized (Thread.currentThread()) {
                         Thread.currentThread().wait();
+                        packetToSend = dataPackets.take();
                     }
                 }
+                log.info("send!");
                 senderStream.write(packetToSend.getHeader().serializeHeader());
                 senderStream.write(packetToSend.getMessageByte());
             } catch (InterruptedException e) {
-                e.printStackTrace();
                 log.info("sender thread done");
                 return;
             } catch (Exception e){
