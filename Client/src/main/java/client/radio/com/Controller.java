@@ -57,6 +57,7 @@ public class Controller implements Runnable {
             } else {
                 gentleExit();
                 log.info("Time to wait for packet expired!");
+                running = false;
             }
         }
     }
@@ -117,8 +118,9 @@ public class Controller implements Runnable {
                         senderThread.notify();
                     }
                 }
-            } else
+            } else {
                 log.info("Already unvoted");
+            }
         } else if (playlist.getCurrentPlaylist().get(songId).isVoted()) {
             if (sender.sendVote(songId, isGoodSong)) {
                 synchronized (senderThread) {
@@ -206,7 +208,6 @@ public class Controller implements Runnable {
             log.error("No I/O");
             System.exit(1);
         }
-
     }
 
     public void setupApplication() {
@@ -249,9 +250,11 @@ public class Controller implements Runnable {
             handlePacketsFromReceiver();
         } catch (Exception e2) {
             //e2.printStackTrace();
+            log.info("controller thread done");
             return;
             //controller.closeApp();
         }
+        log.info("controller thread done");
     }
 
     public void startView() {
