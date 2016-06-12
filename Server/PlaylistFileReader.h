@@ -6,6 +6,7 @@
 #define SERVER_PLAYLISTFILEREADER_H
 
 #include <string>
+#include <memory>
 #include <fstream>
 #include "Song.h"
 
@@ -16,7 +17,7 @@ public:
 
     bool endOF();
 
-    Song *getNextRow();
+    std::shared_ptr<Song> getNextRow();
 
 private:
 

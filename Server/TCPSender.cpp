@@ -10,7 +10,7 @@
 std::string TCPSender::MODULE_NAME = "TCPSender";
 
 void TCPSender::sendMusic(char *message, int messageSize) {
-    char *header = Header::createHeaderStream();
+    char *header = Header::createHeaderStream(false, false, messageSize);
     sendMessage(header, message, messageSize);
 }
 
@@ -25,37 +25,35 @@ void TCPSender::sendConnectionInfo(char *message, int messageSize) {
 }
 
 void TCPSender::sendMessage(char *header, char *message, int messageSize) {
-    writeData(header, Header::SIZE);
-    writeData(message, messageSize);
+    char* data = new char[Header::SIZE + messageSize];
+    memcpy(data, header, Header::SIZE);
+    memcpy(data + Header::SIZE, message, messageSize);
+    writeData(data, Header::SIZE + messageSize);
 //    if(messageSize < 80000)
 //        file->close();
 }
 
 void TCPSender::writeData(char *dataToSend, int dataToSendSize) {
     if(dataToSend != nullptr) {
-//        file->write(dataToSend, dataToSendSize);
+        sendN(dataToSend, dataToSendSize);
+        delete dataToSend;
+    }
+}
+
+void TCPSender::sendN(const char *dataToSend, int dataToSendSize) {//        file->write(dataToSend, dataToSendSize);
+    while(!isConnectionClosed() && dataToSendSize > 0){
         int bytesSent = (int) send(socketDescriptor, dataToSend, dataToSendSize, MSG_NOSIGNAL);
-        if ( bytesSent < 0 && errno == EPIPE) {
+        if (isClosedByRemote(bytesSent)) {
             logger.log("EPIPE error");
             setConnectionClosed();
         } else {
+            dataToSendSize -= bytesSent;
             logger.log(std::to_string(bytesSent));
         }
     }
 }
 
-void TCPSender::addHeader(char *header, char *dataToSend) {
-    if(header != nullptr) {
-        memcpy(dataToSend, header, Header::SIZE);
-        pointerPosition += Header::SIZE;
-    }
-}
-
-void TCPSender::addMessage(char *message, char *dataToSend, int messageSize) const {
-    if (message != nullptr) {
-        memcpy(dataToSend + pointerPosition, message, messageSize);
-    }
-}
+bool TCPSender::isClosedByRemote(int bytesSent) const { return bytesSent < 0 && errno == EPIPE; }
 
 void TCPSender::setConnectionClosed() {
     connectionClosed = true;
@@ -64,9 +62,4 @@ void TCPSender::setConnectionClosed() {
 bool TCPSender::isConnectionClosed() {
     return connectionClosed.load();
 }
-
-
-
-
-
 

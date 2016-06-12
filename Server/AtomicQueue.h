@@ -76,6 +76,7 @@ void AtomicQueue<T>::push(const T &item) {
     condition_variable.notify_one();
 }
 
+
 template <typename T>
 bool AtomicQueue<T>::isEmpty() {
 

@@ -12,12 +12,11 @@
 #include "Logger.h"
 
 class FileManager {
-
 public:
 
     FileManager(std::string &prefix) : prefix(prefix), logger(MODULE_NAME) {}
 
-    std::shared_ptr<std::ifstream> getFileStream(Song *song);
+    std::shared_ptr<std::ifstream> getFileStream(std::shared_ptr<Song> song);
 
 private:
 

@@ -17,12 +17,12 @@ class TCPSender {
 public:
 
     TCPSender(int socketDescriptor) : socketDescriptor(socketDescriptor), logger(MODULE_NAME, socketDescriptor) {
-        std::string fileName = std::string("/home/tomasz/prog/radio/Server/") + std::string("newfile") + std::to_string(socketDescriptor);
-        this->file = new std::ofstream(fileName);
+//        std::string fileName = std::string("/home/tomasz/prog/radio/Server/") + std::string("newfile") + std::to_string(socketDescriptor);
+//        this->file = new std::ofstream(fileName);
     }
 
     ~TCPSender() {
-        delete file;
+//        delete file;
     }
 
     void sendMusic(char *message, int messageSize);
@@ -45,17 +45,15 @@ private:
 
     void sendMessage(char *header, char *message, int messageSize);
 
-    void addHeader(char *header, char *dataToSend);
-
-    std::ofstream *file;
+//    std::ofstream *file;
 
     void writeData(char *dataToSend, int dataToSendSize);
 
-    void addMessage(char *message, char *dataToSend, int messageSize) const;
-
-    int pointerPosition;
-
     std::atomic<bool> connectionClosed;
+
+    void sendN(const char *dataToSend, int dataToSendSize);
+
+    bool isClosedByRemote(int bytesSent) const;
 };
 
 

@@ -14,6 +14,8 @@ public:
 
     Data(DataType type, char *content, int size);
 
+    Data(DataType type, char *content, int size, bool flag);
+
     ~Data();
 
     char * getContent() const { return content; }
@@ -22,6 +24,8 @@ public:
 
     int getSize() const { return size; }
 
+    bool getBool();
+
 private:
 
     char *content;
@@ -29,6 +33,8 @@ private:
     DataType type;
 
     int size;
+
+    bool flag;
 };
 
 

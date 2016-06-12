@@ -6,13 +6,12 @@
 #define SERVER_SONG_H
 
 #include <string>
+#include <atomic>
 
 class Song {
 public:
 
     Song(std::string fileName, std::string title, std::string author);
-
-    ~Song();
 
     const std::string &getTitle() const { return title; }
 
@@ -21,6 +20,12 @@ public:
     const std::string &getFileName() const { return fileName; }
 
     int getID();
+
+    void resetVotes();
+
+    int getVotes() const { return votes; }
+
+    bool operator<(const Song &other);
 
 private:
 
@@ -32,7 +37,9 @@ private:
 
     int ID;
 
-    static int globalID;
+    static std::atomic<int> GLOBAL_ID;
+
+    int votes;
 };
 
 

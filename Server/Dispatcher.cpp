@@ -39,6 +39,7 @@ void Dispatcher::processMessage(Data *data) {
             break;
         case DataType::STREAM:
             wrongDataType();
+        case DataType::CLOSED:break;
     }
 }
 

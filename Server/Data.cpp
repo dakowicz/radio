@@ -14,6 +14,21 @@ Data::~Data() {
     delete[] this->content;
 }
 
+Data::Data(DataType type, char *content, int size, bool flag) {
+    this->content = content;
+    this->type = type;
+    this->size = size;
+    this->flag = flag;
+}
+
+bool Data::getBool() {
+    return flag;
+}
+
+
+
+
+
 
 
 

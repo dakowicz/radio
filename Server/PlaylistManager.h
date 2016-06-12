@@ -15,21 +15,17 @@ class PlaylistManager {
 
 public:
 
-    PlaylistManager(std::string &prefix) : recordings(MODULE_NAME + "Recordings"), playlistFileReader(prefix), logger(MODULE_NAME) {
+    PlaylistManager(std::string &prefix) : currentPosition(0), playlistFileReader(prefix), logger(MODULE_NAME) {
         loadPlaylist();
     }
 
-    Song *getNextSong();
-
-    void popRecording(Song *&song);
+    std::shared_ptr<Song> getCurrentSong();
 
 private:
 
-    std::vector<Song *> songs;
+    std::vector<std::shared_ptr<Song>> songs;
 
     std::vector<Song *>::iterator currentSong;
-
-    AtomicQueue<Song *> recordings;
 
     PlaylistFileReader playlistFileReader;
 
@@ -41,11 +37,11 @@ private:
 
     void loadPlaylist();
 
-    void addSong(Song *song);
+    void addSong(std::shared_ptr<Song> song);
 
     void moveIterator();
 
-    void addRecording(Song *recording);
+    int currentPosition;
 };
 
 

@@ -25,7 +25,7 @@ public:
     static Header *createHeaderVote(bool cancel_vote, int l);
     static Header *createHeaderFile(bool priority,  char info_length, int l);
     static Header *createHeaderList(bool cancel_vote, int l);
-    static Header *createHeaderStream(bool start, bool end, int l);
+    static char * createHeaderStream(bool start, bool end, int l);
 
     int getLength() const {
         return length;

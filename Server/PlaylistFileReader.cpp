@@ -18,11 +18,12 @@ bool PlaylistFileReader::endOF() {
     return fileStream->eof();
 }
 
-Song *PlaylistFileReader::getNextRow() {
-    return new Song("musicFile", "title", "author");
+std::shared_ptr<Song> PlaylistFileReader::getNextRow() {
+    return std::make_shared<Song>("musicFile", "title", "author");
 }
 
 void PlaylistFileReader::readHeader() {
+//    fileStream->getline();
 }
 
 

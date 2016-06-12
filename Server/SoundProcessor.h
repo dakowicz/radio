@@ -48,7 +48,7 @@ private:
 
     void pushStreamData(std::shared_ptr<std::ifstream> fileStream, int songID);
 
-    Data * readFile(std::shared_ptr<std::ifstream> fileStream, char *streamData, int songID);
+    Data * readFile(std::shared_ptr<std::ifstream> fileStream, int streamData);
 
     void sleep() const;
 

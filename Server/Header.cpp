@@ -54,11 +54,12 @@ Header * Header::createHeaderList(bool ack, int l){
 }
 
 
-Header * Header::createHeaderStream(bool start, bool end, int l){
+char * Header::createHeaderStream(bool start, bool end, int l){
 
-     char parameters=( char)(start?1:0);
+    char parameters=(char)(start?1:0);
     parameters+=( char)(end?2:0);
-    return new Header(Header::VOTES, parameters, l);
+    Header *header = new Header(Header::STREAM, parameters, l);
+    return header->createBuffer();
 }
 
 Header * Header::createHeaderFile(bool priority, char info_length, int l){

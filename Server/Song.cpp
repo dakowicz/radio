@@ -5,22 +5,29 @@
 
 #include "Song.h"
 
-int Song::globalID = 0;
+std::atomic<int> Song::GLOBAL_ID(0);
 
 Song::Song(std::string fileName, std::string title, std::string author) {
     this->fileName = fileName;
     this->title = title;
     this->author = author;
-    this->ID = globalID++;
-}
-
-Song::~Song() {
-
+    this->ID = GLOBAL_ID++;
+    this->votes = 0;
 }
 
 int Song::getID() {
     return ID;
 }
+
+void Song::resetVotes() {
+    votes = 0;
+}
+
+bool Song::operator<(const Song& other)
+{
+    return this->votes < other.votes;
+}
+
 
 
 
