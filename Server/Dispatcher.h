@@ -9,6 +9,7 @@
 #include "ClientsMap.h"
 #include "FileManager.h"
 #include "PlaylistManager.h"
+#include "FileType.h"
 
 class ClientManager;
 
@@ -20,7 +21,7 @@ public:
 
     void start();
 
-    void addMessage(Data *newMessage);
+    void addMessage(std::shared_ptr<Data> newMessage);
 
     const bool isRunning() const { return running.load(); }
 
@@ -34,7 +35,7 @@ private:
 
     std::atomic<bool> running;
 
-    AtomicQueue<Data*> atomicQueue;
+    AtomicQueue<std::shared_ptr<Data>> atomicQueue;
 
     FileManager &fileManager;
 
@@ -44,25 +45,27 @@ private:
 
     void wrongDataType();
 
-    bool isMessageEmpty(Data *newMessage) const;
+    bool isMessageEmpty(std::shared_ptr<Data> newMessage) const;
 
-    void processVote(Data *data);
+    void processVote(std::shared_ptr<Data> data);
 
-    void processMusicFile(Data *data);
+    void processMusicFile(std::shared_ptr<Data> data);
 
-    void processConnectionMessage(Data *data);
+    void processConnectionMessage(std::shared_ptr<Data> data);
 
-    void processMessage(Data *data);
+    void processMessage(std::shared_ptr<Data> data);
 
-    int getSongID(const Data *data) const;
-
-    void getPlaylistCSV(std::string content, int &size);
+    int getSongID(std::shared_ptr<Data> data) const;
 
     void broadcastPlaylist();
 
-    void getPlaylistCSV(std::string &content, int &size);
-
     void getPlaylistCSV(std::string &content);
+
+    std::string addNewMusicFile(const std::shared_ptr<Data> &data) const;
+
+    void getSongData(std::shared_ptr<Data> &data, std::string &author, std::string &title);
+
+    std::string addNewMusicFile(const std::shared_ptr<Data> &data, const std::string &author, const std::string &title) const;
 };
 
 

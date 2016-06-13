@@ -4,7 +4,7 @@
 std::string Dispatcher::MODULE_NAME = "Dispatcher";
 
 void Dispatcher::start() {
-    Data *newMessage;
+    std::shared_ptr<Data> newMessage;
     this->running = true;
     while(isRunning()) {
         newMessage = atomicQueue.pop();
@@ -12,18 +12,18 @@ void Dispatcher::start() {
     }
 }
 
-void Dispatcher::addMessage(Data *newMessage) {
+void Dispatcher::addMessage(std::shared_ptr<Data> newMessage) {
     if(isMessageEmpty(newMessage)) {
         return;
     }
     atomicQueue.push(newMessage);
 }
 
-bool Dispatcher::isMessageEmpty(Data *newMessage) const {
+bool Dispatcher::isMessageEmpty(std::shared_ptr<Data> newMessage) const {
     return newMessage == nullptr || newMessage->getContent() == nullptr;
 }
 
-void Dispatcher::processMessage(Data *data) {
+void Dispatcher::processMessage(std::shared_ptr<Data> data) {
     if(data == nullptr) {
         return;
     }
@@ -39,25 +39,23 @@ void Dispatcher::processMessage(Data *data) {
             break;
         case DataType::STREAM:
             wrongDataType();
-        case DataType::CLOSED:break;
     }
 }
 
-void Dispatcher::processVote(Data *data) {
+void Dispatcher::processVote(std::shared_ptr<Data> data) {
     logger.log("Processing - data type VOTE");
-    int songID = getSongID(data);
     switch (data->getParameters()){
         case (char) VoteType::ADD:
-            playlistManager.addVote(songID);
+            playlistManager.addVote(getSongID(data));
             break;
         case (char) VoteType::SUBTRACT:
-            playlistManager.subtractVote(songID);
+            playlistManager.subtractVote(getSongID(data));
             break;
     }
     broadcastPlaylist();
 }
 
-int Dispatcher::getSongID(const Data *data) const {
+int Dispatcher::getSongID(std::shared_ptr<Data> data) const {
     const char *content = data->getContent();
     int songID = content[0] << 24;
     songID += content[1] << 16;
@@ -66,11 +64,23 @@ int Dispatcher::getSongID(const Data *data) const {
     return songID;
 }
 
-void Dispatcher::processMusicFile(Data *data) {
+void Dispatcher::processMusicFile(std::shared_ptr<Data> data) {
     logger.log("Processing - data type MUSIC_FILE");
+    std::string newFileName;
+    switch (data->getParameters()){
+        case (char) FileType::MUSIC:
+            std::string author, title;
+            getSongData(data, author, title);
+            newFileName = addNewMusicFile(data, author, title);
+            playlistManager.addSong(newFileName, author, title);
+    }
 }
 
-void Dispatcher::processConnectionMessage(Data *data) {
+std::string Dispatcher::addNewMusicFile(const std::shared_ptr<Data> &data, const std::string &author, const std::string &title) const {
+    return fileManager.addMusicFile(data->getContent(), data->getSize(), author, title);
+}
+
+void Dispatcher::processConnectionMessage(std::shared_ptr<Data> data) {
     logger.log("Processing - data type CONNECTION");
 }
 
@@ -90,3 +100,16 @@ void Dispatcher::broadcastPlaylist() {
 void Dispatcher::getPlaylistCSV(std::string &content) {
     playlistManager.getPlaylistCSV(content);
 }
+
+void Dispatcher::getSongData(std::shared_ptr<Data> &data, std::string &author, std::string &title) {
+    int songDataSize = data->getParameters();
+    std::string songData(data->getContent(), songDataSize);
+    author = songData.substr(0, songData.find('|'));
+    title = songData.substr(songData.find('|') + 1, songData.size() - author.size() -1);
+}
+
+
+
+
+
+

@@ -8,17 +8,16 @@
 std::string SocketListener::MODULE_NAME = "SocketListener";
 
 void SocketListener::handle() {
-
     while(!isConnectionClosed()) {
         waitForRequest();
-        Data *newMessage = readMessage();
+        std::shared_ptr<Data> newMessage = readMessage();
         if(newMessage != nullptr) {
             dispatcher->addMessage(newMessage);
         }
     }
 }
 
-Data *SocketListener::readMessage() {
+std::shared_ptr<Data> SocketListener::readMessage() {
     return tcpListener.readMessage();
 }
 

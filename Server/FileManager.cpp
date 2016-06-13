@@ -11,3 +11,12 @@ std::shared_ptr<std::ifstream> FileManager::getFileStream(std::shared_ptr<Song> 
     fileStream->open(prefix + song->getFileName());
     return fileStream;
 }
+
+std::string FileManager::addMusicFile(const char *content, int size, std::string author, std::string title) {
+    const std::string fileName = author + title;
+    std::ofstream newFile(prefix + fileName);
+    newFile.write(content, size);
+    newFile.close();
+    return fileName;
+}
+

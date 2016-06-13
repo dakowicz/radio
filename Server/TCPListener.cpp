@@ -7,7 +7,7 @@
 
 std::string TCPListener::MODULE_NAME = "TCPListener";
 
-Data * TCPListener::readMessage() {
+std::shared_ptr<Data> TCPListener::readMessage() {
     if(isHeaderComplete) {
         readMessageContent();
     } else {
@@ -16,12 +16,9 @@ Data * TCPListener::readMessage() {
     return getMessage();
 }
 
-Data *TCPListener::getMessage() const {
-//    if(connectionClosed){
-//        return new Data(DataType::CLOSED, nullptr, 0);
-//    }
+std::shared_ptr<Data> TCPListener::getMessage() const {
     if(isMessageComplete){
-        return new Data((DataType) header->getType(), contentBuffer, header->getLength());
+        return std::make_shared<Data>((DataType) header->getType(), contentBuffer, header->getLength(), header->getParameters());
     }
     return nullptr;
 }
@@ -59,8 +56,7 @@ void TCPListener::readBytes(char *buffer) {
     logger.log("Loaded " + std::to_string(payload));
     if(isReadSuccessful(payload)) {
         updatePayload(payload);
-    }else if(connectionHasBeenClosed(payload)) {
-
+    } else if(connectionHasBeenClosed(payload)) {
         closeConnection();
     } else {
         checkErrorCode(payload);
@@ -104,5 +100,5 @@ void TCPListener::closeConnection() {
 }
 
 void TCPListener::checkErrorCode(int payload) {
-//    logger->log(std::to_string(payload));
+    logger.log(std::to_string(payload));
 }

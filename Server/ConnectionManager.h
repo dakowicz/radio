@@ -73,6 +73,8 @@ private:
     void getClientSockets(std::vector<int> &clientSockets) const;
 
     static const int READ_TIMEOUT_SEC;
+
+    void broadcastPlaylist() const;
 };
 
 

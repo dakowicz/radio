@@ -40,11 +40,11 @@ Header * Header::createHeaderConnect(bool start, bool end, int l){
     return new Header(Header::CONNECT, parameters, l);
 }
 
-Header * Header::createHeaderVote(bool cancel_vote, int l){
+char * Header::createHeaderVote(bool cancel_vote, int l){
 
     char parameters=(char)(cancel_vote?1:0);
     parameters+=2;	//Since it's the client to server message
-    return new Header(Header::VOTES, parameters, l);
+    return createBuffer(Header::VOTES, parameters, l);
 }
 
 Header * Header::createHeaderList(bool ack, int l){
@@ -58,8 +58,7 @@ char * Header::createHeaderStream(bool start, bool end, int l){
 
     char parameters=(char)(start?1:0);
     parameters+=( char)(end?2:0);
-    Header *header = new Header(Header::STREAM, parameters, l);
-    return header->createBuffer();
+    return createBuffer(Header::STREAM, parameters, l);;
 }
 
 Header * Header::createHeaderFile(bool priority, char info_length, int l){
@@ -72,7 +71,7 @@ Header * Header::createHeaderFile(bool priority, char info_length, int l){
     return new Header(Header::FILE, parameters, l);
 }
 
-char *Header::createBuffer() {
+char *Header::createBuffer(char type, char parameters, int length) {
     char *head = new char[7];
     head[0] = ID_PROT;
     head[1] = type;

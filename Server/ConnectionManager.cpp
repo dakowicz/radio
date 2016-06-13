@@ -31,16 +31,6 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
-    Data *data1 = new Data(DataType::CONNECTION, new char[10], 10);
-    Data *data2 = new Data(DataType::MUSIC_FILE, new char[10], 10);
-    Data *data3 = new Data(DataType::VOTE, new char[4]{0,0,0,0}, 4, (char) VoteType::ADD);
-    Data *data4 = new Data((DataType)1, new char[10], 10);
-//
-    dispatcher->addMessage(data1);
-    dispatcher->addMessage(data2);
-    dispatcher->addMessage(data3);
-    dispatcher->addMessage(data4);
-    dispatcher->addMessage(nullptr);
 
     this->running = true;
     while(isRunning()) {
@@ -146,6 +136,7 @@ void ConnectionManager::closeClientManagers() {
 void ConnectionManager::addClient(int newSocketDescriptor) {
     ClientManager *clientManager = new ClientManager(dispatcher, newSocketDescriptor);
     clientManagersThreads[newSocketDescriptor] = new std::thread(&ClientManager::handle, clientManager, clients);
+    broadcastPlaylist();
 }
 
 void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr_in &cli_addr) {
@@ -160,8 +151,11 @@ void ConnectionManager::initConfig(int &sockfd, sockaddr_in &serv_addr, sockaddr
     serv_addr.sin_port = htons((uint16_t) port);
 }
 
+void ConnectionManager::broadcastPlaylist() const {
+    dispatcher->addMessage(std::make_shared<Data>(DataType::VOTE, new char[1], 1, (char)VoteType::TO_CLIENT));
+}
+
 void ConnectionManager::handleError(const char *errorMessage) const {
-    //TODO
     perror(errorMessage);
     exit(0);
 }

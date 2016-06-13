@@ -18,8 +18,14 @@ void PlaylistManager::loadPlaylist() {
     }
 }
 
+bool PlaylistManager::isCorrect(const std::shared_ptr<Song> &song) const { return !song->getFileName().empty(); }
+
 void PlaylistManager::addSong(std::shared_ptr<Song> song) {
     songs.add(song);
+}
+
+void PlaylistManager::addSong(std::string fileName, std::string author, std::string title) {
+    songs.add(std::make_shared<Song>(fileName, title, author));
 }
 
 void PlaylistManager::addVote(int songID) {
@@ -33,6 +39,7 @@ void PlaylistManager::subtractVote(int songID) {
 void PlaylistManager::getPlaylistCSV(std::string &content) {
     writeCSVHeader(content);
     writeSongs(content);
+    logger.log(content);
 }
 
 void PlaylistManager::writeCSVHeader(std::string &content) {

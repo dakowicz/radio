@@ -15,7 +15,7 @@ void TCPSender::sendMusic(const char *message, int messageSize) {
 }
 
 void TCPSender::sendVotes(const char *message, int messageSize) {
-    char *header = Header::createHeaderVote();
+    char *header = Header::createHeaderVote(false, messageSize);
     sendMessage(header, message, messageSize);
 }
 
@@ -40,7 +40,7 @@ void TCPSender::writeData(char *dataToSend, int dataToSendSize) {
     }
 }
 
-void TCPSender::sendN(const char *dataToSend, int dataToSendSize) {//        file->write(dataToSend, dataToSendSize);
+void TCPSender::sendN(const char *dataToSend, int dataToSendSize) {
     while(!isConnectionClosed() && dataToSendSize > 0){
         int bytesSent = (int) send(socketDescriptor, dataToSend, dataToSendSize, MSG_NOSIGNAL);
         if (isClosedByRemote(bytesSent)) {

@@ -18,6 +18,8 @@ public:
 
     std::shared_ptr<std::ifstream> getFileStream(std::shared_ptr<Song> song);
 
+    std::string addMusicFile(const char *content, int size, std::string author, std::string title);
+
 private:
 
     std::string &prefix;

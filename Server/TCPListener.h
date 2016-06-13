@@ -23,7 +23,7 @@ public:
             socketDescriptor(socketDescriptor), logger(MODULE_NAME, socketDescriptor), isHeaderComplete(false), isMessageComplete(false),
             bytesAlreadyRead(0), bytesToRead(0), header(nullptr), contentBuffer(nullptr), headerBuffer() {}
 
-    Data * readMessage();
+    std::shared_ptr<Data> readMessage();
 
     const bool isConnectionsClosed() const { return connectionClosed.load(); }
 
@@ -57,7 +57,7 @@ private:
 
     bool isMessageComplete;
 
-    Data *getMessage() const;
+    std::shared_ptr<Data> getMessage() const;
 
     void readBytes(char *buffer);
 

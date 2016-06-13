@@ -20,12 +20,6 @@ public:
     PlaylistManager(std::string &prefix) :
             playlistFileReader(prefix), logger(MODULE_NAME) {
         loadPlaylist();
-        addVote(0);
-        addVote(2);
-        addVote(2);
-        addVote(3);
-        addVote(3);
-        addVote(3);
     }
 
     std::shared_ptr<Song> getCurrentSong();
@@ -35,6 +29,10 @@ public:
     void subtractVote(int songID);
 
     void getPlaylistCSV(std::string &content);
+
+    void addSong(std::shared_ptr<Song> song);
+
+    void addSong(std::string fileName, std::string author, std::string title);
 
 private:
 
@@ -48,11 +46,12 @@ private:
 
     void loadPlaylist();
 
-    void addSong(std::shared_ptr<Song> song);
-
     void writeSongs(std::string &content);
 
     void writeCSVHeader(std::string &content);
+
+    bool isCorrect(const std::shared_ptr<Song> &song) const;
+
 };
 
 

@@ -44,7 +44,7 @@ private:
 
     void waitForRequest();
 
-    Data *readMessage();
+    std::shared_ptr<Data> readMessage();
 
     bool isConnectionClosed();
 };
