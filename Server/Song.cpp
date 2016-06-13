@@ -23,10 +23,17 @@ void Song::resetVotes() {
     votes = 0;
 }
 
-bool Song::operator<(const Song& other)
-{
-    return this->votes < other.votes;
+void Song::addVote() {
+    votes++;
 }
+
+void Song::subtractVote() {
+    votes--;
+}
+
+
+
+
 
 
 

@@ -25,11 +25,11 @@ public:
 //        delete file;
     }
 
-    void sendMusic(char *message, int messageSize);
+    void sendMusic(const char *message, int messageSize);
 
-    void sendVotes(char *message, int messageSize);
+    void sendVotes(const char *message, int messageSize);
 
-    void sendConnectionInfo(char *message, int messageSize);
+    void sendConnectionInfo(const char *message, int messageSize);
 
     bool isConnectionClosed();
 
@@ -43,7 +43,7 @@ private:
 
     static std::string MODULE_NAME;
 
-    void sendMessage(char *header, char *message, int messageSize);
+    void sendMessage(char *header, const char *message, int messageSize);
 
 //    std::ofstream *file;
 

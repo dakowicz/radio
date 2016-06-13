@@ -13,7 +13,7 @@ void SocketListener::handle() {
         waitForRequest();
         Data *newMessage = readMessage();
         if(newMessage != nullptr) {
-            dispatcher.addMessage(newMessage);
+            dispatcher->addMessage(newMessage);
         }
     }
 }
@@ -44,7 +44,7 @@ void SocketListener::resetReadReaquestCounter() {
 }
 
 bool SocketListener::isConnectionClosed() {
-    return this->tcpListener.isConnectionsClosed();
+    return tcpListener.isConnectionsClosed();
 }
 
 

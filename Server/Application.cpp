@@ -14,13 +14,13 @@ int main(int argc, char *arg[]) {
     std::string fileSystemPrefix = std::string(arg[2]);
     Logger logger("Application");
 
-    std::shared_ptr< AtomicMap<int, ClientManager *> > clients = std::make_shared< AtomicMap<int, ClientManager *> >("Clients");
+    std::shared_ptr< ClientsMap<int, ClientManager *> > clients = std::make_shared< ClientsMap<int, ClientManager *> >("Clients");
 
     FileManager fileManager(fileSystemPrefix);
     PlaylistManager playlistManager(fileSystemPrefix);
 
-    Dispatcher dispatcher(fileManager, playlistManager);
-    std::thread dispatcherThread = std::thread(&Dispatcher::start, &dispatcher);
+    Dispatcher *dispatcher = new Dispatcher(fileManager, playlistManager, clients);
+    std::thread dispatcherThread = std::thread(&Dispatcher::start, dispatcher);
     logger.log("Dispatcher has been created");
 
     ConnectionManager connectionManager(dispatcher, port, clients);
@@ -35,6 +35,7 @@ int main(int argc, char *arg[]) {
     dispatcherThread.join();
     soundProcessorThread.join();
 
+    delete dispatcher;
     logger.log("Has been closed");
     return 0;
 }

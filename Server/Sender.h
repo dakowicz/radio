@@ -20,15 +20,15 @@ public:
 
     void handle();
 
-    void addMessage(Data *message);
+    void addMessage(std::shared_ptr<Data> message);
 
-    void setConnectionClosed(bool i);
+    void setConnectionClosed();
 
 private:
 
     void wrongDataType();
 
-    AtomicQueue<Data*> atomicQueue;
+    AtomicQueue<std::shared_ptr<Data>> atomicQueue;
 
     TCPSender tcpSender;
 
@@ -40,13 +40,13 @@ private:
 
     static std::string MODULE_NAME;
 
-    void sendConnection(Data *data);
+    void sendConnection(std::shared_ptr<Data> data);
 
-    void sendVotes(Data *data);
+    void sendVotes(std::shared_ptr<Data> data);
 
-    void sendData(Data *data);
+    void sendData(std::shared_ptr<Data> data);
 
-    void sendStream(Data *data);
+    void sendStream(std::shared_ptr<Data> data);
 
     bool isConnectionClosed();
 };

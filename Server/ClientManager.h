@@ -5,21 +5,23 @@
 #ifndef SERVER_CLIENTMANAGER_H
 #define SERVER_CLIENTMANAGER_H
 
-
 #include <thread>
 #include "Sender.h"
 #include "SocketListener.h"
-#include "AtomicMap.h"
+#include "ClientsMap.h"
+
+class Dispatcher;
+
+class SocketListener;
 
 class ClientManager {
 public:
 
-    ClientManager(Dispatcher &dispatcher, int newSocketDescriptor) : socketDescriptor(newSocketDescriptor), socketListener(dispatcher, newSocketDescriptor),
-            sender(newSocketDescriptor), logger(MODULE_NAME, newSocketDescriptor) {}
+    ClientManager(Dispatcher *dispatcher, int newSocketDescriptor);
 
-    void handle(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+    ~ClientManager();
 
-    void send(Data *data);
+    void handle(const std::shared_ptr<ClientsMap<int, ClientManager *>> &blockingMap);
 
     int getSocketDescriptor() const { return socketDescriptor; }
 
@@ -29,13 +31,15 @@ public:
 
     bool operator==(ClientManager &clientManager) const;
 
+    void send(std::shared_ptr<Data> data);
+
 private:
 
-    SocketListener socketListener;
+    SocketListener *socketListener;
 
-    Sender sender;
+    Sender *sender;
 
-    Logger logger;
+    Logger *logger;
 
     int socketDescriptor;
 
@@ -43,9 +47,9 @@ private:
 
     void deleteClient();
 
-    void registerThread(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+    void registerThread(const std::shared_ptr<ClientsMap<int, ClientManager *>> &blockingMap);
 
-    void unregisterThread(const std::shared_ptr<AtomicMap<int, ClientManager *>> &blockingMap);
+    void unregisterThread(const std::shared_ptr<ClientsMap<int, ClientManager *>> &blockingMap);
 };
 
 

@@ -7,25 +7,38 @@
 
 
 #include <vector>
-#include "Song.h"
 #include "AtomicQueue.h"
 #include "PlaylistFileReader.h"
+#include "SongList.h"
+#include "VoteType.h"
+#include "Data.h"
 
 class PlaylistManager {
 
 public:
 
-    PlaylistManager(std::string &prefix) : currentPosition(0), playlistFileReader(prefix), logger(MODULE_NAME) {
+    PlaylistManager(std::string &prefix) :
+            playlistFileReader(prefix), logger(MODULE_NAME) {
         loadPlaylist();
+        addVote(0);
+        addVote(2);
+        addVote(2);
+        addVote(3);
+        addVote(3);
+        addVote(3);
     }
 
     std::shared_ptr<Song> getCurrentSong();
 
+    void addVote(int songID);
+
+    void subtractVote(int songID);
+
+    void getPlaylistCSV(std::string &content);
+
 private:
 
-    std::vector<std::shared_ptr<Song>> songs;
-
-    std::vector<Song *>::iterator currentSong;
+    SongList songs;
 
     PlaylistFileReader playlistFileReader;
 
@@ -33,15 +46,13 @@ private:
 
     static std::string MODULE_NAME;
 
-    static std::string PLAYLIST_FILENAME;
-
     void loadPlaylist();
 
     void addSong(std::shared_ptr<Song> song);
 
-    void moveIterator();
+    void writeSongs(std::string &content);
 
-    int currentPosition;
+    void writeCSVHeader(std::string &content);
 };
 
 

@@ -5,15 +5,15 @@
 #ifndef SERVER_SOUNDPROCESSOR_H
 #define SERVER_SOUNDPROCESSOR_H
 
-
 #include "FileManager.h"
 #include "PlaylistManager.h"
 #include "ClientManager.h"
 
+
 class SoundProcessor {
 public:
 
-    SoundProcessor(FileManager &fileManager, PlaylistManager &playlistManager, const std::shared_ptr< AtomicMap<int, ClientManager * > > &clients) :
+    SoundProcessor(FileManager &fileManager, PlaylistManager &playlistManager, const std::shared_ptr< ClientsMap<int, ClientManager * > > &clients) :
             fileManager(fileManager), playlistManager(playlistManager), clients(clients), logger(MODULE_NAME){};
 
     void stream();
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
+    std::shared_ptr<ClientsMap<int, ClientManager *>> clients;
 
     FileManager &fileManager;
 
@@ -40,15 +40,13 @@ private:
 
     static std::string MODULE_NAME;
 
-    void broadcastToClients(Data *data);
-
     void divideFile(std::shared_ptr<std::ifstream> fileStream, int songID);
 
     bool endOf(std::shared_ptr<std::ifstream> fileStream) const;
 
     void pushStreamData(std::shared_ptr<std::ifstream> fileStream, int songID);
 
-    Data * readFile(std::shared_ptr<std::ifstream> fileStream, int streamData);
+    std::shared_ptr<Data> readFile(std::shared_ptr<std::ifstream> fileStream, int streamData);
 
     void sleep() const;
 
@@ -56,6 +54,7 @@ private:
 
     void saveSongID(char *streamData, int songID);
 };
+
 
 
 #endif //SERVER_SOUNDPROCESSOR_H

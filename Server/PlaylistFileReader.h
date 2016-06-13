@@ -13,7 +13,9 @@
 class PlaylistFileReader {
 public:
 
-    PlaylistFileReader(std::string prefix);
+    PlaylistFileReader(std::string prefix) : fileStream(prefix + FILE_NAME) {
+        readHeader();
+    };
 
     bool endOF();
 
@@ -21,15 +23,23 @@ public:
 
 private:
 
-    std::string prefix;
-
     void readHeader();
 
-    std::ifstream *fileStream;
+    std::ifstream fileStream;
 
     static std::string FILE_NAME;
 
     static std::string MODULE_NAME;
+
+    static const char DELIM;
+
+    static std::string FILENAME_COLUMN;
+
+    static std::string TITLE_COLUMN;
+
+    static std::string AUTHOR_COLUMN;
+
+    void getRow(std::string &fileName, std::string &title, std::string &author);
 };
 
 

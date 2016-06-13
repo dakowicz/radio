@@ -5,18 +5,18 @@
 #ifndef SERVER_DISPATCHER_H
 #define SERVER_DISPATCHER_H
 
-#include <thread>
-#include <atomic>
+#include "ClientManager.h"
+#include "ClientsMap.h"
 #include "FileManager.h"
-#include "Data.h"
 #include "PlaylistManager.h"
 
+class ClientManager;
 
 class Dispatcher {
 public:
 
-    Dispatcher(FileManager &fileManager, PlaylistManager &playlistManager) :
-            fileManager(fileManager), playlistManager(playlistManager), atomicQueue(MODULE_NAME), logger(MODULE_NAME){};
+    Dispatcher(FileManager &fileManager, PlaylistManager &playlistManager, const std::shared_ptr<ClientsMap<int, ClientManager *>> &clients) :
+            fileManager(fileManager), playlistManager(playlistManager), clients(clients), atomicQueue(MODULE_NAME), logger(MODULE_NAME){};
 
     void start();
 
@@ -28,9 +28,9 @@ public:
 
 private:
 
-    static std::string MODULE_NAME;
+    std::shared_ptr<ClientsMap<int, ClientManager *>> clients;
 
-    void wrongDataType();
+    static std::string MODULE_NAME;
 
     std::atomic<bool> running;
 
@@ -42,6 +42,8 @@ private:
 
     Logger logger;
 
+    void wrongDataType();
+
     bool isMessageEmpty(Data *newMessage) const;
 
     void processVote(Data *data);
@@ -51,6 +53,16 @@ private:
     void processConnectionMessage(Data *data);
 
     void processMessage(Data *data);
+
+    int getSongID(const Data *data) const;
+
+    void getPlaylistCSV(std::string content, int &size);
+
+    void broadcastPlaylist();
+
+    void getPlaylistCSV(std::string &content, int &size);
+
+    void getPlaylistCSV(std::string &content);
 };
 
 

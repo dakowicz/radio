@@ -35,26 +35,15 @@ void SoundProcessor::divideFile(std::shared_ptr<std::ifstream> fileStream, int s
 
 void SoundProcessor::pushStreamData(std::shared_ptr<std::ifstream> fileStream, int songID) {
     logger.log("Position in current file: " + std::to_string(fileStream->tellg()));
-    Data *data = readFile(fileStream, songID);
-    broadcastToClients(data);
+    std::shared_ptr<Data> data = readFile(fileStream, songID);
+    clients->broadcast(data);
 }
 
-Data * SoundProcessor::readFile(std::shared_ptr<std::ifstream> fileStream, int songID) {
+std::shared_ptr<Data> SoundProcessor::readFile(std::shared_ptr<std::ifstream> fileStream, int songID) {
     char *streamData = new char[ID_SIZE + PACKAGE_SIZE_B];
     saveSongID(streamData, songID);
     fileStream->read(streamData + ID_SIZE, PACKAGE_SIZE_B);
-    return new Data(DataType::STREAM, streamData, (int) fileStream->gcount() + ID_SIZE);
-}
-
-void SoundProcessor::broadcastToClients(Data *data) {
-    std::vector<int> sockets;
-    clients->getAllKeys(sockets);
-    for(auto &socket: sockets) {
-        ClientManager* clientManager = clients->get(socket);
-        if(clientManager != nullptr) {
-            clientManager->send(data);
-        }
-    }
+    return std::make_shared<Data>(DataType::STREAM, streamData, (int) fileStream->gcount() + ID_SIZE);
 }
 
 void SoundProcessor::saveSongID(char *streamData, int songID) {

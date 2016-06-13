@@ -3,8 +3,6 @@
 //
 
 
-#include <cstring>
-#include <unistd.h>
 #include "ConnectionManager.h"
 
 const int ConnectionManager::QUEUE_LIMIT = 5;
@@ -33,16 +31,16 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
-//    Data *data1 = new Data(DataType::CONNECTION, new char[10], 10);
-//    Data *data2 = new Data(DataType::MUSIC_FILE, new char[10], 10);
-//    Data *data3 = new Data(DataType::VOTE, new char[10], 10);
-//    Data *data4 = new Data((DataType)1, new char[10], 10);
+    Data *data1 = new Data(DataType::CONNECTION, new char[10], 10);
+    Data *data2 = new Data(DataType::MUSIC_FILE, new char[10], 10);
+    Data *data3 = new Data(DataType::VOTE, new char[4]{0,0,0,0}, 4, (char) VoteType::ADD);
+    Data *data4 = new Data((DataType)1, new char[10], 10);
 //
-//    dispatcher.addMessage(data1);
-//    dispatcher.addMessage(data2);
-//    dispatcher.addMessage(data3);
-//    dispatcher.addMessage(data4);
-//    dispatcher.addMessage(nullptr);
+    dispatcher->addMessage(data1);
+    dispatcher->addMessage(data2);
+    dispatcher->addMessage(data3);
+    dispatcher->addMessage(data4);
+    dispatcher->addMessage(nullptr);
 
     this->running = true;
     while(isRunning()) {

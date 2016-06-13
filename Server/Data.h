@@ -12,29 +12,32 @@
 class Data {
 public:
 
-    Data(DataType type, char *content, int size);
-
-    Data(DataType type, char *content, int size, bool flag);
+    Data(DataType type, const char *content, int size, char parameters = DEFAULT_PARAMETER) :
+            type(type), content(content), parameters(parameters), size(size) {}
 
     ~Data();
 
-    char * getContent() const { return content; }
+    const char * getContent() const { return content; }
 
     DataType getType() const { return type; }
 
     int getSize() const { return size; }
 
+    char getParameters() const { return parameters; }
+
     bool getBool();
 
 private:
 
-    char *content;
+    const char *content;
 
     DataType type;
 
     int size;
 
-    bool flag;
+    char parameters;
+
+    static char DEFAULT_PARAMETER;
 };
 
 

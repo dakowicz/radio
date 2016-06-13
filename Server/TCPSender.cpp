@@ -9,22 +9,22 @@
 
 std::string TCPSender::MODULE_NAME = "TCPSender";
 
-void TCPSender::sendMusic(char *message, int messageSize) {
+void TCPSender::sendMusic(const char *message, int messageSize) {
     char *header = Header::createHeaderStream(false, false, messageSize);
     sendMessage(header, message, messageSize);
 }
 
-void TCPSender::sendVotes(char *message, int messageSize) {
+void TCPSender::sendVotes(const char *message, int messageSize) {
     char *header = Header::createHeaderVote();
     sendMessage(header, message, messageSize);
 }
 
-void TCPSender::sendConnectionInfo(char *message, int messageSize) {
+void TCPSender::sendConnectionInfo(const char *message, int messageSize) {
     char *header = Header::createHeaderConnect();
     sendMessage(header, message, messageSize);
 }
 
-void TCPSender::sendMessage(char *header, char *message, int messageSize) {
+void TCPSender::sendMessage(char *header, const char *message, int messageSize) {
     char* data = new char[Header::SIZE + messageSize];
     memcpy(data, header, Header::SIZE);
     memcpy(data + Header::SIZE, message, messageSize);

@@ -5,16 +5,17 @@
 #ifndef SERVER_SOCKETLISTENER_H
 #define SERVER_SOCKETLISTENER_H
 
-
 #include <unistd.h>
 #include "TCPListener.h"
 #include "Dispatcher.h"
 
 
+class Dispatcher;
+
 class SocketListener {
 public:
 
-    SocketListener(Dispatcher &dispatcher, int newSocketDescriptor) :
+    SocketListener(Dispatcher *dispatcher, int newSocketDescriptor) :
             dispatcher(dispatcher), tcpListener(newSocketDescriptor), socketDescriptor(newSocketDescriptor), logger(MODULE_NAME, newSocketDescriptor) {};
 
     void handle();
@@ -27,7 +28,7 @@ private:
 
     int socketDescriptor;
 
-    Dispatcher &dispatcher;
+    Dispatcher *dispatcher;
 
     TCPListener tcpListener;
 

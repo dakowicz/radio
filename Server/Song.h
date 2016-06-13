@@ -25,7 +25,9 @@ public:
 
     int getVotes() const { return votes; }
 
-    bool operator<(const Song &other);
+    void addVote();
+
+    void subtractVote();
 
 private:
 

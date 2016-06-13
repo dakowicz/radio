@@ -6,19 +6,14 @@
 #define SERVER_CONNECTIONMANAGER_H
 
 
-#include <vector>
-#include <thread>
 #include <netinet/in.h>
-#include <map>
-#include <atomic>
-#include <memory>
 #include "ClientManager.h"
 
 
 class ConnectionManager {
 public:
 
-    ConnectionManager(Dispatcher &dispatcher, int port, const std::shared_ptr<AtomicMap<int, ClientManager *>> &clients) :
+    ConnectionManager(Dispatcher *dispatcher, int port, const std::shared_ptr<ClientsMap<int, ClientManager *>> &clients) :
             dispatcher(dispatcher), port(port), clients(clients){};
 
     ~ConnectionManager();
@@ -41,9 +36,9 @@ private:
 
     int socketDescriptor;
 
-    Dispatcher &dispatcher;
+    Dispatcher *dispatcher;
 
-    std::shared_ptr<AtomicMap<int, ClientManager *>> clients;
+    std::shared_ptr<ClientsMap<int, ClientManager *>> clients;
 
     std::atomic<bool> running;
 

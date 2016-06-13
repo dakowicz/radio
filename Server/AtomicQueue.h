@@ -8,7 +8,6 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
-#include <iostream>
 #include <shared_mutex>
 #include "Logger.h"
 
@@ -24,9 +23,9 @@ public:
 
     T pop();
 
-    void push(const T &item);
-
     void pop(T &item);
+
+    void push(T item);
 
 private:
 
@@ -67,7 +66,7 @@ void AtomicQueue<T>::pop(T &item) {
 }
 
 template <typename T>
-void AtomicQueue<T>::push(const T &item) {
+void AtomicQueue<T>::push(T item) {
 
     std::unique_lock<std::mutex> lock(mutex);
     queue.push(item);

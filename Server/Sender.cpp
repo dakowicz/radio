@@ -7,15 +7,14 @@
 std::string Sender::MODULE_NAME = "Sender";
 
 void Sender::handle() {
-    Data *dataFromQueue;
-
+    std::shared_ptr<Data> dataFromQueue;
     while(!isConnectionClosed()) {
         dataFromQueue = atomicQueue.pop();
         sendData(dataFromQueue);
     }
 }
 
-void Sender::sendData(Data *data) {
+void Sender::sendData(std::shared_ptr<Data> data) {
     if(data == nullptr) {
         return;
     }
@@ -35,22 +34,22 @@ void Sender::sendData(Data *data) {
     }
 }
 
-void Sender::sendConnection(Data *data) {
+void Sender::sendConnection(std::shared_ptr<Data> data) {
     logger.log("Sending data type CONNECTION");
     tcpSender.sendConnectionInfo(data->getContent(), data->getSize());
 }
 
-void Sender::sendVotes(Data *data) {
+void Sender::sendVotes(std::shared_ptr<Data> data) {
     logger.log("Sending data type VOTES");
     tcpSender.sendVotes(data->getContent(), data->getSize());
 }
 
-void Sender::sendStream(Data *data) {
+void Sender::sendStream(std::shared_ptr<Data> data) {
     logger.log("Sending data type STREAM");
     tcpSender.sendMusic(data->getContent(), data->getSize());
 }
 
-void Sender::addMessage(Data *message) {
+void Sender::addMessage(std::shared_ptr<Data> message) {
     this->atomicQueue.push(message);
 }
 
@@ -62,7 +61,7 @@ bool Sender::isConnectionClosed() {
     return tcpSender.isConnectionClosed();
 }
 
-void Sender::setConnectionClosed(bool i) {
+void Sender::setConnectionClosed() {
     tcpSender.setConnectionClosed();
 }
 
