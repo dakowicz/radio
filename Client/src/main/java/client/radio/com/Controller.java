@@ -135,6 +135,7 @@ public class Controller implements Runnable {
 
     private void handleStreamingMusic(DataPacket packet) {
         log.info("MUSIC");
+
         byte[] songIdb = new byte[4];
         byte[] songData = new byte[packet.getMessageByte().length - 4];
         for (int i = 0; i < 4; i++)

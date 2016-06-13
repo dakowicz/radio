@@ -152,7 +152,8 @@ public class Playlist {
         //StringReader buffer= new StringReader(data.toString());
         log.info("Parsing new Playlist");
         Reader targetReader = new InputStreamReader(new ByteArrayInputStream(data));
-        parser = new CSVParser(targetReader, CSVFormat.DEFAULT.withRecordSeparator(separator));
+        parser = new CSVParser(targetReader, CSVFormat.DEFAULT.withRecordSeparator(separator).withDelimiter('|'));
+
         createPlaylist(parser.getRecords());
         //streamPlayer.getStreamFilesPaths().size();
         targetReader.close();
