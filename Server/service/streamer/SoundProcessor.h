@@ -5,9 +5,9 @@
 #ifndef SERVER_SOUNDPROCESSOR_H
 #define SERVER_SOUNDPROCESSOR_H
 
-#include "FileManager.h"
-#include "PlaylistManager.h"
-#include "ClientManager.h"
+#include "../file/FileManager.h"
+#include "../playlist/PlaylistManager.h"
+#include "../connection/ClientManager.h"
 
 
 class SoundProcessor {

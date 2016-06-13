@@ -6,8 +6,8 @@
 #define SERVER_SOCKETLISTENER_H
 
 #include <unistd.h>
-#include "TCPListener.h"
-#include "Dispatcher.h"
+#include "../../tcp/receiver/TCPListener.h"
+#include "../dispatcher/Dispatcher.h"
 
 
 class Dispatcher;

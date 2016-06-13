@@ -6,7 +6,7 @@
 #define SERVER_MESSAGEDTO_H
 
 
-#include "Header.h"
+#include "../../../tcp/domain/Header.h"
 #include "DataType.h"
 
 class Data {

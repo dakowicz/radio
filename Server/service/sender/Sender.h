@@ -8,9 +8,9 @@
 
 #include <unistd.h>
 #include <atomic>
-#include "TCPSender.h"
-#include "Data.h"
-#include "AtomicQueue.h"
+#include "../../tcp/sender/TCPSender.h"
+#include "../dispatcher/domain/Data.h"
+#include "../dispatcher/domain/AtomicQueue.h"
 
 class Sender {
 public:

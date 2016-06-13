@@ -7,11 +7,11 @@
 
 
 #include <vector>
-#include "AtomicQueue.h"
+#include "../dispatcher/domain/AtomicQueue.h"
 #include "PlaylistFileReader.h"
-#include "SongList.h"
-#include "VoteType.h"
-#include "Data.h"
+#include "domain/SongList.h"
+#include "../dispatcher/domain/VoteType.h"
+#include "../dispatcher/domain/Data.h"
 
 class PlaylistManager {
 

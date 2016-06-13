@@ -4,8 +4,8 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "SoundProcessor.h"
-#include "ConnectionManager.h"
+#include "service/streamer/SoundProcessor.h"
+#include "tcp/connection/ConnectionManager.h"
 
 
 int main(int argc, char *arg[]) {

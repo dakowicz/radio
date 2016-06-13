@@ -12,8 +12,8 @@
 #include <string>
 #include <atomic>
 #include <shared_mutex>
-#include "Data.h"
-#include "Logger.h"
+#include "../../service/dispatcher/domain/Data.h"
+#include "../../logger/Logger.h"
 
 
 class TCPListener {

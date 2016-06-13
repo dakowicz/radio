@@ -8,8 +8,8 @@
 
 #include <fstream>
 #include <memory>
-#include "Song.h"
-#include "Logger.h"
+#include "../playlist/domain/Song.h"
+#include "../../logger/Logger.h"
 
 class FileManager {
 public:

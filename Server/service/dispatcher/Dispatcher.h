@@ -5,11 +5,11 @@
 #ifndef SERVER_DISPATCHER_H
 #define SERVER_DISPATCHER_H
 
-#include "ClientManager.h"
-#include "ClientsMap.h"
-#include "FileManager.h"
-#include "PlaylistManager.h"
-#include "FileType.h"
+#include "../connection/ClientManager.h"
+#include "../connection/domain/ClientsMap.h"
+#include "../file/FileManager.h"
+#include "../playlist/PlaylistManager.h"
+#include "domain/FileType.h"
 
 class ClientManager;
 
@@ -60,7 +60,7 @@ private:
     void broadcastPlaylist();
 
     void getPlaylistCSV(std::string &content);
-    
+
     void getSongData(std::shared_ptr<Data> &data, std::string &author, std::string &title);
 
     std::string addNewMusicFile(const std::shared_ptr<Data> &data, const std::string &author, const std::string &title) const;

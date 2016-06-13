@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 #include <fstream>
-#include "Song.h"
+#include "domain/Song.h"
 
 class PlaylistFileReader {
 public:

@@ -7,7 +7,7 @@
 
 
 #include <netinet/in.h>
-#include "ClientManager.h"
+#include "../../service/connection/ClientManager.h"
 
 
 class ConnectionManager {

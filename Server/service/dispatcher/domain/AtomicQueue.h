@@ -9,7 +9,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <shared_mutex>
-#include "Logger.h"
+#include "../../../logger/Logger.h"
 
 template <typename T>
 class AtomicQueue {

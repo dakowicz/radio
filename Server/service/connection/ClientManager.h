@@ -6,9 +6,9 @@
 #define SERVER_CLIENTMANAGER_H
 
 #include <thread>
-#include "Sender.h"
-#include "SocketListener.h"
-#include "ClientsMap.h"
+#include "../sender/Sender.h"
+#include "../receiver/SocketListener.h"
+#include "domain/ClientsMap.h"
 
 class Dispatcher;
 
