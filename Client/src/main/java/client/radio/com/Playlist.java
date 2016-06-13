@@ -129,9 +129,11 @@ public class Playlist {
 
     public void updateOrPutSong(Song song) {
         // Map<Integer, Song> songsToBePlayed = songsToPlay();
-        if (currentPlaylist.containsKey(song)) {
-            if (!song.isPlayed() && !song.isStreamed())
+        if (currentPlaylist.containsKey(song.getId())) {
+            if (!song.isPlayed() && !song.isStreamed()) {
+                song.setVoted(currentPlaylist.get(song.getId()).isVoted());
                 currentPlaylist.replace(song.getId(), song);
+            }
         } else {
             currentPlaylist.put(song.getId(), song);
         }
