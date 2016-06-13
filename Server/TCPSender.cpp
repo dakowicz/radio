@@ -15,7 +15,7 @@ void TCPSender::sendMusic(const char *message, int messageSize) {
 }
 
 void TCPSender::sendVotes(const char *message, int messageSize) {
-    char *header = Header::createHeaderVote(false, messageSize);
+    char *header = Header::createHeaderList(false, messageSize);
     sendMessage(header, message, messageSize);
 }
 

@@ -40,6 +40,14 @@ void PlaylistFileReader::getRow(std::string &fileName, std::string &title, std::
     std::getline(fileStream, author, '\n');
 }
 
+void PlaylistFileReader::addToPlaylistFile(std::shared_ptr<Song> song) {
+    std::ofstream writeStream(prefix + FILE_NAME, std::ios::app);
+    writeStream << '\n' << song->getFileName() << DELIM << song->getTitle() << DELIM << song->getAuthor();
+    writeStream.close();
+}
+
+
+
 
 
 

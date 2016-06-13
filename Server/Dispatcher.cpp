@@ -6,6 +6,7 @@ std::string Dispatcher::MODULE_NAME = "Dispatcher";
 void Dispatcher::start() {
     std::shared_ptr<Data> newMessage;
     this->running = true;
+    sleep(2);
     while(isRunning()) {
         newMessage = atomicQueue.pop();
         processMessage(newMessage);
@@ -67,7 +68,7 @@ int Dispatcher::getSongID(std::shared_ptr<Data> data) const {
 void Dispatcher::processMusicFile(std::shared_ptr<Data> data) {
     logger.log("Processing - data type MUSIC_FILE");
     std::string newFileName;
-    switch (data->getParameters()){
+    switch (data->getParameters()>>7){
         case (char) FileType::MUSIC:
             std::string author, title;
             getSongData(data, author, title);
@@ -105,7 +106,7 @@ void Dispatcher::getSongData(std::shared_ptr<Data> &data, std::string &author, s
     int songDataSize = data->getParameters();
     std::string songData(data->getContent(), songDataSize);
     author = songData.substr(0, songData.find('|'));
-    title = songData.substr(songData.find('|') + 1, songData.size() - author.size() -1);
+    title = songData.substr(songData.find('|') + 1);
 }
 
 

@@ -47,10 +47,10 @@ char * Header::createHeaderVote(bool cancel_vote, int l){
     return createBuffer(Header::VOTES, parameters, l);
 }
 
-Header * Header::createHeaderList(bool ack, int l){
+char * Header::createHeaderList(bool ack, int l){
 
-     char parameters=( char)(ack?1:0);
-    return new Header(Header::VOTES, parameters, l);
+    char parameters=( char)(ack?1:0);
+    return createBuffer(Header::VOTES, parameters, l);
 }
 
 

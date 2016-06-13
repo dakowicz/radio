@@ -25,7 +25,9 @@ void PlaylistManager::addSong(std::shared_ptr<Song> song) {
 }
 
 void PlaylistManager::addSong(std::string fileName, std::string author, std::string title) {
-    songs.add(std::make_shared<Song>(fileName, title, author));
+    std::shared_ptr<Song> song = std::make_shared<Song>(fileName, title, author);
+    songs.add(song);
+    playlistFileReader.addToPlaylistFile(song);
 }
 
 void PlaylistManager::addVote(int songID) {

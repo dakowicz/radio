@@ -13,7 +13,7 @@
 class PlaylistFileReader {
 public:
 
-    PlaylistFileReader(std::string prefix) : fileStream(prefix + FILE_NAME) {
+    PlaylistFileReader(std::string prefix) : prefix(prefix), fileStream(prefix + FILE_NAME) {
         readHeader();
     };
 
@@ -21,9 +21,13 @@ public:
 
     std::shared_ptr<Song> getNextRow();
 
+    void addToPlaylistFile(std::shared_ptr<Song> song);
+
 private:
 
     void readHeader();
+
+    std::string prefix;
 
     std::ifstream fileStream;
 
