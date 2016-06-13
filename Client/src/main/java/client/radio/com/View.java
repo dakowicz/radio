@@ -259,10 +259,10 @@ public class View extends JFrame implements Runnable {
                         JOptionPane.showMessageDialog(View.this, "Artist and song names are to long");
                         return;
                     }
-                    sendFileButton.setEnabled(false);
-                    voteButton.setEnabled(false);
-                    artistField.setEnabled(false);
-                    titleField.setEnabled(false);
+                    //sendFileButton.setEnabled(false);
+                    //voteButton.setEnabled(false);
+                    //artistField.setEnabled(false);
+                    //titleField.setEnabled(false);
                     controller1.getSender().sendFile(fileToSend, titleAndArtist.getBytes());
                 }
             }
