@@ -14,9 +14,13 @@ std::shared_ptr<std::ifstream> FileManager::getFileStream(std::shared_ptr<Song> 
 
 std::string FileManager::addMusicFile(const char *content, int size, std::string author, std::string title) {
     const std::string fileName = author + title;
+    saveNewFile(content, size, author, title, fileName);
+    return fileName;
+}
+
+void FileManager::saveNewFile(const char *content, int size, const std::string &author, const std::string &title, const std::string &fileName) const {
     std::ofstream newFile(prefix + fileName);
     newFile.write(content + author.size() + title.size() + 1, size - author.size() - title.size() - 1);
     newFile.close();
-    return fileName;
 }
 

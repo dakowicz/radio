@@ -17,8 +17,7 @@ class PlaylistManager {
 
 public:
 
-    PlaylistManager(std::string &prefix) :
-            playlistFileReader(prefix), logger(MODULE_NAME) {
+    PlaylistManager(std::string &prefix) : playlistFileReader(prefix), logger(MODULE_NAME) {
         loadPlaylist();
     }
 
@@ -49,9 +48,6 @@ private:
     void writeSongs(std::string &content);
 
     void writeCSVHeader(std::string &content);
-
-    bool isCorrect(const std::shared_ptr<Song> &song) const;
-
 };
 
 

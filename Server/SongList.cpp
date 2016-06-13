@@ -52,15 +52,6 @@ std::shared_ptr<Song> SongList::findSong(int songID) const {
 
 void SongList::updateOrder() { songs.sort([](std::shared_ptr<Song> a, std::shared_ptr<Song> b){return a->getVotes() > b->getVotes();}); }
 
-bool SongList::comparator(std::shared_ptr<Song> first, std::shared_ptr<Song> second) {
-    return first->getVotes() > second->getVotes();
-}
-
-void SongList::printAll() {
-    for(auto& song : songs)
-        std::cout << song->getID() << std::endl;
-}
-
 void SongList::writeSongs(std::string &content) {
     std::shared_lock<std::shared_timed_mutex> lock(mutex);
     for(auto& song : songs){

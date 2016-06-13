@@ -45,14 +45,3 @@ void SocketListener::resetReadReaquestCounter() {
 bool SocketListener::isConnectionClosed() {
     return tcpListener.isConnectionsClosed();
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -83,26 +83,6 @@ char *Header::createBuffer(char type, char parameters, int length) {
     return head;
 }
 
- char *Header::createHeader() {
-    return nullptr;
-}
-
 char * Header::createHeaderConnect() {
-    return nullptr;
-}
-
-char * Header::createHeaderVote() {
-    return nullptr;
-}
-
- char *Header::createHeaderFile() {
-    return nullptr;
-}
-
- char *Header::createHeaderList() {
-    return nullptr;
-}
-
-char * Header::createHeaderStream() {
     return nullptr;
 }

@@ -64,6 +64,3 @@ bool Sender::isConnectionClosed() {
 void Sender::setConnectionClosed() {
     tcpSender.setConnectionClosed();
 }
-
-
-

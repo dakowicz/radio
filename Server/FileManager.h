@@ -27,6 +27,9 @@ private:
     Logger logger;
 
     static std::string MODULE_NAME;
+
+    void saveNewFile(const char *content, int size, const std::string &author, const std::string &title,
+                     const std::string &fileName) const;
 };
 
 

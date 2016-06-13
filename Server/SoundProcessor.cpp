@@ -56,7 +56,3 @@ void SoundProcessor::saveSongID(char *streamData, int songID) {
 void SoundProcessor::sleep() const { std::this_thread::sleep_for(TIME_INTERVAL_MS); }
 
 bool SoundProcessor::endOf(std::shared_ptr<std::ifstream> fileStream) const { return fileStream->eof(); }
-
-
-
-

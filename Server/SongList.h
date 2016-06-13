@@ -24,8 +24,6 @@ public:
 
     void subtractVote(int songID);
 
-    void getAll(std::vector<std::shared_ptr<Song>> &vector);
-
     void writeSongs(std::string &content);
 
 private:
@@ -39,10 +37,6 @@ private:
     std::shared_ptr<Song> findSong(int songID) const;
 
     void updateOrder();
-
-    static bool comparator(std::shared_ptr<Song> first, std::shared_ptr<Song> second);
-
-    void printAll();
 };
 
 

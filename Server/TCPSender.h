@@ -16,14 +16,7 @@
 class TCPSender {
 public:
 
-    TCPSender(int socketDescriptor) : socketDescriptor(socketDescriptor), logger(MODULE_NAME, socketDescriptor) {
-//        std::string fileName = std::string("/home/tomasz/prog/radio/Server/") + std::string("newfile") + std::to_string(socketDescriptor);
-//        this->file = new std::ofstream(fileName);
-    }
-
-    ~TCPSender() {
-//        delete file;
-    }
+    TCPSender(int socketDescriptor) : socketDescriptor(socketDescriptor), logger(MODULE_NAME, socketDescriptor) {}
 
     void sendMusic(const char *message, int messageSize);
 
@@ -44,8 +37,6 @@ private:
     static std::string MODULE_NAME;
 
     void sendMessage(char *header, const char *message, int messageSize);
-
-//    std::ofstream *file;
 
     void writeData(char *dataToSend, int dataToSendSize);
 

@@ -18,8 +18,6 @@ void PlaylistManager::loadPlaylist() {
     }
 }
 
-bool PlaylistManager::isCorrect(const std::shared_ptr<Song> &song) const { return !song->getFileName().empty(); }
-
 void PlaylistManager::addSong(std::shared_ptr<Song> song) {
     songs.add(song);
 }

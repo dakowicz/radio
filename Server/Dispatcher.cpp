@@ -33,7 +33,7 @@ void Dispatcher::processMessage(std::shared_ptr<Data> data) {
             processVote(data);
             break;
         case DataType::MUSIC_FILE:
-            processMusicFile(data);
+            processFile(data);
             break;
         case DataType::CONNECTION:
             processConnectionMessage(data);
@@ -56,6 +56,22 @@ void Dispatcher::processVote(std::shared_ptr<Data> data) {
     broadcastPlaylist();
 }
 
+void Dispatcher::processFile(std::shared_ptr<Data> data) {
+    logger.log("Processing - data type MUSIC_FILE");
+    switch (data->getParameters()>>7){
+        case (char) FileType::MUSIC:
+            processMusicFile(data);
+    }
+}
+
+void Dispatcher::processConnectionMessage(std::shared_ptr<Data> data) {
+    logger.log("Processing - data type CONNECTION");
+}
+
+void Dispatcher::wrongDataType() {
+    logger.log("Processing - wrong data type");
+}
+
 int Dispatcher::getSongID(std::shared_ptr<Data> data) const {
     const char *content = data->getContent();
     int songID = content[0] << 24;
@@ -66,27 +82,14 @@ int Dispatcher::getSongID(std::shared_ptr<Data> data) const {
 }
 
 void Dispatcher::processMusicFile(std::shared_ptr<Data> data) {
-    logger.log("Processing - data type MUSIC_FILE");
-    std::string newFileName;
-    switch (data->getParameters()>>7){
-        case (char) FileType::MUSIC:
-            std::string author, title;
-            getSongData(data, author, title);
-            newFileName = addNewMusicFile(data, author, title);
-            playlistManager.addSong(newFileName, author, title);
-    }
+    std::string author, title, newFileName;
+    getSongData(data, author, title);
+    newFileName = addNewMusicFile(data, author, title);
+    playlistManager.addSong(newFileName, author, title);
 }
 
 std::string Dispatcher::addNewMusicFile(const std::shared_ptr<Data> &data, const std::string &author, const std::string &title) const {
     return fileManager.addMusicFile(data->getContent(), data->getSize(), author, title);
-}
-
-void Dispatcher::processConnectionMessage(std::shared_ptr<Data> data) {
-    logger.log("Processing - data type CONNECTION");
-}
-
-void Dispatcher::wrongDataType() {
-    logger.log("Processing - wrong data type");
 }
 
 void Dispatcher::broadcastPlaylist() {

@@ -29,8 +29,6 @@ void TCPSender::sendMessage(char *header, const char *message, int messageSize) 
     memcpy(data, header, Header::SIZE);
     memcpy(data + Header::SIZE, message, messageSize);
     writeData(data, Header::SIZE + messageSize);
-//    if(messageSize < 80000)
-//        file->close();
 }
 
 void TCPSender::writeData(char *dataToSend, int dataToSendSize) {
@@ -55,11 +53,6 @@ void TCPSender::sendN(const char *dataToSend, int dataToSendSize) {
 
 bool TCPSender::isClosedByRemote(int bytesSent) const { return bytesSent < 0 && errno == EPIPE; }
 
-void TCPSender::setConnectionClosed() {
-    connectionClosed = true;
-}
+void TCPSender::setConnectionClosed() { connectionClosed = true; }
 
-bool TCPSender::isConnectionClosed() {
-    return connectionClosed.load();
-}
-
+bool TCPSender::isConnectionClosed() { return connectionClosed.load(); }

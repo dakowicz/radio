@@ -7,8 +7,11 @@
 
 
 enum class VoteType {
+
     TO_CLIENT = 0,
+
     SUBTRACT = 2,
+
     ADD = 3,
 };
 

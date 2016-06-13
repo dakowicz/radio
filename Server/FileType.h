@@ -7,7 +7,9 @@
 
 
 enum class FileType {
+
     MUSIC = 0,
+
     RECORDING = 1
 };
 

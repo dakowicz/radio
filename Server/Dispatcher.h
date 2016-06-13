@@ -49,7 +49,7 @@ private:
 
     void processVote(std::shared_ptr<Data> data);
 
-    void processMusicFile(std::shared_ptr<Data> data);
+    void processFile(std::shared_ptr<Data> data);
 
     void processConnectionMessage(std::shared_ptr<Data> data);
 
@@ -60,12 +60,12 @@ private:
     void broadcastPlaylist();
 
     void getPlaylistCSV(std::string &content);
-
-    std::string addNewMusicFile(const std::shared_ptr<Data> &data) const;
-
+    
     void getSongData(std::shared_ptr<Data> &data, std::string &author, std::string &title);
 
     std::string addNewMusicFile(const std::shared_ptr<Data> &data, const std::string &author, const std::string &title) const;
+
+    void processMusicFile(std::shared_ptr<Data> data);
 };
 
 

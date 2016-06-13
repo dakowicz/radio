@@ -31,12 +31,6 @@ void ConnectionManager::start() {
     if(listen(serverSocketDescriptor, QUEUE_LIMIT) == -1) {
         handleError("error on listening");
     }
-    
-//    std::string playlistContent("abba|romanceABC");
-//    char* content = new char[playlistContent.size()];
-//    std::copy(playlistContent.begin(), playlistContent.end(), content);
-//    std::shared_ptr<Data> newMessage = std::make_shared<Data>(DataType::MUSIC_FILE, content, playlistContent.size(), (char) 12 );
-//    dispatcher->addMessage(newMessage);
 
     this->running = true;
     while(isRunning()) {

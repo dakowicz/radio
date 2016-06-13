@@ -20,8 +20,6 @@ public:
 
     const bool isRunning() const { return running.load(); }
 
-    void setRunning(bool val) { this->running = val; }
-
 private:
 
     std::shared_ptr<ClientsMap<int, ClientManager *>> clients;
